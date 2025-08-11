@@ -88,20 +88,21 @@ export default function AdminPage() {
   useEffect(() => {
     const tenant = getTenantId()
     setCurrentTenant(tenant)
-    loadConfig()
-  }, [])
-
-  const loadConfig = async () => {
-    try {
-      const response = await fetch('/api/config')
-      if (response.ok) {
-        const config = await response.json()
-        setFormData(config)
+    
+    const loadInitialConfig = async () => {
+      try {
+        const response = await fetch('/api/config')
+        if (response.ok) {
+          const config = await response.json()
+          setFormData(config)
+        }
+      } catch (error) {
+        console.error('Error loading config:', error)
       }
-    } catch (error) {
-      console.error('Error loading config:', error)
     }
-  }
+    
+    loadInitialConfig()
+  }, [])
 
   const handleTemplateSelect = (template: any) => {
     setCurrentTemplate(template.id)
@@ -121,16 +122,8 @@ export default function AdminPage() {
       console.error('Error loading template config:', error)
     }
   }
-    try {
-      const response = await fetch('/api/config')
-      if (response.ok) {
-        const config = await response.json()
-        setFormData(config)
-      }
-    } catch (error) {
-      console.error('Error loading config:', error)
-    }
-  }
+
+
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault()
