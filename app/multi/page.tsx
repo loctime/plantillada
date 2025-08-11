@@ -1,447 +1,304 @@
 "use client"
 
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { 
-  Globe, 
-  ShoppingCart, 
-  MessageSquare, 
-  Settings,
-  Plus,
-  ExternalLink,
-  Edit,
-  Trash2,
-  ArrowUp,
-  ArrowDown,
-  Eye,
-  EyeOff
-} from "lucide-react"
-
-interface Page {
-  id: string
-  name: string
-  description: string
-  route: string
-  status: 'active' | 'draft' | 'coming-soon'
-  icon: React.ReactNode
-  order: number
-  visible: boolean
-}
-
-interface NavigationItem {
-  id: string
-  label: string
-  url: string
-  order: number
-  visible: boolean
-  children?: NavigationItem[]
-}
+import { useState, useEffect } from 'react'
+import { Config } from '@/lib/config-loader'
 
 export default function MultiPage() {
-  const [pages, setPages] = useState<Page[]>([
-    {
-      id: 'landing',
-      name: 'Landing Page',
-      description: 'Página principal de aterrizaje',
-      route: '/',
-      status: 'active',
-      icon: <Globe className="h-4 w-4" />,
-      order: 1,
-      visible: true
-    },
-    {
-      id: 'shop',
-      name: 'Tienda',
-      description: 'Catálogo de productos y carrito',
-      route: '/shop',
-      status: 'active',
-      icon: <ShoppingCart className="h-4 w-4" />,
-      order: 2,
-      visible: true
-    },
-    {
-      id: 'forum',
-      name: 'Foro',
-      description: 'Comunidad y discusiones',
-      route: '/forum',
-      status: 'coming-soon',
-      icon: <MessageSquare className="h-4 w-4" />,
-      order: 3,
-      visible: false
-    }
-  ])
+  const [config, setConfig] = useState<Config | null>(null)
+  const [loading, setLoading] = useState(true)
 
-  const [navigation, setNavigation] = useState<NavigationItem[]>([
-    {
-      id: 'home',
-      label: 'Inicio',
-      url: '/',
-      order: 1,
-      visible: true
-    },
-    {
-      id: 'shop',
-      label: 'Tienda',
-      url: '/shop',
-      order: 2,
-      visible: true
-    },
-    {
-      id: 'about',
-      label: 'Sobre Nosotros',
-      url: '/about',
-      order: 3,
-      visible: true
-    },
-    {
-      id: 'contact',
-      label: 'Contacto',
-      url: '/contact',
-      order: 4,
-      visible: true
-    }
-  ])
-
-  const [newPageName, setNewPageName] = useState("")
-  const [newPageRoute, setNewPageRoute] = useState("")
-
-  const getStatusBadge = (status: Page['status']) => {
-    switch (status) {
-      case 'active':
-        return <Badge variant="default" className="bg-green-100 text-green-800">Activo</Badge>
-      case 'draft':
-        return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">Borrador</Badge>
-      case 'coming-soon':
-        return <Badge variant="outline" className="text-gray-500">Próximamente</Badge>
-    }
-  }
-
-  const handleAddPage = () => {
-    if (!newPageName.trim() || !newPageRoute.trim()) return
-
-    const newPage: Page = {
-      id: newPageRoute.replace('/', ''),
-      name: newPageName,
-      description: `Nueva página: ${newPageName}`,
-      route: newPageRoute,
-      status: 'draft',
-      icon: <Globe className="h-4 w-4" />,
-      order: pages.length + 1,
-      visible: true
+  useEffect(() => {
+    const loadConfig = async () => {
+      try {
+        const response = await fetch('/api/config?template=multi-page')
+        if (response.ok) {
+          const multiConfig = await response.json()
+          setConfig(multiConfig)
+        }
+      } catch (error) {
+        console.error('Error loading multi-page config:', error)
+      } finally {
+        setLoading(false)
+      }
     }
 
-    setPages([...pages, newPage])
-    setNewPageName("")
-    setNewPageRoute("")
+    loadConfig()
+  }, [])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-lg">Cargando sitio multi-página...</div>
+      </div>
+    )
   }
 
-  const handleDeletePage = (pageId: string) => {
-    setPages(pages.filter(p => p.id !== pageId))
-  }
-
-  const handleTogglePageVisibility = (pageId: string) => {
-    setPages(pages.map(p => 
-      p.id === pageId ? { ...p, visible: !p.visible } : p
-    ))
-  }
-
-  const handleMovePage = (pageId: string, direction: 'up' | 'down') => {
-    const currentIndex = pages.findIndex(p => p.id === pageId)
-    if (currentIndex === -1) return
-
-    const newPages = [...pages]
-    const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1
-
-    if (targetIndex >= 0 && targetIndex < newPages.length) {
-      [newPages[currentIndex], newPages[targetIndex]] = [newPages[targetIndex], newPages[currentIndex]]
-      newPages[currentIndex].order = currentIndex + 1
-      newPages[targetIndex].order = targetIndex + 1
-      setPages(newPages)
-    }
-  }
-
-  const handleToggleNavigationVisibility = (itemId: string) => {
-    setNavigation(navigation.map(item => 
-      item.id === itemId ? { ...item, visible: !item.visible } : item
-    ))
+  if (!config) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-lg text-red-600">Error al cargar la configuración</div>
+      </div>
+    )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      <div className="max-w-6xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Sitio Multi-Página</h1>
-          <p className="text-muted-foreground">
-            Gestiona todas las páginas de tu sitio web desde un solo lugar
-          </p>
+    <div className="min-h-screen bg-white">
+      {/* Header */}
+      <header className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-6">
+            <div className="flex items-center">
+              <h1 className="text-2xl font-bold text-gray-900">
+                {config.site.title}
+              </h1>
+            </div>
+            <nav className="hidden md:flex space-x-8">
+              <a href="#inicio" className="text-gray-700 hover:text-gray-900">Inicio</a>
+              <a href="#sesiones" className="text-gray-700 hover:text-gray-900">Sesiones</a>
+              <a href="#cursos" className="text-gray-700 hover:text-gray-900">Cursos</a>
+              <a href="#sobre-mi" className="text-gray-700 hover:text-gray-900">Sobre Mí</a>
+              <a href="#testimonios" className="text-gray-700 hover:text-gray-900">Testimonios</a>
+              <a href="#contacto" className="text-gray-700 hover:text-gray-900">Contacto</a>
+            </nav>
+          </div>
         </div>
+      </header>
 
-        <Tabs defaultValue="pages" className="space-y-6">
-          <TabsList>
-            <TabsTrigger value="pages">Páginas</TabsTrigger>
-            <TabsTrigger value="navigation">Navegación</TabsTrigger>
-            <TabsTrigger value="settings">Configuración</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="pages" className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="text-xl font-semibold">Páginas del Sitio</h2>
-              <Button onClick={() => document.getElementById('addPageModal')?.classList.remove('hidden')}>
-                <Plus className="h-4 w-4 mr-2" />
-                Agregar Página
-              </Button>
+      {/* Hero Section */}
+      <section id="inicio" className="bg-gradient-to-r from-purple-600 to-blue-600 text-white py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h2 className="text-4xl font-bold mb-4">
+              {config.site.heroTitle || "Sitio Multi-Página Profesional"}
+            </h2>
+            <p className="text-xl mb-8">
+              {config.site.tagline}
+            </p>
+            <div className="flex justify-center space-x-4">
+              <a
+                href="#sesiones"
+                className="bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+              >
+                {config.buttons?.heroButton || "Explorar"}
+              </a>
+              <a
+                href="#contacto"
+                className="border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-purple-600 transition-colors"
+              >
+                {config.buttons?.ctaButton || "Contacto"}
+              </a>
             </div>
+          </div>
+        </div>
+      </section>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {pages.map((page) => (
-                <Card key={page.id} className="hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 bg-primary/10 rounded-lg text-primary">
-                          {page.icon}
-                        </div>
-                        <div>
-                          <CardTitle className="text-lg">{page.name}</CardTitle>
-                          <div className="flex items-center gap-2 mt-1">
-                            {getStatusBadge(page.status)}
-                            <Badge variant="outline" className="text-xs">
-                              Orden: {page.order}
-                            </Badge>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleTogglePageVisibility(page.id)}
-                        >
-                          {page.visible ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
-                        </Button>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <CardDescription>
-                      {page.description}
-                    </CardDescription>
-                    
-                    <div className="text-sm text-muted-foreground">
-                      Ruta: <code className="bg-gray-100 px-1 rounded">{page.route}</code>
-                    </div>
-                    
-                    <div className="flex gap-2">
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="flex-1"
-                        onClick={() => window.open(page.route, '_blank')}
-                      >
-                        <ExternalLink className="h-3 w-3 mr-1" />
-                        Ver
-                      </Button>
-                      <Button 
-                        size="sm" 
-                        className="flex-1"
-                        disabled={page.status === 'coming-soon'}
-                      >
-                        <Edit className="h-3 w-3 mr-1" />
-                        Configurar
-                      </Button>
-                    </div>
-
-                    <div className="flex gap-1">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleMovePage(page.id, 'up')}
-                        disabled={page.order === 1}
-                      >
-                        <ArrowUp className="h-3 w-3" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleMovePage(page.id, 'down')}
-                        disabled={page.order === pages.length}
-                      >
-                        <ArrowDown className="h-3 w-3" />
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => handleDeletePage(page.id)}
-                        className="flex-1"
-                      >
-                        <Trash2 className="h-3 w-3 mr-1" />
-                        Eliminar
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-
-            {/* Add Page Modal */}
-            <Card id="addPageModal" className="hidden">
-              <CardHeader>
-                <CardTitle>Agregar Nueva Página</CardTitle>
-                <CardDescription>
-                  Crea una nueva página para tu sitio web
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="pageName">Nombre de la Página</Label>
-                    <Input
-                      id="pageName"
-                      value={newPageName}
-                      onChange={(e) => setNewPageName(e.target.value)}
-                      placeholder="Mi Nueva Página"
-                    />
+      {/* Sesiones Section */}
+      <section id="sesiones" className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h3 className="text-3xl font-bold text-gray-900 mb-4">
+              {config.site.sessionsTitle || "Sesiones 1:1"}
+            </h3>
+            <p className="text-lg text-gray-600">
+              {config.site.sessionsSubtitle || "Sesiones personalizadas para tu crecimiento"}
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-2 gap-8">
+            {config.sessions.map((session) => (
+              <div key={session.id} className="bg-white rounded-lg shadow-md overflow-hidden">
+                <div className="p-6">
+                  <h4 className="text-xl font-semibold text-gray-900 mb-2">
+                    {session.name}
+                  </h4>
+                  <p className="text-gray-600 mb-4">{session.summary}</p>
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-2xl font-bold text-purple-600">{session.price}</span>
+                    <span className="text-sm text-gray-500">{session.duration}</span>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="pageRoute">Ruta</Label>
-                    <Input
-                      id="pageRoute"
-                      value={newPageRoute}
-                      onChange={(e) => setNewPageRoute(e.target.value)}
-                      placeholder="/mi-pagina"
-                    />
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <Button onClick={handleAddPage}>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Crear Página
-                  </Button>
-                  <Button 
-                    variant="outline"
-                    onClick={() => document.getElementById('addPageModal')?.classList.add('hidden')}
+                  <ul className="space-y-2 mb-6">
+                    {session.features.map((feature, index) => (
+                      <li key={index} className="flex items-center text-sm text-gray-600">
+                        <svg className="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+                  <a
+                    href={session.hotmartUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block w-full bg-purple-600 text-white text-center py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors"
                   >
-                    Cancelar
-                  </Button>
+                    {config.buttons?.sessionsButton || "Agendar Sesión"}
+                  </a>
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-          <TabsContent value="navigation" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Configuración de Navegación</CardTitle>
-                <CardDescription>
-                  Organiza el menú principal y la estructura de navegación
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-4">
-                  <h4 className="font-medium">Menú Principal</h4>
-                  <div className="space-y-2">
-                    {navigation.map((item) => (
-                      <div key={item.id} className="flex items-center justify-between p-3 border rounded-lg">
-                        <div className="flex items-center gap-3">
-                          <span className="font-medium">{item.label}</span>
-                          <code className="text-sm bg-gray-100 px-2 py-1 rounded">
-                            {item.url}
-                          </code>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Badge variant={item.visible ? 'default' : 'secondary'}>
-                            {item.visible ? 'Visible' : 'Oculto'}
-                          </Badge>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleToggleNavigationVisibility(item.id)}
-                          >
-                            {item.visible ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
-                          </Button>
-                          <Button variant="outline" size="sm">
-                            <Edit className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+      {/* Cursos Section */}
+      <section id="cursos" className="py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h3 className="text-3xl font-bold text-gray-900 mb-4">Cursos Online</h3>
+            <p className="text-lg text-gray-600">Formación especializada para tu desarrollo profesional</p>
+          </div>
+          
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <h4 className="text-2xl font-bold text-gray-900 mb-4">
+                {config.course.title}
+              </h4>
+              <p className="text-lg text-gray-600 mb-6">
+                {config.course.blurb}
+              </p>
+              <div className="mb-6">
+                <span className="text-3xl font-bold text-purple-600">{config.course.price}</span>
+              </div>
+              <ul className="space-y-3 mb-8">
+                {config.course.bullets.map((bullet, index) => (
+                  <li key={index} className="flex items-center text-gray-700">
+                    <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    {bullet}
+                  </li>
+                ))}
+              </ul>
+              <a
+                href={config.course.hotmartUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block bg-purple-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-purple-700 transition-colors"
+              >
+                {config.buttons?.courseButton || "Comprar Curso"}
+              </a>
+            </div>
+            <div className="bg-gray-200 rounded-lg aspect-video flex items-center justify-center">
+              {config.course.videoUrl ? (
+                <iframe
+                  src={config.course.videoUrl}
+                  className="w-full h-full rounded-lg"
+                  allowFullScreen
+                />
+              ) : (
+                <div className="text-gray-500 text-center">
+                  <svg className="w-16 h-16 mx-auto mb-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+                  </svg>
+                  <p>Video de presentación</p>
                 </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
 
-                <div className="pt-4 border-t">
-                  <h4 className="font-medium mb-2">Vista Previa del Menú</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {navigation.filter(item => item.visible).map((item) => (
-                      <Button key={item.id} variant="outline" size="sm">
-                        {item.label}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+      {/* Sobre Mí Section */}
+      <section id="sobre-mi" className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h3 className="text-3xl font-bold text-gray-900 mb-4">
+              {config.site.aboutTitle || "Sobre Mí"}
+            </h3>
+          </div>
+          
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="bg-gray-200 rounded-lg aspect-square flex items-center justify-center">
+              <img
+                src={config.about.photoUrl}
+                alt="Foto profesional"
+                className="w-full h-full object-cover rounded-lg"
+              />
+            </div>
+            <div>
+              <p className="text-lg text-gray-700 mb-6">
+                {config.about.story}
+              </p>
+              <p className="text-lg text-gray-700">
+                {config.about.whyMe}
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
 
-          <TabsContent value="settings" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Settings className="h-5 w-5" />
-                  Configuración General
-                </CardTitle>
-                <CardDescription>
-                  Configuración global del sitio multi-página
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="siteTitle">Título del Sitio</Label>
-                    <Input
-                      id="siteTitle"
-                      placeholder="Mi Sitio Web"
-                      defaultValue="Plantillada - Sitio Multi-Página"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="siteDomain">Dominio</Label>
-                    <Input
-                      id="siteDomain"
-                      placeholder="misitio.com"
-                      defaultValue="plantillada.com"
-                    />
-                  </div>
+      {/* Testimonios Section */}
+      <section id="testimonios" className="py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h3 className="text-3xl font-bold text-gray-900 mb-4">
+              {config.site.testimonialsTitle || "Testimonios"}
+            </h3>
+            <p className="text-lg text-gray-600">
+              {config.site.testimonialsSubtitle || "Lo que dicen mis clientes"}
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {config.testimonials.map((testimonial, index) => (
+              <div key={index} className="bg-white rounded-lg shadow-md p-6">
+                <div className="mb-4">
+                  <svg className="w-8 h-8 text-purple-600 mb-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                  </svg>
                 </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="siteDescription">Descripción</Label>
-                  <Input
-                    id="siteDescription"
-                    placeholder="Descripción del sitio web"
-                    defaultValue="Sitio web multi-página con landing, tienda y más"
-                  />
+                <p className="text-gray-700 mb-4 italic">"{testimonial.quote}"</p>
+                <div>
+                  <p className="font-semibold text-gray-900">{testimonial.author}</p>
+                  <p className="text-sm text-gray-600">{testimonial.role}</p>
                 </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-                <div className="pt-4 border-t">
-                  <h4 className="font-medium mb-2">Configuraciones Avanzadas</h4>
-                  <div className="space-y-2 text-sm text-muted-foreground">
-                    <p>• SEO global y meta tags</p>
-                    <p>• Analytics y tracking</p>
-                    <p>• Configuración de caché</p>
-                    <p>• Optimización de rendimiento</p>
-                    <p>• Configuración de seguridad</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-      </div>
+      {/* Contacto Section */}
+      <section id="contacto" className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h3 className="text-3xl font-bold text-gray-900 mb-4">
+              {config.site.ctaTitle || "¿Listo para empezar?"}
+            </h3>
+            <p className="text-lg text-gray-600">
+              {config.site.ctaSubtitle || "Contáctame para comenzar tu transformación"}
+            </p>
+          </div>
+          
+          <div className="max-w-md mx-auto text-center">
+            <a
+              href={`mailto:${config.contact.email}`}
+              className="inline-block bg-purple-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-purple-700 transition-colors"
+            >
+              {config.buttons?.ctaButton || "Contactar"}
+            </a>
+            <p className="mt-4 text-gray-600">
+              O escríbeme directamente a: <a href={`mailto:${config.contact.email}`} className="text-purple-600 hover:underline">{config.contact.email}</a>
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-white py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h4 className="text-xl font-semibold mb-4">{config.site.title}</h4>
+            <p className="text-gray-400 mb-6">{config.site.tagline}</p>
+            <div className="flex justify-center space-x-6">
+              <a href={`mailto:${config.contact.email}`} className="text-gray-400 hover:text-white">
+                {config.contact.email}
+              </a>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }

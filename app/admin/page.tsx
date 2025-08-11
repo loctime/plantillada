@@ -23,7 +23,7 @@ export default function AdminPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [message, setMessage] = useState("")
   const [currentTenant, setCurrentTenant] = useState("")
-  const [currentTemplate, setCurrentTemplate] = useState<string>('landing')
+  const [selectedTemplates, setSelectedTemplates] = useState<string[]>(['landing'])
   const [showTemplateSelector, setShowTemplateSelector] = useState(false)
   const [formData, setFormData] = useState<FormData>({
     site: {
@@ -105,11 +105,38 @@ export default function AdminPage() {
     loadInitialConfig()
   }, [])
 
-  const handleTemplateSelect = async (template: any) => {
-    setCurrentTemplate(template.id)
-    setShowTemplateSelector(false)
-    // Aquí podrías cargar la configuración específica de la plantilla
-    await loadTemplateConfig(template.id)
+  const handleTemplateSelect = async (templates: any[]) => {
+    const templateIds = templates.map(t => t.id)
+    setSelectedTemplates(templateIds)
+    // No cerrar el selector automáticamente - setShowTemplateSelector(false)
+    
+    // Guardar automáticamente la configuración con las plantillas seleccionadas
+    const updatedConfig = {
+      ...formData,
+      selectedTemplates: templateIds
+    }
+    setFormData(updatedConfig)
+    
+    // Guardar en Firestore
+    try {
+      const response = await fetch('/api/config', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedConfig),
+      })
+      
+      if (response.ok) {
+        const templateNames = templates.map(t => t.name).join(', ')
+        setMessage(`✅ Plantillas seleccionadas: ${templateNames}`)
+      } else {
+        setMessage("❌ Error al guardar las plantillas")
+      }
+    } catch (error) {
+      console.error('Error saving templates:', error)
+      setMessage("❌ Error al guardar las plantillas")
+    }
   }
 
   const loadTemplateConfig = async (templateId: string) => {
@@ -356,12 +383,12 @@ export default function AdminPage() {
                      </Button>
                    </div>
                    
-                   {showTemplateSelector && (
-                     <TemplateSelector 
-                       onTemplateSelect={handleTemplateSelect}
-                       currentTemplate={currentTemplate}
-                     />
-                   )}
+                                       {showTemplateSelector && (
+                      <TemplateSelector 
+                        onTemplateSelect={handleTemplateSelect}
+                        selectedTemplates={selectedTemplates}
+                      />
+                    )}
                  </div>
                </CardContent>
              </Card>

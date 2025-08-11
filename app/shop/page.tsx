@@ -1,453 +1,722 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useState, useEffect } from 'react'
+import { Config } from '@/lib/config-loader'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Card, CardContent } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Slider } from '@/components/ui/slider'
 import { 
-  ShoppingCart, 
-  Package, 
-  Plus, 
   Search, 
-  Filter,
-  Download,
-  Upload,
-  Globe,
-  Settings,
-  Copy,
-  Trash2,
-  Edit
-} from "lucide-react"
-import { CloningStats } from "@/components/cloning-stats"
+  ShoppingCart, 
+  Star, 
+  Filter, 
+  ChevronDown,
+  Heart,
+  Eye,
+  ShoppingBag,
+  X,
+  Minus,
+  Plus,
+  Edit3
+} from 'lucide-react'
+import { useAdmin } from '@/lib/admin-context'
+import { AdminToggle } from '@/components/admin-toggle'
 
 interface Product {
   id: string
   name: string
-  description: string
+  brand: string
   price: number
-  category: string
+  originalPrice?: number
   image: string
-  stock: number
-  status: 'active' | 'draft' | 'out-of-stock'
-  originalUrl?: string
-  clonedAt?: Date
+  rating: number
+  reviews: number
+  category: string
+  inStock: boolean
+  description: string
+  features: string[]
 }
 
-interface CloningStats {
-  totalProducts: number
-  successfulClones: number
-  failedClones: number
-  averageProcessingTime: number
-  imagesProcessed: number
-  storageUsed: number
-  lastClonedAt: Date
+// Productos de ejemplo basados en la imagen
+const sampleProducts: Product[] = [
+  {
+    id: '1',
+    name: 'iPad 11th (A16)',
+    brand: 'iPad',
+    price: 899.00,
+    originalPrice: 999.00,
+    image: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400&h=400&fit=crop',
+    rating: 4.5,
+    reviews: 128,
+    category: 'tablets',
+    inStock: true,
+    description: 'iPad de 11 pulgadas con chip A16, perfecto para productividad y creatividad.',
+    features: ['Chip A16 Bionic', '11 pulgadas', '128GB', 'WiFi + Cellular']
+  },
+  {
+    id: '2',
+    name: 'iPad Mini (A17)',
+    brand: 'iPad',
+    price: 599.00,
+    originalPrice: 699.00,
+    image: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400&h=400&fit=crop',
+    rating: 4.3,
+    reviews: 89,
+    category: 'tablets',
+    inStock: true,
+    description: 'iPad Mini compacto con chip A17, ideal para uso portátil.',
+    features: ['Chip A17 Pro', '8.3 pulgadas', '64GB', 'WiFi']
+  },
+  {
+    id: '3',
+    name: 'iPad Air M2',
+    brand: 'iPad',
+    price: 799.00,
+    originalPrice: 899.00,
+    image: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400&h=400&fit=crop',
+    rating: 4.7,
+    reviews: 156,
+    category: 'tablets',
+    inStock: true,
+    description: 'iPad Air con chip M2, potencia profesional en formato ligero.',
+    features: ['Chip M2', '10.9 pulgadas', '256GB', 'WiFi + Cellular']
+  },
+  {
+    id: '4',
+    name: 'NUBIA FLIP',
+    brand: 'Nubia',
+    price: 757.00,
+    originalPrice: 899.00,
+    image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&h=400&fit=crop',
+    rating: 4.2,
+    reviews: 67,
+    category: 'smartphones',
+    inStock: true,
+    description: 'Smartphone plegable con diseño innovador y tecnología avanzada.',
+    features: ['Pantalla plegable', '6.9 pulgadas', '256GB', '5G']
+  },
+  {
+    id: '5',
+    name: 'ROG PHONE 8',
+    brand: 'ASUS',
+    price: 1299.00,
+    originalPrice: 1499.00,
+    image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&h=400&fit=crop',
+    rating: 4.6,
+    reviews: 234,
+    category: 'gaming',
+    inStock: true,
+    description: 'Smartphone gaming con refrigeración líquida y rendimiento extremo.',
+    features: ['Snapdragon 8 Gen 3', '16GB RAM', '512GB', 'Gaming']
+  },
+  {
+    id: '6',
+    name: 'Nubia Red Magic 6',
+    brand: 'Nubia',
+    price: 757.00,
+    originalPrice: 899.00,
+    image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&h=400&fit=crop',
+    rating: 4.4,
+    reviews: 189,
+    category: 'gaming',
+    inStock: true,
+    description: 'Smartphone gaming con ventilador integrado y pantalla de alta frecuencia.',
+    features: ['Snapdragon 888', '12GB RAM', '256GB', '165Hz']
+  }
+]
+
+interface CartItem extends Product {
+  quantity: number
+}
+
+interface ShopConfig {
+  storeName: string
+  storeTagline: string
+  navigation: string[]
+  categories: string[]
+  searchPlaceholder: string
+  filterButtonText: string
+  bestSellersTitle: string
+  breadcrumbText: string
+  resultsText: string
+  sortOptions: { value: string; label: string }[]
+  addToCartText: string
+  outOfStockText: string
+  cartTitle: string
+  emptyCartText: string
+  checkoutText: string
+  totalText: string
+}
+
+const defaultShopConfig: ShopConfig = {
+  storeName: "TECH STORE",
+  storeTagline: "Tu tienda de tecnología de confianza",
+  navigation: ["TIENDA", "CELULARES", "APPLE", "DRONES DJI", "GAMING", "WAREHOUSE", "LISTA DE PRECIOS"],
+  categories: ["Todos", "Tablets", "Smartphones", "Gaming"],
+  searchPlaceholder: "Buscar productos...",
+  filterButtonText: "FILTRAR",
+  bestSellersTitle: "Our Best Sellers",
+  breadcrumbText: "Inicio / STORE DE LA TIENDA",
+  resultsText: "Mostrando 1-{count} de {total} resultados",
+  sortOptions: [
+    { value: "latest", label: "Ordenar por los últimos" },
+    { value: "price-low", label: "Precio: Menor a Mayor" },
+    { value: "price-high", label: "Precio: Mayor a Menor" },
+    { value: "rating", label: "Mejor Valorados" }
+  ],
+  addToCartText: "Agregar al Carrito",
+  outOfStockText: "Sin Stock",
+  cartTitle: "Carrito de Compras",
+  emptyCartText: "Tu carrito está vacío",
+  checkoutText: "Proceder al Pago",
+  totalText: "Total:"
 }
 
 export default function ShopPage() {
-  const [products, setProducts] = useState<Product[]>([])
-  const [searchTerm, setSearchTerm] = useState("")
-  const [selectedCategory, setSelectedCategory] = useState("all")
-  const [cloningUrl, setCloningUrl] = useState("")
-  const [isCloning, setIsCloning] = useState(false)
-  const [cloningStats, setCloningStats] = useState<CloningStats>({
-    totalProducts: 0,
-    successfulClones: 0,
-    failedClones: 0,
-    averageProcessingTime: 0,
-    imagesProcessed: 0,
-    storageUsed: 0,
-    lastClonedAt: new Date()
-  })
-
-  // Mock data - en producción vendría de la API
-  const mockProducts: Product[] = [
-    {
-      id: "1",
-      name: "Producto Ejemplo 1",
-      description: "Descripción del producto clonado desde sitio externo",
-      price: 29.99,
-      category: "Electrónicos",
-      image: "/placeholder.jpg",
-      stock: 10,
-      status: 'active',
-      originalUrl: "https://ejemplo.com/producto/1",
-      clonedAt: new Date()
-    },
-    {
-      id: "2",
-      name: "Producto Ejemplo 2",
-      description: "Otro producto clonado exitosamente",
-      price: 49.99,
-      category: "Ropa",
-      image: "/placeholder.jpg",
-      stock: 5,
-      status: 'active',
-      originalUrl: "https://ejemplo.com/producto/2",
-      clonedAt: new Date()
-    }
-  ]
-
-  const categories = ["all", "Electrónicos", "Ropa", "Hogar", "Deportes"]
+  const { isAdminMode } = useAdmin()
+  const [config, setConfig] = useState<Config | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [products, setProducts] = useState<Product[]>(sampleProducts)
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>(sampleProducts)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [priceRange, setPriceRange] = useState([0, 1500])
+  const [selectedCategory, setSelectedCategory] = useState('all')
+  const [cart, setCart] = useState<CartItem[]>([])
+  const [showCart, setShowCart] = useState(false)
+  const [sortBy, setSortBy] = useState('latest')
+  const [shopConfig, setShopConfig] = useState<ShopConfig>(defaultShopConfig)
+  const [editingField, setEditingField] = useState<string | null>(null)
+  const [editingValue, setEditingValue] = useState('')
 
   useEffect(() => {
-    setProducts(mockProducts)
-    loadCloningStats()
+    const loadConfig = async () => {
+      try {
+        const response = await fetch('/api/config?template=shop')
+        if (response.ok) {
+          const shopConfig = await response.json()
+          setConfig(shopConfig)
+          // Cargar configuración de la tienda si existe
+          if (shopConfig.shopConfig) {
+            setShopConfig({ ...defaultShopConfig, ...shopConfig.shopConfig })
+          }
+        }
+      } catch (error) {
+        console.error('Error loading shop config:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadConfig()
   }, [])
 
-  const loadCloningStats = async () => {
-    try {
-      const response = await fetch('/api/cloning-stats')
-      if (response.ok) {
-        const result = await response.json()
-        if (result.success) {
-          setCloningStats({
-            totalProducts: result.stats.totalProducts,
-            successfulClones: result.stats.successfulClones,
-            failedClones: result.stats.failedClones,
-            averageProcessingTime: result.stats.averageProcessingTime,
-            imagesProcessed: result.stats.imagesProcessed,
-            storageUsed: result.stats.storageUsed,
-            lastClonedAt: new Date(result.stats.lastClonedAt)
-          })
-        }
-      }
-    } catch (error) {
-      console.error('Error cargando estadísticas:', error)
-      // Fallback a datos mock
-      setCloningStats({
-        totalProducts: mockProducts.length,
-        successfulClones: mockProducts.length,
-        failedClones: 0,
-        averageProcessingTime: 2.5,
-        imagesProcessed: mockProducts.length * 3,
-        storageUsed: 15.2,
-        lastClonedAt: new Date()
-      })
+  // Filtrar productos
+  useEffect(() => {
+    let filtered = products.filter(product => {
+      const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           product.brand.toLowerCase().includes(searchTerm.toLowerCase())
+      const matchesPrice = product.price >= priceRange[0] && product.price <= priceRange[1]
+      const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory
+      
+      return matchesSearch && matchesPrice && matchesCategory
+    })
+
+    // Ordenar productos
+    switch (sortBy) {
+      case 'price-low':
+        filtered.sort((a, b) => a.price - b.price)
+        break
+      case 'price-high':
+        filtered.sort((a, b) => b.price - a.price)
+        break
+      case 'rating':
+        filtered.sort((a, b) => b.rating - a.rating)
+        break
+      case 'latest':
+      default:
+        // Mantener orden original
+        break
     }
+
+    setFilteredProducts(filtered)
+  }, [products, searchTerm, priceRange, selectedCategory, sortBy])
+
+  const addToCart = (product: Product) => {
+    setCart(prevCart => {
+      const existingItem = prevCart.find(item => item.id === product.id)
+      if (existingItem) {
+        return prevCart.map(item =>
+          item.id === product.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        )
+      }
+      return [...prevCart, { ...product, quantity: 1 }]
+    })
   }
 
-  const filteredProducts = products.filter(product => {
-    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         product.description.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesCategory = selectedCategory === "all" || product.category === selectedCategory
-    return matchesSearch && matchesCategory
-  })
+  const removeFromCart = (productId: string) => {
+    setCart(prevCart => prevCart.filter(item => item.id !== productId))
+  }
 
-  const handleCloneProduct = async () => {
-    if (!cloningUrl.trim()) return
+  const updateQuantity = (productId: string, quantity: number) => {
+    if (quantity <= 0) {
+      removeFromCart(productId)
+      return
+    }
+    setCart(prevCart =>
+      prevCart.map(item =>
+        item.id === productId ? { ...item, quantity } : item
+      )
+    )
+  }
+
+  const cartTotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0)
+  const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0)
+
+  const renderStars = (rating: number) => {
+    return Array.from({ length: 5 }, (_, i) => (
+      <Star
+        key={i}
+        className={`w-4 h-4 ${i < Math.floor(rating) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`}
+      />
+    ))
+  }
+
+  const startEditing = (field: string, value: string) => {
+    if (!isAdminMode) return
+    setEditingField(field)
+    setEditingValue(value)
+  }
+
+  const saveEdit = async () => {
+    if (!editingField) return
     
-    setIsCloning(true)
+    const newShopConfig = { ...shopConfig }
+    const keys = editingField.split('.')
+    let current = newShopConfig as any
+    
+    for (let i = 0; i < keys.length - 1; i++) {
+      current = current[keys[i]]
+    }
+    
+    current[keys[keys.length - 1]] = editingValue
+    setShopConfig(newShopConfig)
+    setEditingField(null)
+    setEditingValue('')
+
+    // Guardar en la base de datos
     try {
-      const response = await fetch('/api/clone-product', {
+      const updatedConfig = {
+        ...config,
+        shopConfig: newShopConfig
+      }
+      
+      await fetch('/api/config', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ url: cloningUrl }),
+        body: JSON.stringify(updatedConfig),
       })
-      
-      const result = await response.json()
-      
-      if (response.ok && result.success) {
-        const clonedProduct: Product = {
-          id: result.product.id,
-          name: result.product.name,
-          description: result.product.description,
-          price: result.product.price,
-          category: result.product.category || 'Sin categoría',
-          image: result.product.images[0] || "/placeholder.jpg",
-          stock: Math.floor(Math.random() * 20) + 1,
-          status: 'active',
-          originalUrl: result.product.originalUrl,
-          clonedAt: new Date(result.product.clonedAt)
-        }
-        
-        setProducts([...products, clonedProduct])
-        setCloningUrl("")
-        
-        // Actualizar estadísticas
-        setCloningStats(prev => ({
-          ...prev,
-          totalProducts: prev.totalProducts + 1,
-          successfulClones: prev.successfulClones + 1,
-          imagesProcessed: prev.imagesProcessed + result.product.images.length,
-          lastClonedAt: new Date()
-        }))
-        
-        // Registrar actividad
-        await fetch('/api/cloning-stats', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            action: 'product_cloned',
-            details: `Producto "${clonedProduct.name}" clonado desde ${cloningUrl}`
-          })
-        })
-        
-      } else {
-        throw new Error(result.error || 'Error al clonar producto')
-      }
-      
     } catch (error) {
-      console.error('Error clonando producto:', error)
-      setCloningStats(prev => ({
-        ...prev,
-        failedClones: prev.failedClones + 1
-      }))
-      
-      // Registrar error
-      await fetch('/api/cloning-stats', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'clone_failed',
-          details: `Error al clonar desde ${cloningUrl}: ${error instanceof Error ? error.message : 'Error desconocido'}`
-        })
-      })
-    } finally {
-      setIsCloning(false)
+      console.error('Error saving shop config:', error)
     }
   }
 
-  const handleDeleteProduct = (productId: string) => {
-    setProducts(products.filter(p => p.id !== productId))
-    setCloningStats(prev => ({
-      ...prev,
-      totalProducts: prev.totalProducts - 1
-    }))
+  const cancelEdit = () => {
+    setEditingField(null)
+    setEditingValue('')
+  }
+
+  const renderEditableText = (field: string, value: string, className: string = "") => {
+    if (isAdminMode && editingField === field) {
+      return (
+        <div className="flex items-center gap-2">
+          <Input
+            value={editingValue}
+            onChange={(e) => setEditingValue(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') saveEdit()
+              if (e.key === 'Escape') cancelEdit()
+            }}
+            className={className}
+            autoFocus
+          />
+          <Button size="sm" onClick={saveEdit}>✓</Button>
+          <Button size="sm" variant="outline" onClick={cancelEdit}>✕</Button>
+        </div>
+      )
+    }
+
+    return (
+      <div className="flex items-center gap-2 group">
+        <span className={className}>{value}</span>
+        {isAdminMode && (
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => startEditing(field, value)}
+            className="opacity-0 group-hover:opacity-100 transition-opacity"
+          >
+            <Edit3 className="h-3 w-3" />
+          </Button>
+        )}
+      </div>
+    )
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-lg">Cargando tienda...</div>
+      </div>
+    )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      <div className="max-w-7xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Tienda Online</h1>
-          <p className="text-muted-foreground">
-            Gestiona tu catálogo de productos y configura la tienda
-          </p>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="bg-black text-white shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-4">
+            <div className="flex items-center">
+              <div className="text-blue-600 font-bold text-xl group">
+                {renderEditableText('storeName', shopConfig.storeName, "text-blue-600 font-bold text-xl")}
+                {isAdminMode && (
+                  <div className="text-xs text-gray-400 mt-1 group">
+                    {renderEditableText('storeTagline', shopConfig.storeTagline, "text-xs text-gray-400")}
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            <nav className="hidden md:flex space-x-8">
+              {shopConfig.navigation.map((item, index) => (
+                <a 
+                  key={index} 
+                  href="#" 
+                  className="hover:text-blue-400 transition-colors group"
+                >
+                  {isAdminMode ? (
+                    renderEditableText(`navigation.${index}`, item, "hover:text-blue-400 transition-colors")
+                  ) : (
+                    item
+                  )}
+                </a>
+              ))}
+            </nav>
+
+            <div className="flex items-center space-x-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowCart(!showCart)}
+                className="relative text-white hover:text-blue-400"
+              >
+                <ShoppingCart className="h-6 w-6" />
+                {cartItemCount > 0 && (
+                  <Badge className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-blue-600 text-xs">
+                    {cartItemCount}
+                  </Badge>
+                )}
+              </Button>
+            </div>
+          </div>
         </div>
+      </header>
 
-        {/* Stats Component */}
-        <div className="mb-8">
-          <CloningStats />
-        </div>
-
-        <Tabs defaultValue="products" className="space-y-6">
-          <TabsList>
-            <TabsTrigger value="products">Productos</TabsTrigger>
-            <TabsTrigger value="cloning">Clonación</TabsTrigger>
-            <TabsTrigger value="settings">Configuración</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="products" className="space-y-6">
-            {/* Actions */}
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1 flex gap-2">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex gap-8">
+          {/* Sidebar */}
+          <div className="w-80 flex-shrink-0">
+            <div className="bg-white rounded-lg shadow-md p-6 space-y-6">
+                             {/* Búsqueda */}
+               <div className="space-y-2">
+                 <label className="text-sm font-medium text-gray-700 group">
+                   {renderEditableText('searchPlaceholder', shopConfig.searchPlaceholder, "text-sm font-medium text-gray-700")}
+                 </label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                   <Input
-                    placeholder="Buscar productos..."
+                    placeholder={shopConfig.searchPlaceholder}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="pl-10"
                   />
                 </div>
-                <select
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="px-3 py-2 border border-input rounded-md bg-background"
-                >
-                  {categories.map(category => (
-                    <option key={category} value={category}>
-                      {category === "all" ? "Todas las categorías" : category}
-                    </option>
-                  ))}
-                </select>
               </div>
-              <Button>
-                <Plus className="h-4 w-4 mr-2" />
-                Agregar Producto
-              </Button>
+
+              {/* Filtro de precio */}
+              <div className="space-y-4">
+                <h3 className="font-medium text-gray-900">Filtrar por precio</h3>
+                <Slider
+                  value={priceRange}
+                  onValueChange={setPriceRange}
+                  max={1500}
+                  min={0}
+                  step={10}
+                  className="w-full"
+                />
+                <div className="flex justify-between text-sm text-gray-600">
+                  <span>Precio: ${priceRange[0]} —</span>
+                  <span>${priceRange[1]}</span>
+                </div>
+                <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                  <Filter className="h-4 w-4 mr-2" />
+                  {shopConfig.filterButtonText}
+                </Button>
+              </div>
+
+              {/* Categorías */}
+              <div className="space-y-3">
+                <h3 className="font-medium text-gray-900">Categorías</h3>
+                {['all', 'tablets', 'smartphones', 'gaming'].map((category, index) => (
+                                     isAdminMode ? (
+                     <div
+                       key={category}
+                       className={`block w-full text-left px-3 py-2 rounded-md text-sm transition-colors group ${
+                         selectedCategory === category
+                           ? 'bg-blue-100 text-blue-700'
+                           : 'text-gray-600 hover:bg-gray-100'
+                       }`}
+                     >
+                       {renderEditableText(`categories.${index}`, shopConfig.categories[index], "block w-full text-left")}
+                     </div>
+                   ) : (
+                    <button
+                      key={category}
+                      onClick={() => setSelectedCategory(category)}
+                      className={`block w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${
+                        selectedCategory === category
+                          ? 'bg-blue-100 text-blue-700'
+                          : 'text-gray-600 hover:bg-gray-100'
+                      }`}
+                    >
+                      {shopConfig.categories[index]}
+                    </button>
+                  )
+                ))}
+              </div>
+
+                             {/* Mejores vendidos */}
+               <div className="space-y-4">
+                 <h3 className="font-medium text-gray-900 group">
+                   {renderEditableText('bestSellersTitle', shopConfig.bestSellersTitle, "font-medium text-gray-900")}
+                 </h3>
+                {sampleProducts.slice(0, 3).map(product => (
+                  <div key={product.id} className="flex items-center space-x-3 p-3 border rounded-lg">
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="w-12 h-12 object-cover rounded"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-900 truncate">{product.name}</p>
+                      <div className="flex items-center space-x-1">
+                        {renderStars(product.rating)}
+                      </div>
+                      <p className="text-sm font-bold text-blue-600">${product.price.toFixed(2)}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Contenido principal */}
+          <div className="flex-1">
+                         {/* Breadcrumbs y controles */}
+             <div className="flex justify-between items-center mb-6">
+               <div className="text-sm text-gray-600 group">
+                 {renderEditableText('breadcrumbText', shopConfig.breadcrumbText, "text-sm text-gray-600")}
+               </div>
+              <div className="flex items-center space-x-4">
+                <span className="text-sm text-gray-600">
+                  {shopConfig.resultsText
+                    .replace('{count}', filteredProducts.length.toString())
+                    .replace('{total}', products.length.toString())}
+                </span>
+                <div className="relative">
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className="appearance-none bg-white border border-gray-300 rounded-md px-4 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    {shopConfig.sortOptions.map(option => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                </div>
+              </div>
             </div>
 
-            {/* Products Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredProducts.map((product) => (
-                <Card key={product.id} className="overflow-hidden">
-                  <div className="aspect-square bg-gray-100 flex items-center justify-center">
-                    <img 
-                      src={product.image} 
-                      alt={product.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
+            {/* Grid de productos */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredProducts.map(product => (
+                <Card key={product.id} className="group hover:shadow-lg transition-shadow">
                   <CardContent className="p-4">
-                    <div className="flex items-start justify-between mb-2">
-                      <h3 className="font-semibold text-lg">{product.name}</h3>
-                      <Badge variant={product.status === 'active' ? 'default' : 'secondary'}>
-                        {product.status}
-                      </Badge>
-                    </div>
-                    <p className="text-muted-foreground text-sm mb-2">
-                      {product.description}
-                    </p>
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="font-bold text-lg">€{product.price}</span>
-                      <span className="text-sm text-muted-foreground">
-                        Stock: {product.stock}
-                      </span>
-                    </div>
-                    {product.originalUrl && (
-                      <div className="text-xs text-muted-foreground mb-3">
-                        Clonado desde: {product.originalUrl}
+                    <div className="relative">
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className="w-full h-48 object-cover rounded-lg mb-4"
+                      />
+                      <div className="absolute top-2 right-2 space-y-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Button size="sm" variant="secondary" className="h-8 w-8 p-0">
+                          <Heart className="h-4 w-4" />
+                        </Button>
+                        <Button size="sm" variant="secondary" className="h-8 w-8 p-0">
+                          <Eye className="h-4 w-4" />
+                        </Button>
                       </div>
-                    )}
-                    <div className="flex gap-2">
-                      <Button variant="outline" size="sm" className="flex-1">
-                        <Edit className="h-3 w-3 mr-1" />
-                        Editar
-                      </Button>
-                      <Button variant="outline" size="sm" className="flex-1">
-                        <Copy className="h-3 w-3 mr-1" />
-                        Clonar
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => handleDeleteProduct(product.id)}
+                      {product.originalPrice && (
+                        <Badge className="absolute top-2 left-2 bg-blue-600">
+                          -{Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
+                        </Badge>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-gray-500 uppercase">{product.brand}</span>
+                        <div className="flex items-center space-x-1">
+                          {renderStars(product.rating)}
+                          <span className="text-xs text-gray-500">({product.reviews})</span>
+                        </div>
+                      </div>
+
+                      <h3 className="font-medium text-gray-900 line-clamp-2">{product.name}</h3>
+
+                      <div className="flex items-center space-x-2">
+                        <span className="text-lg font-bold text-blue-600">${product.price.toFixed(2)}</span>
+                        {product.originalPrice && (
+                          <span className="text-sm text-gray-500 line-through">${product.originalPrice.toFixed(2)}</span>
+                        )}
+                      </div>
+
+                      <Button
+                        onClick={() => addToCart(product)}
+                        className="w-full bg-blue-600 hover:bg-blue-700"
+                        disabled={!product.inStock}
                       >
-                        <Trash2 className="h-3 w-3" />
+                        <ShoppingBag className="h-4 w-4 mr-2" />
+                        {product.inStock ? shopConfig.addToCartText : shopConfig.outOfStockText}
                       </Button>
                     </div>
                   </CardContent>
                 </Card>
               ))}
             </div>
-
-            {filteredProducts.length === 0 && (
-              <Card className="text-center py-12">
-                <CardContent>
-                  <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">No hay productos</h3>
-                  <p className="text-muted-foreground mb-4">
-                    Comienza agregando tu primer producto o clonando desde otro sitio
-                  </p>
-                  <Button>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Agregar Producto
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
-          </TabsContent>
-
-          <TabsContent value="cloning" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Globe className="h-5 w-5" />
-                  Clonación de Productos
-                </CardTitle>
-                <CardDescription>
-                  Clona automáticamente productos desde sitios web externos
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="cloningUrl">URL del Producto a Clonar</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      id="cloningUrl"
-                      type="url"
-                      placeholder="https://ejemplo.com/producto/123"
-                      value={cloningUrl}
-                      onChange={(e) => setCloningUrl(e.target.value)}
-                    />
-                    <Button 
-                      onClick={handleCloneProduct}
-                      disabled={isCloning || !cloningUrl.trim()}
-                    >
-                      {isCloning ? (
-                        <>
-                          <Upload className="h-4 w-4 mr-2 animate-spin" />
-                          Clonando...
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="h-4 w-4 mr-2" />
-                          Clonar
-                        </>
-                      )}
-                    </Button>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    Ingresa la URL de cualquier producto de e-commerce para clonarlo automáticamente
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
-                  <div className="space-y-2">
-                    <h4 className="font-medium">Estadísticas de Clonación</h4>
-                    <div className="space-y-1 text-sm">
-                      <div className="flex justify-between">
-                        <span>Productos clonados:</span>
-                        <span className="font-medium">{cloningStats.successfulClones}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Fallos:</span>
-                        <span className="font-medium text-red-600">{cloningStats.failedClones}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Tiempo promedio:</span>
-                        <span className="font-medium">{cloningStats.averageProcessingTime}s</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Última clonación:</span>
-                        <span className="font-medium">
-                          {cloningStats.lastClonedAt.toLocaleDateString()}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <h4 className="font-medium">Características del Sistema</h4>
-                    <ul className="space-y-1 text-sm text-muted-foreground">
-                      <li>• Extracción automática de datos</li>
-                      <li>• Procesamiento de imágenes</li>
-                      <li>• Rate limiting inteligente</li>
-                      <li>• Respeto a robots.txt</li>
-                      <li>• Optimización automática</li>
-                    </ul>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="settings" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Settings className="h-5 w-5" />
-                  Configuración de la Tienda
-                </CardTitle>
-                <CardDescription>
-                  Configura los parámetros de tu tienda online
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  Aquí podrás configurar la moneda, impuestos, métodos de pago,
-                  zonas de envío y otras configuraciones de la tienda.
-                </p>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+          </div>
+        </div>
       </div>
+
+      {/* Carrito lateral */}
+      {showCart && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50">
+          <div className="fixed right-0 top-0 h-full w-96 bg-white shadow-xl">
+                         <div className="flex justify-between items-center p-6 border-b">
+               <h2 className="text-xl font-bold group">
+                 {renderEditableText('cartTitle', shopConfig.cartTitle, "text-xl font-bold")}
+               </h2>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowCart(false)}
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-6">
+              {cart.length === 0 ? (
+                                 <div className="text-center py-8">
+                   <ShoppingCart className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                   <p className="text-gray-500 group">
+                     {renderEditableText('emptyCartText', shopConfig.emptyCartText, "text-gray-500")}
+                   </p>
+                 </div>
+              ) : (
+                <div className="space-y-4">
+                  {cart.map(item => (
+                    <div key={item.id} className="flex items-center space-x-4 p-4 border rounded-lg">
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="w-16 h-16 object-cover rounded"
+                      />
+                      <div className="flex-1">
+                        <h4 className="font-medium text-sm">{item.name}</h4>
+                        <p className="text-sm text-gray-500">{item.brand}</p>
+                        <p className="font-bold text-blue-600">${item.price.toFixed(2)}</p>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                        >
+                          <Minus className="h-3 w-3" />
+                        </Button>
+                        <span className="w-8 text-center">{item.quantity}</span>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                        >
+                          <Plus className="h-3 w-3" />
+                        </Button>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => removeFromCart(item.id)}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {cart.length > 0 && (
+              <div className="border-t p-6">
+                                 <div className="flex justify-between items-center mb-4">
+                   <span className="text-lg font-bold group">
+                     {renderEditableText('totalText', shopConfig.totalText, "text-lg font-bold")}
+                   </span>
+                   <span className="text-xl font-bold text-blue-600">${cartTotal.toFixed(2)}</span>
+                 </div>
+                 <Button className="w-full bg-blue-600 hover:bg-blue-700 group">
+                   {renderEditableText('checkoutText', shopConfig.checkoutText, "w-full bg-blue-600 hover:bg-blue-700")}
+                 </Button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* WhatsApp flotante */}
+      <div className="fixed bottom-6 left-6 z-40">
+        <Button
+          size="lg"
+          className="bg-green-500 hover:bg-green-600 rounded-full h-14 w-14 p-0"
+        >
+          <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488"/>
+          </svg>
+        </Button>
+      </div>
+
+      {/* Botón de modo admin */}
+      <AdminToggle />
     </div>
   )
 }

@@ -21,49 +21,16 @@ import { TestimonialManager } from "@/components/testimonial-manager"
 import { AdminNotifications } from "@/components/admin-notifications"
 import { AdminDebug } from "@/components/admin-debug"
 import { ThemeSwitch } from "@/components/theme-switch"
+import { DynamicNavigation } from "@/components/dynamic-navigation"
 
 export default function Page() {
-  const [config, setConfig] = useState<Config | null>(null)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    const loadConfig = async () => {
-      try {
-        const response = await fetch('/api/config')
-        if (response.ok) {
-          const data = await response.json()
-          setConfig(data)
-        }
-      } catch (error) {
-        console.error('Error loading config:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    loadConfig()
-  }, [])
-
-  if (loading || !config) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600 mx-auto"></div>
-          <p className="mt-2 text-muted-foreground">Cargando...</p>
-        </div>
-      </div>
-    )
-  }
-
-  return (
-    <AdminProvider initialConfig={config}>
-      <PageContent />
-    </AdminProvider>
-  )
+  return <PageContent />
 }
 
 function PageContent() {
-  const { config, updateConfig } = useAdmin()
+  const [config, setConfig] = useState<Config | null>(null)
+  const [loading, setLoading] = useState(true)
+  const { updateConfig } = useAdmin()
   const [sections, setSections] = useState([
     {
       id: 'hero',
@@ -115,6 +82,64 @@ function PageContent() {
     }
   ])
 
+  // Cargar configuración
+  useEffect(() => {
+    const loadConfig = async () => {
+      try {
+        const response = await fetch('/api/config')
+        if (response.ok) {
+          const data = await response.json()
+          setConfig(data)
+        }
+      } catch (error) {
+        console.error('Error loading config:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadConfig()
+  }, [])
+
+  // Cargar secciones guardadas al iniciar
+  useEffect(() => {
+    try {
+      const savedSections = localStorage.getItem('landing-sections')
+      if (savedSections) {
+        const parsedSections = JSON.parse(savedSections)
+        // Actualizar solo las propiedades de configuración, mantener los componentes
+        setSections(prevSections => 
+          prevSections.map(section => {
+            const savedSection = parsedSections.find((s: any) => s.id === section.id)
+            if (savedSection) {
+              return {
+                ...section,
+                title: savedSection.title,
+                visible: savedSection.visible,
+                description: savedSection.description,
+                type: savedSection.type
+              }
+            }
+            return section
+          })
+        )
+      }
+    } catch (error) {
+      console.warn('Error al cargar secciones guardadas:', error)
+    }
+  }, [])
+
+  if (loading || !config) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600 mx-auto"></div>
+          <p className="mt-2 text-muted-foreground">Cargando...</p>
+        </div>
+      </div>
+    )
+  }
+
   const handleSectionsChange = (newSections: any[]) => {
     // Actualizar las secciones con los componentes correctos
     const updatedSections = newSections.map(section => {
@@ -150,34 +175,6 @@ function PageContent() {
     }
   }
 
-  // Cargar secciones guardadas al iniciar
-  useEffect(() => {
-    try {
-      const savedSections = localStorage.getItem('landing-sections')
-      if (savedSections) {
-        const parsedSections = JSON.parse(savedSections)
-        // Actualizar solo las propiedades de configuración, mantener los componentes
-        setSections(prevSections => 
-          prevSections.map(section => {
-            const savedSection = parsedSections.find((s: any) => s.id === section.id)
-            if (savedSection) {
-              return {
-                ...section,
-                title: savedSection.title,
-                visible: savedSection.visible,
-                description: savedSection.description,
-                type: savedSection.type
-              }
-            }
-            return section
-          })
-        )
-      }
-    } catch (error) {
-      console.warn('Error al cargar secciones guardadas:', error)
-    }
-  }, [])
-
   return (
     <div className="min-h-[100dvh] flex flex-col custom-bg">
       <Header />
@@ -209,20 +206,7 @@ function Header() {
           className="font-semibold tracking-tight text-lg"
           tag="span"
         />
-        <nav className="ml-auto hidden md:flex items-center gap-6">
-          <a href="#sesiones" className="text-sm text-muted-foreground hover:text-foreground">
-            Sesiones
-          </a>
-          <a href="#curso" className="text-sm text-muted-foreground hover:text-foreground">
-            Curso
-          </a>
-          <a href="#sobre-mi" className="text-sm text-muted-foreground hover:text-foreground">
-            Sobre mí
-          </a>
-          <a href="#testimonios" className="text-sm text-muted-foreground hover:text-foreground">
-            Testimonios
-          </a>
-        </nav>
+        <DynamicNavigation config={config} />
         <div className="ml-auto md:ml-4 flex items-center gap-2">
           <ThemeSwitch />
           <ScheduleButton 

@@ -44,6 +44,8 @@ export interface Config {
     hotmartBaseUrl: string
   }
   theme?: ThemeConfig
+  currentTemplate?: string
+  selectedTemplates?: string[]
   sessions: Array<{
     id: string
     name: string
@@ -138,7 +140,13 @@ export async function loadConfig(tenantId?: string, template?: string | null): P
       // Si los datos están en el campo 'data' como string JSON
       if (data.data && typeof data.data === 'string') {
         try {
-          return JSON.parse(data.data) as Config
+          const config = JSON.parse(data.data) as Config
+          // Si hay un template guardado, aplicar esa configuración
+          if (config.currentTemplate) {
+            console.log('📋 Aplicando template guardado:', config.currentTemplate)
+            return getTemplateConfig(config.currentTemplate, tenant)
+          }
+          return config
         } catch (parseError) {
           console.error('Error parsing JSON from data field:', parseError)
           return getDefaultConfig(tenant)
@@ -146,7 +154,13 @@ export async function loadConfig(tenantId?: string, template?: string | null): P
       }
       
       // Si los datos están directamente en el documento
-      return data as Config
+      const config = data as Config
+      // Si hay un template guardado, aplicar esa configuración
+      if (config.currentTemplate) {
+        console.log('📋 Aplicando template guardado:', config.currentTemplate)
+        return getTemplateConfig(config.currentTemplate, tenant)
+      }
+      return config
     } else {
       // Si no existe, crear configuración por defecto para este tenant
       console.log('📝 Creando configuración por defecto para tenant:', tenant)

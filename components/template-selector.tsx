@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -60,22 +60,6 @@ const templates: Template[] = [
     color: 'bg-green-500'
   },
   {
-    id: 'multi-page',
-    name: 'Sitio Multi-Página',
-    description: 'Combinación de landing, tienda y otras secciones en un solo sitio',
-    icon: <Layers className="h-6 w-6" />,
-    features: [
-      'Landing page principal',
-      'Tienda integrada',
-      'Blog/Foro (próximamente)',
-      'Páginas adicionales',
-      'Navegación unificada'
-    ],
-    status: 'beta',
-    route: '/multi',
-    color: 'bg-purple-500'
-  },
-  {
     id: 'forum',
     name: 'Foro Comunitario',
     description: 'Plataforma de discusión y comunidad con moderación',
@@ -94,16 +78,29 @@ const templates: Template[] = [
 ]
 
 interface TemplateSelectorProps {
-  onTemplateSelect: (template: Template) => void
-  currentTemplate?: string
+  onTemplateSelect: (templates: Template[]) => void
+  selectedTemplates?: string[]
 }
 
-export function TemplateSelector({ onTemplateSelect, currentTemplate }: TemplateSelectorProps) {
-  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(currentTemplate || null)
+export function TemplateSelector({ onTemplateSelect, selectedTemplates = [] }: TemplateSelectorProps) {
+  const [selectedTemplatesState, setSelectedTemplatesState] = useState<string[]>(selectedTemplates)
 
-  const handleTemplateSelect = (template: Template) => {
-    setSelectedTemplate(template.id)
-    onTemplateSelect(template)
+  // Sincronizar el estado interno con las props
+  useEffect(() => {
+    setSelectedTemplatesState(selectedTemplates)
+  }, [selectedTemplates])
+
+  const handleTemplateToggle = (template: Template, e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    
+    const newSelected = selectedTemplatesState.includes(template.id)
+      ? selectedTemplatesState.filter(id => id !== template.id)
+      : [...selectedTemplatesState, template.id]
+    
+    setSelectedTemplatesState(newSelected)
+    const selectedTemplatesList = templates.filter(t => newSelected.includes(t.id))
+    onTemplateSelect(selectedTemplatesList)
   }
 
   const getStatusBadge = (status: Template['status']) => {
@@ -126,93 +123,88 @@ export function TemplateSelector({ onTemplateSelect, currentTemplate }: Template
         </p>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {templates.map((template) => (
-          <Card 
-            key={template.id}
-            className={`cursor-pointer transition-all duration-200 hover:shadow-lg ${
-              selectedTemplate === template.id 
-                ? 'ring-2 ring-primary border-primary' 
-                : 'hover:border-gray-300'
-            }`}
-            onClick={() => handleTemplateSelect(template)}
-          >
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className={`p-1.5 rounded-md ${template.color} text-white`}>
-                    {template.icon}
-                  </div>
-                  <div>
-                    <CardTitle className="text-sm">{template.name}</CardTitle>
-                    {getStatusBadge(template.status)}
-                  </div>
-                </div>
-                {selectedTemplate === template.id && (
-                  <CheckCircle className="h-4 w-4 text-primary" />
-                )}
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-3 pt-0">
-              <CardDescription className="text-xs">
-                {template.description}
-              </CardDescription>
-              
-              <div className="space-y-1">
-                <h4 className="font-medium text-xs">Características:</h4>
-                <ul className="space-y-0.5">
-                  {template.features.slice(0, 3).map((feature, index) => (
-                    <li key={index} className="text-xs text-muted-foreground flex items-center gap-1">
-                      <div className="w-1 h-1 bg-primary rounded-full" />
-                      {feature}
-                    </li>
-                  ))}
-                  {template.features.length > 3 && (
-                    <li className="text-xs text-muted-foreground">
-                      +{template.features.length - 3} más...
-                    </li>
-                  )}
-                </ul>
-              </div>
+             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+         {templates.map((template) => (
+           <Card 
+             key={template.id}
+             className={`transition-all duration-200 hover:shadow-lg ${
+               selectedTemplatesState.includes(template.id)
+                 ? 'ring-2 ring-primary border-primary' 
+                 : 'hover:border-gray-300'
+             }`}
+           >
+             <CardHeader className="pb-3">
+               <div className="flex items-center justify-between">
+                 <div className="flex items-center gap-2">
+                   <div className={`p-1.5 rounded-md ${template.color} text-white`}>
+                     {template.icon}
+                   </div>
+                   <div>
+                     <CardTitle className="text-sm">{template.name}</CardTitle>
+                     {getStatusBadge(template.status)}
+                   </div>
+                 </div>
+                 <div className="flex items-center gap-2">
+                   <input
+                     type="checkbox"
+                     checked={selectedTemplatesState.includes(template.id)}
+                     onChange={(e) => handleTemplateToggle(template, e)}
+                     className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
+                   />
+                 </div>
+               </div>
+             </CardHeader>
+             <CardContent className="space-y-3 pt-0">
+               <CardDescription className="text-xs">
+                 {template.description}
+               </CardDescription>
+               
+               <div className="space-y-1">
+                 <h4 className="font-medium text-xs">Características:</h4>
+                 <ul className="space-y-0.5">
+                   {template.features.slice(0, 3).map((feature, index) => (
+                     <li key={index} className="text-xs text-muted-foreground flex items-center gap-1">
+                       <div className="w-1 h-1 bg-primary rounded-full" />
+                       {feature}
+                     </li>
+                   ))}
+                   {template.features.length > 3 && (
+                     <li className="text-xs text-muted-foreground">
+                       +{template.features.length - 3} más...
+                     </li>
+                   )}
+                 </ul>
+               </div>
 
-              <div className="flex gap-1 pt-1">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="flex-1 text-xs h-7"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    window.open(template.route, '_blank')
-                  }}
-                >
-                  <ExternalLink className="h-3 w-3 mr-1" />
-                  Demo
-                </Button>
-                <Button 
-                  size="sm" 
-                  className="flex-1 text-xs h-7"
-                  disabled={template.status === 'coming-soon'}
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    handleTemplateSelect(template)
-                  }}
-                >
-                  <Settings className="h-3 w-3 mr-1" />
-                  Usar
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+               <div className="flex gap-1 pt-1">
+                 <Button 
+                   variant="outline" 
+                   size="sm" 
+                   className="flex-1 text-xs h-7"
+                   onClick={(e) => {
+                     e.stopPropagation()
+                     window.open(template.route, '_blank')
+                   }}
+                 >
+                   <ExternalLink className="h-3 w-3 mr-1" />
+                   Ver Página
+                 </Button>
+               </div>
+             </CardContent>
+           </Card>
+         ))}
+       </div>
 
-      {selectedTemplate && (
-        <div className="text-center">
-          <p className="text-sm text-muted-foreground">
-            Plantilla seleccionada: <strong>{templates.find(t => t.id === selectedTemplate)?.name}</strong>
-          </p>
-        </div>
-      )}
+             {selectedTemplatesState.length > 0 && (
+         <div className="text-center">
+           <p className="text-sm text-muted-foreground">
+             Plantillas seleccionadas: <strong>{selectedTemplatesState.length}</strong>
+           </p>
+           <p className="text-xs text-muted-foreground mt-1">
+             Estas plantillas aparecerán como enlaces en la navegación
+           </p>
+         </div>
+       )}
     </div>
   )
 }
