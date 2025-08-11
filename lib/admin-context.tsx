@@ -12,15 +12,42 @@ interface AdminContextType {
   lastSaved: Date | null
   refreshConfig: () => Promise<void>
   forceReload: () => void
+  isLoading: boolean
 }
 
 const AdminContext = createContext<AdminContextType | undefined>(undefined)
 
 export function AdminProvider({ children, initialConfig }: { children: ReactNode, initialConfig: Config }) {
   const [isAdminMode, setIsAdminMode] = useState(false)
-  const [config, setConfig] = useState<Config>(initialConfig)
+  const [config, setConfig] = useState<Config | null>(null)
   const [isSaving, setIsSaving] = useState(false)
   const [lastSaved, setLastSaved] = useState<Date | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+
+  // Cargar configuración real desde Firebase al iniciar
+  useEffect(() => {
+    const loadConfig = async () => {
+      try {
+        console.log('🔄 Cargando configuración desde Firebase...')
+        const response = await fetch('/api/config')
+        if (response.ok) {
+          const data = await response.json()
+          setConfig(data)
+          console.log('✅ Configuración cargada desde Firebase:', data.site?.title)
+        } else {
+          console.error('❌ Error cargando configuración, usando configuración por defecto')
+          setConfig(initialConfig)
+        }
+      } catch (error) {
+        console.error('❌ Error cargando configuración, usando configuración por defecto:', error)
+        setConfig(initialConfig)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadConfig()
+  }, [initialConfig])
 
   // Detectar modo admin con Ctrl+Shift+A
   useEffect(() => {
@@ -67,6 +94,7 @@ export function AdminProvider({ children, initialConfig }: { children: ReactNode
   }
 
   const updateConfig = async (updates: Partial<Config>) => {
+    if (!config) return
     const newConfig = { ...config, ...updates }
     setConfig(newConfig)
     
@@ -94,6 +122,18 @@ export function AdminProvider({ children, initialConfig }: { children: ReactNode
     }
   }
 
+  // Mostrar loading mientras se carga la configuración
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600 mx-auto"></div>
+          <p className="mt-2 text-muted-foreground">Cargando configuración...</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <AdminContext.Provider value={{
       isAdminMode,
@@ -103,7 +143,8 @@ export function AdminProvider({ children, initialConfig }: { children: ReactNode
       isSaving,
       lastSaved,
       refreshConfig,
-      forceReload
+      forceReload,
+      isLoading
     }}>
       {children}
     </AdminContext.Provider>
