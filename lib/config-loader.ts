@@ -45,7 +45,6 @@ export interface Config {
   }
   theme?: ThemeConfig
   currentTemplate?: string
-  selectedTemplates?: string[]
   sessions: Array<{
     id: string
     name: string
