@@ -9,8 +9,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Separator } from "@/components/ui/separator"
-import { Save, Eye, EyeOff, Settings, User, ShoppingCart, Calendar, Quote, Globe } from "lucide-react"
+import { Save, Eye, EyeOff, Settings, User, ShoppingCart, Calendar, Quote, Globe, Layers } from "lucide-react"
 import { Config, getTenantId } from "@/lib/config-loader"
+import { TemplateSelector } from "@/components/template-selector"
 
 interface FormData extends Config {}
 
@@ -22,6 +23,8 @@ export default function AdminPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [message, setMessage] = useState("")
   const [currentTenant, setCurrentTenant] = useState("")
+  const [currentTemplate, setCurrentTemplate] = useState<string>('landing')
+  const [showTemplateSelector, setShowTemplateSelector] = useState(false)
   const [formData, setFormData] = useState<FormData>({
     site: {
       title: "Tu Marca Personal",
@@ -89,6 +92,35 @@ export default function AdminPage() {
   }, [])
 
   const loadConfig = async () => {
+    try {
+      const response = await fetch('/api/config')
+      if (response.ok) {
+        const config = await response.json()
+        setFormData(config)
+      }
+    } catch (error) {
+      console.error('Error loading config:', error)
+    }
+  }
+
+  const handleTemplateSelect = (template: any) => {
+    setCurrentTemplate(template.id)
+    setShowTemplateSelector(false)
+    // Aquí podrías cargar la configuración específica de la plantilla
+    loadTemplateConfig(template.id)
+  }
+
+  const loadTemplateConfig = async (templateId: string) => {
+    try {
+      const response = await fetch(`/api/config?template=${templateId}`)
+      if (response.ok) {
+        const config = await response.json()
+        setFormData(config)
+      }
+    } catch (error) {
+      console.error('Error loading template config:', error)
+    }
+  }
     try {
       const response = await fetch('/api/config')
       if (response.ok) {
@@ -238,15 +270,35 @@ export default function AdminPage() {
             <div>
               <h1 className="text-3xl font-bold">Panel de Administración</h1>
               <p className="text-muted-foreground">
-                Configura tu landing page desde aquí
+                Configura tu sitio web desde aquí
               </p>
             </div>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Globe className="h-4 w-4" />
-              <span>Tenant: <strong>{currentTenant}</strong></span>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Globe className="h-4 w-4" />
+                <span>Tenant: <strong>{currentTenant}</strong></span>
+              </div>
+              <Button 
+                variant="outline" 
+                onClick={() => setShowTemplateSelector(!showTemplateSelector)}
+              >
+                <Layers className="h-4 w-4 mr-2" />
+                Cambiar Plantilla
+              </Button>
             </div>
           </div>
         </div>
+
+        {showTemplateSelector && (
+          <Card className="mb-6">
+            <CardContent className="p-6">
+              <TemplateSelector 
+                onTemplateSelect={handleTemplateSelect}
+                currentTemplate={currentTemplate}
+              />
+            </CardContent>
+          </Card>
+        )}
 
         {message && (
           <Alert className="mb-6">
