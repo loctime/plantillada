@@ -9,27 +9,33 @@ export function useTheme() {
 
   // Detectar preferencia del sistema al cargar
   useEffect(() => {
+    console.log('🔄 useTheme: Detectando preferencia inicial del tema')
     const savedTheme = localStorage.getItem('theme')
     if (savedTheme) {
+      console.log(`📥 useTheme: Tema guardado encontrado: ${savedTheme}`)
       setIsDarkMode(savedTheme === 'dark')
     } else {
       // Detectar preferencia del sistema
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+      console.log(`🌐 useTheme: Usando preferencia del sistema: ${prefersDark ? 'oscuro' : 'claro'}`)
       setIsDarkMode(prefersDark)
     }
   }, [])
 
   // Aplicar tema cuando cambie
   useEffect(() => {
+    console.log(`🎨 useTheme: Aplicando tema ${isDarkMode ? 'oscuro' : 'claro'}`)
     const theme = isDarkMode ? 'dark' : 'light'
     localStorage.setItem('theme', theme)
     
     // Aplicar estilos CSS personalizados si existen en la configuración
     if (config?.theme) {
+      console.log('✅ useTheme: Configuración de tema disponible')
       const activeTheme = config.theme[isDarkMode ? 'dark' : 'light']
       
       // Aplicar variables CSS personalizadas
       const root = document.documentElement
+      console.log('🎨 useTheme: Aplicando variables CSS personalizadas')
       root.style.setProperty('--background-color', activeTheme.backgroundColor)
       root.style.setProperty('--section-background', activeTheme.sectionBackground)
       root.style.setProperty('--navbar-background', activeTheme.navbarBackground)
@@ -58,10 +64,14 @@ export function useTheme() {
       
       // Aplicar clase de tema
       document.body.classList.toggle('dark', isDarkMode)
+      console.log(`🎭 useTheme: Clase 'dark' ${isDarkMode ? 'agregada' : 'removida'} del body`)
+    } else {
+      console.log('⚠️ useTheme: No hay configuración de tema disponible')
     }
   }, [isDarkMode, config])
 
   const toggleTheme = () => {
+    console.log(`🔄 useTheme: Toggle del tema de ${isDarkMode ? 'oscuro' : 'claro'} a ${!isDarkMode ? 'oscuro' : 'claro'}`)
     setIsDarkMode(!isDarkMode)
   }
 

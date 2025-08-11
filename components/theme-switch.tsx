@@ -12,13 +12,18 @@ import {
 
 export function ThemeSwitch() {
   const { isDarkMode, toggleTheme } = useTheme()
+  
+  console.log(`🎛️ ThemeSwitch: Renderizado con tema ${isDarkMode ? 'oscuro' : 'claro'}`)
 
   return (
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
           <Button
-            onClick={toggleTheme}
+            onClick={() => {
+              console.log('🖱️ ThemeSwitch: Botón clickeado')
+              toggleTheme()
+            }}
             variant="ghost"
             size="sm"
             className="h-9 w-9 p-0"
