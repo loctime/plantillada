@@ -140,11 +140,14 @@ export async function loadConfig(tenantId?: string, template?: string | null): P
       if (data.data && typeof data.data === 'string') {
         try {
           const config = JSON.parse(data.data) as Config
-          // Si hay un template guardado, aplicar esa configuración
-          if (config.currentTemplate) {
-            console.log('📋 Aplicando template guardado:', config.currentTemplate)
-            return getTemplateConfig(config.currentTemplate, tenant)
+          // IMPORTANTE: No aplicar template automáticamente si hay configuración personalizada
+          // Solo aplicar template si se solicita explícitamente
+          if (template && config.currentTemplate) {
+            console.log('📋 Aplicando template solicitado:', template)
+            return getTemplateConfig(template, tenant)
           }
+          // Si no hay template solicitado, devolver la configuración personalizada
+          console.log('✅ Cargando configuración personalizada guardada')
           return config
         } catch (parseError) {
           console.error('Error parsing JSON from data field:', parseError)
@@ -154,11 +157,14 @@ export async function loadConfig(tenantId?: string, template?: string | null): P
       
       // Si los datos están directamente en el documento
       const config = data as Config
-      // Si hay un template guardado, aplicar esa configuración
-      if (config.currentTemplate) {
-        console.log('📋 Aplicando template guardado:', config.currentTemplate)
-        return getTemplateConfig(config.currentTemplate, tenant)
+      // IMPORTANTE: No aplicar template automáticamente si hay configuración personalizada
+      // Solo aplicar template si se solicita explícitamente
+      if (template && config.currentTemplate) {
+        console.log('📋 Aplicando template solicitado:', template)
+        return getTemplateConfig(template, tenant)
       }
+      // Si no hay template solicitado, devolver la configuración personalizada
+      console.log('✅ Cargando configuración personalizada guardada')
       return config
     } else {
       // Si no existe, crear configuración por defecto para este tenant
@@ -184,8 +190,16 @@ export async function saveConfig(config: Config, tenantId?: string): Promise<boo
     const configDoc = doc(db, 'config', tenant)
     console.log('📄 Referencia del documento creada')
     
+    // IMPORTANTE: Limpiar currentTemplate cuando se guarda configuración personalizada
+    // para evitar que se aplique automáticamente al cargar
+    const configToSave = { ...config }
+    if (configToSave.currentTemplate) {
+      console.log('🧹 Limpiando currentTemplate para evitar aplicación automática')
+      delete configToSave.currentTemplate
+    }
+    
     // Guardar como JSON string en el campo 'data'
-    const dataToSave = { data: JSON.stringify(config) }
+    const dataToSave = { data: JSON.stringify(configToSave) }
     console.log('💾 Datos a guardar:', JSON.stringify(dataToSave, null, 2))
     
     await setDoc(configDoc, dataToSave)
@@ -199,6 +213,28 @@ export async function saveConfig(config: Config, tenantId?: string): Promise<boo
       code: (error as any)?.code || 'No code',
       stack: error instanceof Error ? error.stack : 'No stack'
     })
+    return false
+  }
+}
+
+// Función para guardar un template específico (mantiene currentTemplate)
+export async function saveTemplate(templateId: string, tenantId?: string): Promise<boolean> {
+  try {
+    const tenant = tenantId || getTenantId()
+    console.log('🔄 Guardando template:', templateId, 'para tenant:', tenant)
+    
+    const templateConfig = getTemplateConfig(templateId, tenant)
+    // Agregar el currentTemplate para que se aplique automáticamente
+    templateConfig.currentTemplate = templateId
+    
+    const configDoc = doc(db, 'config', tenant)
+    const dataToSave = { data: JSON.stringify(templateConfig) }
+    
+    await setDoc(configDoc, dataToSave)
+    console.log('✅ Template guardado exitosamente:', templateId)
+    return true
+  } catch (error) {
+    console.error('❌ Error saving template:', error)
     return false
   }
 }
