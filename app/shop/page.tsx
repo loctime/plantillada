@@ -214,6 +214,39 @@ export default function ShopPage() {
   const [editingImageProduct, setEditingImageProduct] = useState<Product | null>(null)
   const [newImageUrl, setNewImageUrl] = useState('')
 
+  // Función helper para guardar configuración preservando el resto
+  const saveConfigPreservingRest = async (updates: any) => {
+    try {
+      // Primero cargar la configuración completa actual
+      const currentConfigResponse = await fetch('/api/config')
+      let currentConfig = {}
+      
+      if (currentConfigResponse.ok) {
+        currentConfig = await currentConfigResponse.json()
+      }
+      
+      // Actualizar solo las secciones especificadas, preservando el resto
+      const updatedConfig = {
+        ...currentConfig,
+        ...updates
+      }
+      
+      await fetch('/api/config', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedConfig),
+      })
+      
+      console.log('✅ Configuración guardada preservando el resto')
+      return true
+    } catch (error) {
+      console.error('❌ Error guardando configuración:', error)
+      return false
+    }
+  }
+
   useEffect(() => {
     const loadConfig = async () => {
       try {
@@ -224,6 +257,11 @@ export default function ShopPage() {
           // Cargar configuración de la tienda si existe
           if (shopConfig.shopConfig) {
             setShopConfig({ ...defaultShopConfig, ...shopConfig.shopConfig })
+          }
+          // Cargar productos si existen
+          if (shopConfig.products && Array.isArray(shopConfig.products)) {
+            setProducts(shopConfig.products)
+            setFilteredProducts(shopConfig.products)
           }
         }
       } catch (error) {
@@ -331,23 +369,8 @@ export default function ShopPage() {
     setEditingField(null)
     setEditingValue('')
 
-    // Guardar en la base de datos
-    try {
-      const updatedConfig = {
-        ...config,
-        shopConfig: newShopConfig
-      }
-      
-      await fetch('/api/config', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedConfig),
-      })
-    } catch (error) {
-      console.error('Error saving shop config:', error)
-    }
+    // Guardar en la base de datos preservando toda la configuración
+    await saveConfigPreservingRest({ shopConfig: newShopConfig })
   }
 
   const cancelEdit = () => {
@@ -446,7 +469,7 @@ export default function ShopPage() {
     })
   }
 
-  const saveProduct = () => {
+  const saveProduct = async () => {
     const newProduct: Product = {
       id: editingProduct?.id || Date.now().toString(),
       name: productForm.name,
@@ -462,19 +485,29 @@ export default function ShopPage() {
       features: productForm.features.filter(f => f.trim() !== '')
     }
 
+    let updatedProducts: Product[]
     if (editingProduct) {
       // Editar producto existente
-      setProducts(prev => prev.map(p => p.id === editingProduct.id ? newProduct : p))
+      updatedProducts = products.map(p => p.id === editingProduct.id ? newProduct : p)
     } else {
       // Agregar nuevo producto
-      setProducts(prev => [...prev, newProduct])
+      updatedProducts = [...products, newProduct]
     }
+
+    setProducts(updatedProducts)
+
+    // Guardar en Firestore preservando toda la configuración
+    await saveConfigPreservingRest({ products: updatedProducts })
 
     closeProductModal()
   }
 
-  const deleteProduct = (productId: string) => {
-    setProducts(prev => prev.filter(p => p.id !== productId))
+  const deleteProduct = async (productId: string) => {
+    const updatedProducts = products.filter(p => p.id !== productId)
+    setProducts(updatedProducts)
+    
+    // Guardar en Firestore preservando toda la configuración
+    await saveConfigPreservingRest({ products: updatedProducts })
   }
 
   const updateProductForm = (field: string, value: any) => {
@@ -508,7 +541,7 @@ export default function ShopPage() {
     setNewImageUrl('')
   }
 
-  const saveImageUrl = () => {
+  const saveImageUrl = async () => {
     if (!editingImageProduct || !newImageUrl.trim()) return
     
     const updatedProduct = {
@@ -516,9 +549,14 @@ export default function ShopPage() {
       image: newImageUrl.trim()
     }
     
-    setProducts(prev => prev.map(p => 
+    const updatedProducts = products.map(p => 
       p.id === editingImageProduct.id ? updatedProduct : p
-    ))
+    )
+    
+    setProducts(updatedProducts)
+    
+    // Guardar en Firestore preservando toda la configuración
+    await saveConfigPreservingRest({ products: updatedProducts })
     
     closeImageModal()
   }
