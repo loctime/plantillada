@@ -164,10 +164,15 @@ export async function loadConfig(tenantId?: string, template?: string | null): P
           }
           // Si no hay template solicitado, devolver la configuración personalizada
           console.log('✅ Cargando configuración personalizada guardada')
+          console.log('📋 Título cargado:', config.site?.title)
+          console.log('📋 Tagline cargada:', config.site?.tagline)
           return config
         } catch (parseError) {
           console.error('Error parsing JSON from data field:', parseError)
-          return getDefaultConfig(tenant)
+          console.error('🔍 Datos que causaron el error:', data.data)
+          // En lugar de devolver configuración por defecto, intentar usar los datos directamente
+          console.log('🔄 Intentando usar datos directamente...')
+          return data as Config
         }
       }
       
