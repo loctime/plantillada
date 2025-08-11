@@ -126,7 +126,7 @@ export function TemplateSelector({ onTemplateSelect, currentTemplate }: Template
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {templates.map((template) => (
           <Card 
             key={template.id}
@@ -137,55 +137,60 @@ export function TemplateSelector({ onTemplateSelect, currentTemplate }: Template
             }`}
             onClick={() => handleTemplateSelect(template)}
           >
-            <CardHeader>
+            <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-lg ${template.color} text-white`}>
+                <div className="flex items-center gap-2">
+                  <div className={`p-1.5 rounded-md ${template.color} text-white`}>
                     {template.icon}
                   </div>
                   <div>
-                    <CardTitle className="text-lg">{template.name}</CardTitle>
+                    <CardTitle className="text-sm">{template.name}</CardTitle>
                     {getStatusBadge(template.status)}
                   </div>
                 </div>
                 {selectedTemplate === template.id && (
-                  <CheckCircle className="h-5 w-5 text-primary" />
+                  <CheckCircle className="h-4 w-4 text-primary" />
                 )}
               </div>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <CardDescription className="text-sm">
+            <CardContent className="space-y-3 pt-0">
+              <CardDescription className="text-xs">
                 {template.description}
               </CardDescription>
               
-              <div className="space-y-2">
-                <h4 className="font-medium text-sm">Características:</h4>
-                <ul className="space-y-1">
-                  {template.features.map((feature, index) => (
-                    <li key={index} className="text-xs text-muted-foreground flex items-center gap-2">
+              <div className="space-y-1">
+                <h4 className="font-medium text-xs">Características:</h4>
+                <ul className="space-y-0.5">
+                  {template.features.slice(0, 3).map((feature, index) => (
+                    <li key={index} className="text-xs text-muted-foreground flex items-center gap-1">
                       <div className="w-1 h-1 bg-primary rounded-full" />
                       {feature}
                     </li>
                   ))}
+                  {template.features.length > 3 && (
+                    <li className="text-xs text-muted-foreground">
+                      +{template.features.length - 3} más...
+                    </li>
+                  )}
                 </ul>
               </div>
 
-              <div className="flex gap-2 pt-2">
+              <div className="flex gap-1 pt-1">
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  className="flex-1"
+                  className="flex-1 text-xs h-7"
                   onClick={(e) => {
                     e.stopPropagation()
                     window.open(template.route, '_blank')
                   }}
                 >
                   <ExternalLink className="h-3 w-3 mr-1" />
-                  Ver Demo
+                  Demo
                 </Button>
                 <Button 
                   size="sm" 
-                  className="flex-1"
+                  className="flex-1 text-xs h-7"
                   disabled={template.status === 'coming-soon'}
                   onClick={(e) => {
                     e.stopPropagation()
@@ -193,7 +198,7 @@ export function TemplateSelector({ onTemplateSelect, currentTemplate }: Template
                   }}
                 >
                   <Settings className="h-3 w-3 mr-1" />
-                  Configurar
+                  Usar
                 </Button>
               </div>
             </CardContent>

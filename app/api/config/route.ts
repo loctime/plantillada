@@ -33,9 +33,12 @@ function getTenantFromRequest(request: NextRequest): string {
 export async function GET(request: NextRequest) {
   try {
     const tenantId = getTenantFromRequest(request)
-    console.log('🔍 API: Cargando configuración para tenant:', tenantId)
+    const { searchParams } = new URL(request.url)
+    const template = searchParams.get('template')
     
-    const config = await loadConfig(tenantId)
+    console.log('🔍 API: Cargando configuración para tenant:', tenantId, 'template:', template)
+    
+    const config = await loadConfig(tenantId, template)
     return NextResponse.json(config)
   } catch (error) {
     console.error('Error loading config:', error)

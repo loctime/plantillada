@@ -32,7 +32,7 @@ export interface Config {
     ctaTitle?: string
     ctaSubtitle?: string
   }
-  buttons: {
+  buttons?: {
     heroButton?: string
     sessionsButton?: string
     courseButton?: string
@@ -117,10 +117,17 @@ export function getTenantId(): string {
 }
 
 // Función para cargar configuración desde Firestore (multi-tenant)
-export async function loadConfig(tenantId?: string): Promise<Config> {
+export async function loadConfig(tenantId?: string, template?: string | null): Promise<Config> {
   try {
     const tenant = tenantId || getTenantId()
-    console.log('🔍 Cargando configuración para tenant:', tenant)
+    console.log('🔍 Cargando configuración para tenant:', tenant, 'template:', template)
+    
+    // Si se especifica un template, usar una configuración específica para ese template
+    if (template) {
+      const templateConfig = getTemplateConfig(template, tenant)
+      console.log('📋 Usando configuración específica para template:', template)
+      return templateConfig
+    }
     
     const configDoc = doc(db, 'config', tenant)
     const configSnapshot = await getDoc(configDoc)
@@ -290,4 +297,114 @@ function getDefaultConfig(tenantId: string): Config {
   }
 
   return baseConfig
+}
+
+// Función para obtener configuración específica por template
+function getTemplateConfig(templateId: string, tenantId: string): Config {
+  const baseConfig = getDefaultConfig(tenantId)
+  
+  switch (templateId) {
+    case 'landing':
+      return {
+        ...baseConfig,
+        site: {
+          ...baseConfig.site,
+          title: `${baseConfig.site.title} - Landing Page`,
+          tagline: "Página de aterrizaje profesional con formularios de contacto y conversión"
+        },
+        buttons: {
+          heroButton: "Agendar Sesión",
+          sessionsButton: "Ver Sesiones",
+          courseButton: "Comprar Curso",
+          aboutButton: "Conoce Más",
+          ctaButton: "Empezar Ahora"
+        }
+      }
+      
+    case 'shop':
+      return {
+        ...baseConfig,
+        site: {
+          ...baseConfig.site,
+          title: `${baseConfig.site.title} - Tienda Online`,
+          tagline: "E-commerce completo con carrito, pagos y sistema de clonación de productos"
+        },
+        buttons: {
+          heroButton: "Ver Productos",
+          sessionsButton: "Comprar Sesión",
+          courseButton: "Comprar Curso",
+          aboutButton: "Sobre Nosotros",
+          ctaButton: "Ir a la Tienda"
+        },
+        sessions: [
+          ...baseConfig.sessions,
+          {
+            id: "sesion-avanzada",
+            name: "Sesión Avanzada",
+            summary: "Sesión intensiva de 2 horas para resultados rápidos.",
+            duration: "120 min",
+            price: "€199",
+            features: [
+              "Análisis profundo de objetivos",
+              "Plan de acción detallado",
+              "Seguimiento por 30 días",
+              "Recursos adicionales"
+            ],
+            hotmartUrl: "https://pay.hotmart.com/TU_CHECKOUT_2"
+          }
+        ]
+      }
+      
+    case 'multi-page':
+      return {
+        ...baseConfig,
+        site: {
+          ...baseConfig.site,
+          title: `${baseConfig.site.title} - Sitio Multi-Página`,
+          tagline: "Combinación de landing, tienda y otras secciones en un solo sitio"
+        },
+        buttons: {
+          heroButton: "Explorar",
+          sessionsButton: "Sesiones",
+          courseButton: "Cursos",
+          aboutButton: "Nosotros",
+          ctaButton: "Contacto"
+        },
+        testimonials: [
+          ...baseConfig.testimonials,
+          {
+            quote: "El sitio multi-página me permite tener todo en un lugar.",
+            author: "Carlos R.",
+            role: "Emprendedor"
+          }
+        ]
+      }
+      
+    case 'forum':
+      return {
+        ...baseConfig,
+        site: {
+          ...baseConfig.site,
+          title: `${baseConfig.site.title} - Foro Comunitario`,
+          tagline: "Plataforma de discusión y comunidad con moderación"
+        },
+        buttons: {
+          heroButton: "Unirse al Foro",
+          sessionsButton: "Sesiones",
+          courseButton: "Cursos",
+          aboutButton: "Comunidad",
+          ctaButton: "Registrarse"
+        },
+        testimonials: [
+          {
+            quote: "La comunidad me ha ayudado mucho en mi crecimiento.",
+            author: "Ana L.",
+            role: "Miembro Activo"
+          }
+        ]
+      }
+      
+    default:
+      return baseConfig
+  }
 }

@@ -101,14 +101,15 @@ export default function AdminPage() {
       }
     }
     
+    // Llamar la función async
     loadInitialConfig()
   }, [])
 
-  const handleTemplateSelect = (template: any) => {
+  const handleTemplateSelect = async (template: any) => {
     setCurrentTemplate(template.id)
     setShowTemplateSelector(false)
     // Aquí podrías cargar la configuración específica de la plantilla
-    loadTemplateConfig(template.id)
+    await loadTemplateConfig(template.id)
   }
 
   const loadTemplateConfig = async (templateId: string) => {
@@ -266,32 +267,16 @@ export default function AdminPage() {
                 Configura tu sitio web desde aquí
               </p>
             </div>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Globe className="h-4 w-4" />
-                <span>Tenant: <strong>{currentTenant}</strong></span>
-              </div>
-              <Button 
-                variant="outline" 
-                onClick={() => setShowTemplateSelector(!showTemplateSelector)}
-              >
-                <Layers className="h-4 w-4 mr-2" />
-                Cambiar Plantilla
-              </Button>
-            </div>
+                         <div className="flex items-center gap-4">
+               <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                 <Globe className="h-4 w-4" />
+                 <span>Tenant: <strong>{currentTenant}</strong></span>
+               </div>
+             </div>
           </div>
         </div>
 
-        {showTemplateSelector && (
-          <Card className="mb-6">
-            <CardContent className="p-6">
-              <TemplateSelector 
-                onTemplateSelect={handleTemplateSelect}
-                currentTemplate={currentTemplate}
-              />
-            </CardContent>
-          </Card>
-        )}
+        
 
         {message && (
           <Alert className="mb-6">
@@ -310,48 +295,77 @@ export default function AdminPage() {
              <TabsTrigger value="legal">Legal</TabsTrigger>
            </TabsList>
 
-          <TabsContent value="general" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Settings className="h-5 w-5" />
-                  Configuración General
-                </CardTitle>
-                <CardDescription>
-                  Información básica del sitio
-                </CardDescription>
-              </CardHeader>
-                             <CardContent className="space-y-4">
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                   <div className="space-y-2">
-                     <Label htmlFor="title">Título del Sitio</Label>
-                     <Input
-                       id="title"
-                       value={formData.site.title}
-                       onChange={(e) => handleInputChange("site.title", e.target.value)}
-                     />
+                     <TabsContent value="general" className="space-y-6">
+             <Card>
+               <CardHeader>
+                 <CardTitle className="flex items-center gap-2">
+                   <Settings className="h-5 w-5" />
+                   Configuración General
+                 </CardTitle>
+                 <CardDescription>
+                   Información básica del sitio
+                 </CardDescription>
+               </CardHeader>
+               <CardContent className="space-y-6">
+                 <div className="space-y-4">
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                     <div className="space-y-2">
+                       <Label htmlFor="title">Título del Sitio</Label>
+                       <Input
+                         id="title"
+                         value={formData.site.title}
+                         onChange={(e) => handleInputChange("site.title", e.target.value)}
+                       />
+                     </div>
+                     <div className="space-y-2">
+                       <Label htmlFor="tagline">Tagline</Label>
+                       <Input
+                         id="tagline"
+                         value={formData.site.tagline}
+                         onChange={(e) => handleInputChange("site.tagline", e.target.value)}
+                       />
+                     </div>
                    </div>
                    <div className="space-y-2">
-                     <Label htmlFor="tagline">Tagline</Label>
+                     <Label htmlFor="contactEmail">Email de Contacto</Label>
                      <Input
-                       id="tagline"
-                       value={formData.site.tagline}
-                       onChange={(e) => handleInputChange("site.tagline", e.target.value)}
+                       id="contactEmail"
+                       type="email"
+                       value={formData.contact.email}
+                       onChange={(e) => handleInputChange("contact.email", e.target.value)}
                      />
                    </div>
                  </div>
-                 <div className="space-y-2">
-                   <Label htmlFor="contactEmail">Email de Contacto</Label>
-                   <Input
-                     id="contactEmail"
-                     type="email"
-                     value={formData.contact.email}
-                     onChange={(e) => handleInputChange("contact.email", e.target.value)}
-                   />
+
+                 <Separator />
+
+                 <div className="space-y-4">
+                   <div className="flex items-center justify-between">
+                     <div>
+                       <h3 className="text-lg font-medium">Plantilla del Sitio</h3>
+                       <p className="text-sm text-muted-foreground">
+                         Selecciona el tipo de sitio web que mejor se adapte a tus necesidades
+                       </p>
+                     </div>
+                     <Button 
+                       variant="outline" 
+                       onClick={() => setShowTemplateSelector(!showTemplateSelector)}
+                     >
+                       <Layers className="h-4 w-4 mr-2" />
+                       {showTemplateSelector ? "Ocultar" : "Cambiar Plantilla"}
+                     </Button>
+                   </div>
+                   
+                   {showTemplateSelector && (
+                     <TemplateSelector 
+                       onTemplateSelect={handleTemplateSelect}
+                       currentTemplate={currentTemplate}
+                     />
+                   )}
                  </div>
                </CardContent>
-            </Card>
-          </TabsContent>
+             </Card>
+           </TabsContent>
 
           <TabsContent value="integrations" className="space-y-6">
             <Card>
