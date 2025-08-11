@@ -1,0 +1,116 @@
+{
+  "site": {
+    "title": "marcamia",
+    "tagline": "Acompañamiento 1:1 y formación práctica para cambios reales."
+  },
+  "integrations": {
+    "calendlyUrl": "https://calendly.com/tu-usuario/sesion",
+    "hotmartBaseUrl": "https://pay.hotmart.com"
+  },
+  "theme": {
+    "light": {
+      "backgroundColor": "#ffffff",
+      "sectionBackground": "#f8fafc",
+      "navbarBackground": "#ffffff",
+      "textColor": "#1e293b",
+      "accentColor": "#10b981",
+      "primaryButtonColor": "#10b981",
+      "secondaryButtonColor": "#3b82f6",
+      "outlineButtonColor": "#6b7280"
+    },
+    "dark": {
+      "backgroundColor": "#0f172a",
+      "sectionBackground": "#1e293b",
+      "navbarBackground": "#0f172a",
+      "textColor": "#f1f5f9",
+      "accentColor": "#10b981",
+      "primaryButtonColor": "#10b981",
+      "secondaryButtonColor": "#3b82f6",
+      "outlineButtonColor": "#9ca3af"
+    }
+  },
+  "sessions": [
+    {
+      "id": "sesion-claridad",
+      "name": "Sesión de Claridad",
+      "summary": "Define tu objetivo y el plan inmediato de 30 días.",
+      "duration": "60 min",
+      "price": "€99",
+      "features": [
+        "Diagnóstico inicial y mapa de objetivos",
+        "Prioridades y plan de acción",
+        "Seguimiento por email 7 días"
+      ],
+      "hotmartUrl": "https://pay.hotmart.com/TU_CHECKOUT_1"
+    },
+    {
+      "id": "sesion-estrategia",
+      "name": "Estrategia Pro",
+      "summary": "Estrategia personalizada y sistema semanal.",
+      "duration": "90 min",
+      "price": "€149",
+      "features": [
+        "Auditoría de situación actual",
+        "Diseño de sistema y métricas",
+        "Plantillas y recursos"
+      ],
+      "hotmartUrl": "https://pay.hotmart.com/TU_CHECKOUT_2"
+    },
+    {
+      "id": "sesion-impulso",
+      "name": "Impulso y Ejecución",
+      "summary": "Implementación guiada y resolución de bloqueos.",
+      "duration": "60 min",
+      "price": "€129",
+      "features": [
+        "Resolución de bloqueos clave",
+        "Checklist de ejecución",
+        "Revisión de resultados"
+      ],
+      "hotmartUrl": "https://pay.hotmart.com/TU_CHECKOUT_3"
+    }
+  ],
+  "course": {
+    "title": "Curso Online: Sistema de Productividad Sencilla",
+    "blurb": "Aprende a construir un sistema ligero para enfocarte, priorizar con calma y avanzar cada semana sin fricción.",
+    "price": "€1",
+    "hotmartUrl": "https://pay.hotmart.com/TU_CHECKOUT_CURSO",
+    "videoUrl": "",
+    "bullets": [
+      "Estructura de planificación semanal en 30 minutos",
+      "Métricas simples para medir progreso",
+      "Plantillas reutilizables y ejemplos",
+      "Casos prácticos y ejercicios guiados"
+    ]
+  },
+  "about": {
+    "photoUrl": "/placeholder.svg?height=520&width=420",
+    "videoUrl": "",
+    "story": "Soy [Tu Nombre], consultor y coach con X años ayudando a profesionales a ganar claridad, enfocarse y ejecutar con calma. Mi enfoque es práctico, humano y orientado a resultados medibles.",
+    "whyMe": "He acompañado a +300 clientes en sectores diversos. Integro estrategia, hábitos y priorización para construir momentum sostenible."
+  },
+  "testimonials": [
+    {
+      "quote": "En dos sesiones definimos un plan claro y recuperé la motivación. Pasé de la parálisis a entregar mi proyecto.",
+      "author": "María G.",
+      "role": "Marketing Specialist"
+    },
+    {
+      "quote": "Las herramientas son simples y efectivas. Mi semana ahora tiene foco y cierro lo importante.",
+      "author": "Javier R.",
+      "role": "Product Manager"
+    },
+    {
+      "quote": "El curso me dio estructura y las sesiones 1:1 me mantuvieron responsable. Muy recomendable.",
+      "author": "Lucía P.",
+      "role": "Emprendedora"
+    }
+  ],
+  "contact": {
+    "email": "hola@tumarca.com"
+  },
+  "legal": {
+    "termsUrl": "",
+    "privacyUrl": ""
+  }
+}
