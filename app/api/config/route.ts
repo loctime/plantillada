@@ -19,7 +19,23 @@ function getTenantFromRequest(request: NextRequest): string {
     return domainToTenant[host]
   }
   
-  // Buscar coincidencia por subdominio
+  // IMPORTANTE: Para subdominios de Vercel, extraer el tenant base
+  // Ejemplo: plantilla-5dqaylk9f-loctimes-projects.vercel.app -> plantilla
+  if (host.includes('.vercel.app')) {
+    const parts = host.split('.')
+    if (parts.length >= 3) {
+      const firstPart = parts[0]
+      // Si el primer parte contiene guiones, tomar solo la parte antes del primer guión
+      if (firstPart.includes('-')) {
+        const baseTenant = firstPart.split('-')[0]
+        console.log(`🔍 API: Detectado subdominio Vercel: ${host} -> tenant: ${baseTenant}`)
+        return baseTenant
+      }
+      return firstPart
+    }
+  }
+  
+  // Buscar coincidencia por subdominio (solo para dominios no-Vercel)
   const subdomain = host.split('.')[0]
   if (subdomain && subdomain !== 'www') {
     return subdomain
