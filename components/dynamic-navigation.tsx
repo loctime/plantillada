@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Config } from '@/lib/config-loader'
+import { cn } from '@/lib/utils'
 
 interface NavigationItem {
   id: string
@@ -33,9 +34,10 @@ const templateNavigation: Record<string, NavigationItem> = {
 
 interface DynamicNavigationProps {
   config?: Config
+  isMobile?: boolean
 }
 
-export function DynamicNavigation({ config }: DynamicNavigationProps) {
+export function DynamicNavigation({ config, isMobile = false }: DynamicNavigationProps) {
   const [navigationItems, setNavigationItems] = useState<NavigationItem[]>([])
 
   useEffect(() => {
@@ -60,12 +62,17 @@ export function DynamicNavigation({ config }: DynamicNavigationProps) {
   }, [config?.selectedTemplates])
 
   return (
-    <nav className="hidden md:flex space-x-8">
+    <nav className={isMobile ? "flex flex-col space-y-4" : "hidden md:flex space-x-8"}>
       {navigationItems.map((item) => (
         <a
           key={item.id}
           href={item.route}
-          className="text-gray-700 hover:text-gray-900 transition-colors flex items-center gap-1"
+          className={cn(
+            "transition-colors flex items-center gap-2",
+            isMobile 
+              ? "text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white py-2 px-3 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800" 
+              : "text-gray-700 hover:text-gray-900"
+          )}
         >
           <span>{item.icon}</span>
           <span>{item.name}</span>

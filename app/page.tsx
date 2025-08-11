@@ -1,6 +1,6 @@
 "use client"
 
-import { Calendar, Check, Quote, ShoppingCart } from "lucide-react"
+import { Calendar, Check, Quote, ShoppingCart, Menu, X } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { ScheduleButton } from "@/components/schedule-dialog"
@@ -194,28 +194,60 @@ function PageContent() {
 
 function Header() {
   const { config, updateConfig } = useAdmin()
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   if (!config) return null
 
   return (
     <header className="sticky top-0 z-50 custom-navbar-bg-transparent backdrop-blur-md border-b">
-      <div className="container px-4 md:px-6 h-16 flex items-center">
-        <EditableText
-          value={config.site.title}
-          onSave={(newValue) => updateConfig({ site: { ...config.site, title: newValue } })}
-          className="font-semibold tracking-tight text-lg"
-          tag="span"
-        />
-        <DynamicNavigation config={config} />
-        <div className="ml-auto md:ml-4 flex items-center gap-2">
+      <div className="container px-4 md:px-6 h-16 flex items-center justify-between">
+        {/* Lado izquierdo: Título */}
+        <div className="flex items-center">
+          <EditableText
+            value={config.site.title}
+            onSave={(newValue) => updateConfig({ site: { ...config.site, title: newValue } })}
+            className="font-semibold tracking-tight text-lg"
+            tag="span"
+          />
+        </div>
+        
+        {/* Centro: Navegación (solo desktop) */}
+        <div className="hidden md:flex items-center">
+          <DynamicNavigation config={config} isMobile={false} />
+        </div>
+        
+        {/* Lado derecho: Botones y controles */}
+        <div className="flex items-center gap-3">
           <ThemeSwitch />
           <ScheduleButton 
             url={config.integrations.calendlyUrl} 
             label={config.buttons?.heroButton || "Agendar"} 
             onLabelChange={(newValue) => updateConfig({ buttons: { ...config.buttons, heroButton: newValue } })}
           />
+          
+          {/* Botón de menú móvil */}
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="md:hidden p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            aria-label="Abrir menú de navegación"
+          >
+            {isMobileMenuOpen ? (
+              <X className="h-5 w-5" />
+            ) : (
+              <Menu className="h-5 w-5" />
+            )}
+          </button>
         </div>
       </div>
+      
+      {/* Menú móvil */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden border-t custom-bg">
+          <div className="container px-4 py-4">
+            <DynamicNavigation config={config} isMobile={true} />
+          </div>
+        </div>
+      )}
     </header>
   )
 }
@@ -321,7 +353,7 @@ function Sessions() {
         </div>
         <div className="grid gap-6 md:grid-cols-3">
           {config.sessions.map((session, index) => (
-            <article key={session.id} className="rounded-xl border bg-white p-6 flex flex-col">
+            <article key={session.id} className="rounded-xl border custom-bg p-6 flex flex-col">
               <div className="space-y-1">
                 <EditableText
                   value={session.name}

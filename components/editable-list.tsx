@@ -111,7 +111,7 @@ export function EditableList({
                 variant="ghost"
                 onClick={() => removeItem(index)}
                 disabled={isPending || isSaving}
-                className="h-6 w-6 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                className="h-6 w-6 p-0 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
               >
                 <Trash2 className="h-3 w-3" />
               </Button>
@@ -175,7 +175,7 @@ export function EditableList({
   return (
     <div className="relative group">
       <ul className={cn(
-        "cursor-pointer hover:bg-emerald-50 rounded p-2 -m-2 transition-colors",
+        "cursor-pointer hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded p-2 -m-2 transition-colors",
         isSaving && "opacity-75",
         className
       )}>
@@ -192,7 +192,7 @@ export function EditableList({
         variant="ghost"
         onClick={() => setIsEditing(true)}
         disabled={isSaving}
-        className="absolute -top-2 -right-2 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity bg-white border shadow-sm"
+        className="absolute -top-2 -right-2 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity custom-bg border shadow-sm"
       >
         <Edit2 className="h-3 w-3" />
       </Button>

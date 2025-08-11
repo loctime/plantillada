@@ -142,7 +142,7 @@ export function EditableText({
   return (
     <div className="relative group">
       <div className={cn(
-        "cursor-pointer hover:bg-emerald-50 rounded px-1 -mx-1 transition-colors",
+        "cursor-pointer hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded px-1 -mx-1 transition-colors",
         isSaving && "opacity-75",
         className
       )}>
@@ -154,7 +154,7 @@ export function EditableText({
         variant="ghost"
         onClick={() => setIsEditing(true)}
         disabled={isSaving}
-        className="absolute -top-2 -right-2 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity bg-white border shadow-sm"
+        className="absolute -top-2 -right-2 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity custom-bg border shadow-sm"
       >
         <Edit2 className="h-3 w-3" />
       </Button>
