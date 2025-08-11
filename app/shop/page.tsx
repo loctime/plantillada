@@ -228,7 +228,9 @@ export default function ShopPage() {
       // Actualizar solo las secciones especificadas, preservando el resto
       const updatedConfig = {
         ...currentConfig,
-        ...updates
+        ...updates,
+        // Marcar que esta configuración es para el template shop
+        currentTemplate: 'shop'
       }
       
       await fetch('/api/config', {
@@ -250,7 +252,8 @@ export default function ShopPage() {
   useEffect(() => {
     const loadConfig = async () => {
       try {
-        const response = await fetch('/api/config?template=shop')
+        // Cargar configuración personalizada (sin template) para preservar cambios
+        const response = await fetch('/api/config')
         if (response.ok) {
           const shopConfig = await response.json()
           setConfig(shopConfig)

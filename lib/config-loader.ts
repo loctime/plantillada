@@ -80,6 +80,39 @@ export interface Config {
     termsUrl: string
     privacyUrl: string
   }
+  // Campos específicos para la tienda
+  shopConfig?: {
+    storeName: string
+    storeTagline: string
+    navigation: string[]
+    categories: string[]
+    searchPlaceholder: string
+    filterButtonText: string
+    bestSellersTitle: string
+    breadcrumbText: string
+    resultsText: string
+    sortOptions: { value: string; label: string }[]
+    addToCartText: string
+    outOfStockText: string
+    cartTitle: string
+    emptyCartText: string
+    checkoutText: string
+    totalText: string
+  }
+  products?: Array<{
+    id: string
+    name: string
+    brand: string
+    price: number
+    originalPrice?: number
+    image: string
+    rating: number
+    reviews: number
+    category: string
+    inStock: boolean
+    description: string
+    features: string[]
+  }>
 }
 
 // Función para obtener el tenant ID basado en el dominio
@@ -421,6 +454,115 @@ function getTemplateConfig(templateId: string, tenantId: string): Config {
               "Recursos adicionales"
             ],
             hotmartUrl: "https://pay.hotmart.com/TU_CHECKOUT_2"
+          }
+        ],
+        shopConfig: {
+          storeName: "TECH STORE",
+          storeTagline: "Tu tienda de tecnología de confianza",
+          navigation: ["TIENDA", "CELULARES", "APPLE", "DRONES DJI", "GAMING", "WAREHOUSE", "LISTA DE PRECIOS"],
+          categories: ["Todos", "Tablets", "Smartphones", "Gaming"],
+          searchPlaceholder: "Buscar productos...",
+          filterButtonText: "FILTRAR",
+          bestSellersTitle: "Our Best Sellers",
+          breadcrumbText: "Inicio / STORE DE LA TIENDA",
+          resultsText: "Mostrando 1-{count} de {total} resultados",
+          sortOptions: [
+            { value: "latest", label: "Ordenar por los últimos" },
+            { value: "price-low", label: "Precio: Menor a Mayor" },
+            { value: "price-high", label: "Precio: Mayor a Menor" },
+            { value: "rating", label: "Mejor Valorados" }
+          ],
+          addToCartText: "Agregar al Carrito",
+          outOfStockText: "Sin Stock",
+          cartTitle: "Carrito de Compras",
+          emptyCartText: "Tu carrito está vacío",
+          checkoutText: "Proceder al Pago",
+          totalText: "Total:"
+        },
+        products: [
+          {
+            id: '1',
+            name: 'iPad 11th (A16)',
+            brand: 'iPad',
+            price: 899.00,
+            originalPrice: 999.00,
+            image: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400&h=400&fit=crop',
+            rating: 4.5,
+            reviews: 128,
+            category: 'tablets',
+            inStock: true,
+            description: 'iPad de 11 pulgadas con chip A16, perfecto para productividad y creatividad.',
+            features: ['Chip A16 Bionic', '11 pulgadas', '128GB', 'WiFi + Cellular']
+          },
+          {
+            id: '2',
+            name: 'iPad Mini (A17)',
+            brand: 'iPad',
+            price: 599.00,
+            originalPrice: 699.00,
+            image: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400&h=400&fit=crop',
+            rating: 4.3,
+            reviews: 89,
+            category: 'tablets',
+            inStock: true,
+            description: 'iPad Mini compacto con chip A17, ideal para uso portátil.',
+            features: ['Chip A17 Pro', '8.3 pulgadas', '64GB', 'WiFi']
+          },
+          {
+            id: '3',
+            name: 'iPad Air M2',
+            brand: 'iPad',
+            price: 799.00,
+            originalPrice: 899.00,
+            image: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400&h=400&fit=crop',
+            rating: 4.7,
+            reviews: 156,
+            category: 'tablets',
+            inStock: true,
+            description: 'iPad Air con chip M2, potencia profesional en formato ligero.',
+            features: ['Chip M2', '10.9 pulgadas', '256GB', 'WiFi + Cellular']
+          },
+          {
+            id: '4',
+            name: 'NUBIA FLIP',
+            brand: 'Nubia',
+            price: 757.00,
+            originalPrice: 899.00,
+            image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&h=400&fit=crop',
+            rating: 4.2,
+            reviews: 67,
+            category: 'smartphones',
+            inStock: true,
+            description: 'Smartphone plegable con diseño innovador y tecnología avanzada.',
+            features: ['Pantalla plegable', '6.9 pulgadas', '256GB', '5G']
+          },
+          {
+            id: '5',
+            name: 'ROG PHONE 8',
+            brand: 'ASUS',
+            price: 1299.00,
+            originalPrice: 1499.00,
+            image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&h=400&fit=crop',
+            rating: 4.6,
+            reviews: 234,
+            category: 'gaming',
+            inStock: true,
+            description: 'Smartphone gaming con refrigeración líquida y rendimiento extremo.',
+            features: ['Snapdragon 8 Gen 3', '16GB RAM', '512GB', 'Gaming']
+          },
+          {
+            id: '6',
+            name: 'Nubia Red Magic 6',
+            brand: 'Nubia',
+            price: 757.00,
+            originalPrice: 899.00,
+            image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&h=400&fit=crop',
+            rating: 4.4,
+            reviews: 189,
+            category: 'gaming',
+            inStock: true,
+            description: 'Smartphone gaming con ventilador integrado y pantalla de alta frecuencia.',
+            features: ['Snapdragon 888', '12GB RAM', '256GB', '165Hz']
           }
         ]
       }
