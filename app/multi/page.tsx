@@ -113,7 +113,9 @@ export default function MultiPage() {
                   </h4>
                   <p className="text-gray-600 mb-4">{session.summary}</p>
                   <div className="flex items-center justify-between mb-4">
-                    <span className="text-2xl font-bold text-purple-600">{session.price}</span>
+                    {(config.site?.showPrices !== false && session.showPrice !== false) && (
+                      <span className="text-2xl font-bold text-purple-600">{session.price}</span>
+                    )}
                     <span className="text-sm text-gray-500">{session.duration}</span>
                   </div>
                   <ul className="space-y-2 mb-6">
@@ -157,9 +159,11 @@ export default function MultiPage() {
               <p className="text-lg text-gray-600 mb-6">
                 {config.course.blurb}
               </p>
-              <div className="mb-6">
-                <span className="text-3xl font-bold text-purple-600">{config.course.price}</span>
-              </div>
+              {(config.site?.showPrices !== false && config.course.showPrice !== false) && (
+                <div className="mb-6">
+                  <span className="text-3xl font-bold text-purple-600">{config.course.price}</span>
+                </div>
+              )}
               <ul className="space-y-3 mb-8">
                 {config.course.bullets.map((bullet, index) => (
                   <li key={index} className="flex items-center text-gray-700">

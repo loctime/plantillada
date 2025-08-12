@@ -15,6 +15,7 @@ import { Config, getTenantId } from "@/lib/config-loader"
 import { TemplateSelector } from "@/components/template-selector"
 import { DesignSelector } from "@/components/design-selector"
 import BackupManager from "@/components/backup-manager"
+import { PriceVisibilityToggle } from "@/components/price-visibility-toggle"
 
 interface FormData extends Config {}
 
@@ -490,6 +491,18 @@ export default function AdminPage() {
                        <p className="text-gray-500">Necesitas seleccionar al menos una plantilla para poder elegir su diseño.</p>
                      </div>
                    )}
+                 </div>
+
+                 <Separator />
+
+                 <div className="space-y-4">
+                   <PriceVisibilityToggle 
+                     tenantId={currentTenant}
+                     onConfigUpdate={() => {
+                       // Recargar configuración después de actualizar
+                       loadInitialConfig()
+                     }}
+                   />
                  </div>
                </CardContent>
              </Card>

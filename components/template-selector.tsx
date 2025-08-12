@@ -11,7 +11,8 @@ import {
   Layers, 
   CheckCircle,
   ExternalLink,
-  Settings
+  Settings,
+  Brain
 } from "lucide-react"
 
 interface Template {
@@ -74,6 +75,23 @@ const templates: Template[] = [
     status: 'coming-soon',
     route: '/forum',
     color: 'bg-orange-500'
+  },
+  {
+    id: 'psicologos',
+    name: 'Centro de Psicología',
+    description: 'Sitio web profesional para psicólogos y terapeutas',
+    icon: <Brain className="h-6 w-6" />,
+    features: [
+      'Terapia individual y grupal',
+      'Especialidades terapéuticas',
+      'Agendamiento de sesiones',
+      'Testimonios de pacientes',
+      'Información sobre servicios',
+      'Contacto confidencial'
+    ],
+    status: 'active',
+    route: '/psicologos',
+    color: 'bg-purple-500'
   }
 ]
 
@@ -90,7 +108,7 @@ export function TemplateSelector({ onTemplateSelect, selectedTemplates = [] }: T
     setSelectedTemplatesState(selectedTemplates)
   }, [selectedTemplates])
 
-  const handleTemplateToggle = (template: Template, e: React.MouseEvent) => {
+  const handleTemplateToggle = (template: Template, e: React.MouseEvent | React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault()
     e.stopPropagation()
     

@@ -7,6 +7,7 @@ Una plataforma completa para crear y gestionar diferentes tipos de sitios web de
 ### 🎯 Sistema Multi-Plantilla
 - **Landing Page**: Página de aterrizaje profesional con formularios y conversión
 - **Tienda Online**: E-commerce completo con sistema de clonación de productos
+- **Centro de Psicología**: Sitio web especializado para psicólogos y terapeutas
 - **Sitio Multi-Página**: Combinación de múltiples secciones en un solo sitio
 - **Foro Comunitario**: Plataforma de discusión (próximamente)
 
@@ -35,6 +36,7 @@ Una plataforma completa para crear y gestionar diferentes tipos de sitios web de
 /pages
 ├── /                   # Landing page
 ├── /shop              # Tienda online
+├── /psicologos        # Centro de psicología
 ├── /multi             # Sitio multi-página
 └── /admin             # Panel de administración
 ```
@@ -329,6 +331,44 @@ vercel env add NEXT_PUBLIC_FIREBASE_API_KEY
 ## 📄 Licencia
 
 Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
+
+## 🧠 Diseño de Psicólogos
+
+### Características Especializadas
+El diseño de psicólogos está optimizado para profesionales de la salud mental con:
+
+- **🎨 Colores terapéuticos**: Púrpuras y azules que transmiten confianza y serenidad
+- **🧠 Iconografía especializada**: Iconos relacionados con la mente y el bienestar
+- **🛡️ Enfoque en confidencialidad**: Diseño que prioriza la privacidad del paciente
+- **📋 Servicios especializados**: Terapia individual, de pareja, familiar y evaluaciones
+- **⭐ Testimonios de pacientes**: Sección dedicada a experiencias reales
+- **📅 Integración Calendly**: Agendamiento profesional de sesiones
+- **💳 Enlaces Hotmart**: Para pagos seguros de servicios
+
+### Aplicación Rápida
+```bash
+# Aplicar diseño de psicólogos
+node scripts/apply-psicologos-design.js
+
+# Para un tenant específico
+node scripts/apply-psicologos-design.js psicologo-madrid
+```
+
+### Configuración Automática
+El diseño incluye:
+- **4 servicios terapéuticos** preconfigurados
+- **Taller online** de gestión del estrés
+- **Testimonios** realistas de pacientes
+- **Información del centro** profesional
+- **Tema visual** optimizado para psicólogos
+
+### Personalización
+Desde el panel de administración (`/admin`):
+1. Seleccionar plantilla "Centro de Psicología"
+2. Elegir diseño "Psicólogos"
+3. Personalizar contenido y servicios
+4. Configurar Calendly y Hotmart
+5. Ajustar colores y tipografía
 
 ## 🆘 Soporte
 

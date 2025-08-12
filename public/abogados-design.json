@@ -1,0 +1,211 @@
+{
+  "id": "estudio-abogados-premium",
+  "name": "Estudio de Abogados Premium",
+  "description": "Diseño elegante y profesional para bufetes de abogados con estilo premium",
+  "category": "landing",
+  "colorScheme": {
+    "primary": "#1a1a1a",
+    "secondary": "#8b8b8b",
+    "accent": "#d4af37"
+  },
+  "cssVariables": {
+    "--primary": "#1a1a1a",
+    "--secondary": "#8b8b8b",
+    "--accent": "#d4af37",
+    "--font-family": "Georgia, \"Times New Roman\", serif",
+    "--heading-font": "Georgia, \"Times New Roman\", serif",
+    "--body-font": "Georgia, \"Times New Roman\", serif",
+    "--background-color": "#ffffff",
+    "--section-background": "#f8f9fa",
+    "--navbar-background": "#ffffff",
+    "--text-color": "#1a1a1a",
+    "--accent-color": "#d4af37",
+    "--primary-button-color": "#1a1a1a",
+    "--secondary-button-color": "#8b8b8b",
+    "--outline-button-color": "#8b8b8b"
+  },
+  "theme": {
+    "light": {
+      "backgroundColor": "#ffffff",
+      "sectionBackground": "#f8f9fa",
+      "navbarBackground": "#ffffff",
+      "textColor": "#1a1a1a",
+      "accentColor": "#d4af37",
+      "primaryButtonColor": "#1a1a1a",
+      "secondaryButtonColor": "#8b8b8b",
+      "outlineButtonColor": "#8b8b8b"
+    },
+    "dark": {
+      "backgroundColor": "#0f0f0f",
+      "sectionBackground": "#1a1a1a",
+      "navbarBackground": "#0f0f0f",
+      "textColor": "#f5f5f5",
+      "accentColor": "#d4af37",
+      "primaryButtonColor": "#d4af37",
+      "secondaryButtonColor": "#8b8b8b",
+      "outlineButtonColor": "#8b8b8b"
+    }
+  },
+      "config": {
+        "site": {
+    "title": "Bufete de Abogados Martínez & Asociados",
+    "tagline": "Excelencia legal y compromiso con la justicia desde 1995",
+    "heroTitle": "Defendemos tus derechos con la máxima profesionalidad",
+    "heroSubtitle": "Más de 25 años de experiencia en derecho civil, mercantil, laboral y penal. Tu confianza es nuestra responsabilidad.",
+    "sessionsTitle": "Nuestras Especialidades",
+    "sessionsSubtitle": "Servicios legales integrales con la más alta calidad profesional",
+    "aboutTitle": "Nuestro Bufete",
+    "testimonialsTitle": "Casos de Éxito",
+    "testimonialsSubtitle": "Testimonios de clientes que confiaron en nosotros",
+    "ctaTitle": "¿Necesitas asesoramiento legal experto?",
+    "ctaSubtitle": "Primera consulta gratuita y confidencial",
+    "showPrices": false
+  },
+  "theme": {
+    "light": {
+      "backgroundColor": "#f8f9fa",
+      "sectionBackground": "#ffffff",
+      "navbarBackground": "#1a1a1a",
+      "textColor": "#2c3e50",
+      "accentColor": "#d4af37",
+      "primaryButtonColor": "#1a1a1a",
+      "secondaryButtonColor": "#8b8b8b",
+      "outlineButtonColor": "#d4af37"
+    },
+    "dark": {
+      "backgroundColor": "#1a1a1a",
+      "sectionBackground": "#2d2d2d",
+      "navbarBackground": "#000000",
+      "textColor": "#ffffff",
+      "accentColor": "#d4af37",
+      "primaryButtonColor": "#d4af37",
+      "secondaryButtonColor": "#8b8b8b",
+      "outlineButtonColor": "#ffffff"
+    }
+  },
+    "sessions": [
+      {
+        "id": "derecho-civil",
+        "name": "Derecho Civil",
+        "summary": "Asesoramiento integral en contratos, herencias, responsabilidad civil y derecho de familia",
+        "duration": "Según complejidad del caso",
+        "price": "Desde €200",
+        "features": [
+          "Contratos y acuerdos comerciales",
+          "Herencias y sucesiones",
+          "Responsabilidad civil y daños",
+          "Derecho de familia y divorcios",
+          "Propiedad horizontal",
+          "Arrendamientos urbanos"
+        ],
+        "hotmartUrl": "https://pay.hotmart.com/DERECHO_CIVIL",
+        "showPrice": false
+      },
+      {
+        "id": "derecho-mercantil",
+        "name": "Derecho Mercantil",
+        "summary": "Asesoramiento empresarial y corporativo para empresas de todos los tamaños",
+        "duration": "Servicio continuo",
+        "price": "Desde €300/mes",
+        "features": [
+          "Constitución de sociedades",
+          "Contratos comerciales",
+          "Fusiones y adquisiciones",
+          "Derecho societario",
+          "Concurrencia desleal",
+          "Propiedad intelectual"
+        ],
+        "hotmartUrl": "https://pay.hotmart.com/DERECHO_MERCANTIL",
+        "showPrice": false
+      },
+      {
+        "id": "derecho-laboral",
+        "name": "Derecho Laboral",
+        "summary": "Defensa de derechos laborales y asesoramiento en relaciones de trabajo",
+        "duration": "Según caso",
+        "price": "Desde €250",
+        "features": [
+          "Despidos y conflictos laborales",
+          "Negociaciones colectivas",
+          "Prevención de riesgos laborales",
+          "Auditorías laborales",
+          "Convenios colectivos",
+          "Accidentes de trabajo"
+        ],
+        "hotmartUrl": "https://paymart.com/DERECHO_LABORAL",
+        "showPrice": false
+      },
+      {
+        "id": "derecho-penal",
+        "name": "Derecho Penal",
+        "summary": "Defensa penal especializada con amplia experiencia en tribunales",
+        "duration": "Según proceso",
+        "price": "Desde €500",
+        "features": [
+          "Defensa en juicios penales",
+          "Delitos económicos",
+          "Delitos contra la propiedad",
+          "Delitos contra las personas",
+          "Recursos penales",
+          "Medidas cautelares"
+        ],
+        "hotmartUrl": "https://pay.hotmart.com/DERECHO_PENAL",
+        "showPrice": false
+      }
+    ],
+    "course": {
+      "title": "Curso: Fundamentos Legales para Empresarios",
+      "blurb": "Conoce los aspectos legales fundamentales para proteger tu negocio y evitar conflictos jurídicos",
+      "price": "€599",
+      "hotmartUrl": "https://pay.hotmart.com/CURSO_DERECHO_EMPRESARIAL",
+      "videoUrl": "",
+              "bullets": [
+          "Formas jurídicas de empresa y sus implicaciones",
+          "Contratos comerciales y cláusulas esenciales",
+          "Protección de datos y RGPD",
+          "Aspectos laborales básicos",
+          "Propiedad intelectual y marcas",
+          "Responsabilidad civil empresarial"
+        ],
+        "showPrice": false
+    },
+    "about": {
+      "photoUrl": "/placeholder.svg?height=520&width=420",
+      "videoUrl": "",
+      "story": "Fundado en 1995, nuestro bufete se ha consolidado como una referencia en el sector legal, combinando la tradición jurídica con las últimas innovaciones en el campo del derecho. Nuestro equipo de abogados especializados trabaja con dedicación para ofrecer soluciones legales efectivas y personalizadas.",
+      "whyMe": "Hemos resuelto exitosamente más de 2.500 casos, manteniendo la confidencialidad, profesionalidad y excelencia que caracteriza a nuestro bufete. Nuestro compromiso es defender los derechos de nuestros clientes con la máxima eficacia."
+    },
+    "testimonials": [
+      {
+        "quote": "Excelente trabajo en mi caso de despido improcedente. No solo recuperé mi empleo, sino que obtuve una indemnización justa. Profesionalidad y resultados excepcionales.",
+        "author": "Miguel Rodríguez",
+        "role": "Ingeniero Industrial"
+      },
+      {
+        "quote": "Gracias a su asesoramiento, pudimos resolver un conflicto mercantil complejo de manera satisfactoria. Su experiencia y dedicación son inigualables.",
+        "author": "Laura Sánchez",
+        "role": "Directora General"
+      },
+      {
+        "quote": "En un momento difícil de mi vida, encontré en este bufete no solo excelentes abogados, sino también personas que me apoyaron y guiaron en todo el proceso.",
+        "author": "Carlos Martín",
+        "role": "Empresario"
+      }
+    ],
+    "contact": {
+      "email": "info@bufetemartinez.com"
+    }
+  },
+  "features": [
+    "Colores oscuros y elegantes",
+    "Tipografía formal y profesional",
+    "Iconografía legal",
+    "Secciones de especialidades legales",
+    "Diseño premium con detalles dorados",
+    "Contenido específico para bufetes de abogados",
+    "Estructura de servicios legales completa",
+    "Testimonios de casos de éxito",
+    "Información de contacto profesional"
+  ],
+  "status": "active"
+}

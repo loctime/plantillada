@@ -8,7 +8,8 @@ import {
   Zap,
   ShoppingBag,
   Dumbbell,
-  Sparkles
+  Sparkles,
+  Brain
 } from "lucide-react"
 import { Config } from "./config-loader"
 
@@ -144,100 +145,174 @@ export const landingDesigns: Design[] = [
     icon: <Scale className="h-6 w-6" />,
     category: 'landing',
     colorScheme: {
-      primary: '#1f2937',
-      secondary: '#6b7280',
-      accent: '#dc2626'
+      primary: '#1a1a1a',
+      secondary: '#8b8b8b',
+      accent: '#d4af37'
     },
     features: [
       'Colores oscuros y elegantes',
-      'Tipografía formal',
+      'Tipografía formal y profesional',
       'Iconografía legal',
-      'Secciones de especialidades'
+      'Secciones de especialidades legales',
+      'Diseño premium con detalles dorados'
     ],
     status: 'active',
     cssVariables: {
-      '--primary': '#1f2937',
-      '--secondary': '#6b7280',
-      '--accent': '#dc2626',
-      '--font-family': 'Times New Roman, serif'
+      '--primary': '#1a1a1a',
+      '--secondary': '#8b8b8b',
+      '--accent': '#d4af37',
+      '--font-family': 'Georgia, "Times New Roman", serif',
+      '--heading-font': 'Georgia, "Times New Roman", serif',
+      '--body-font': 'Georgia, "Times New Roman", serif'
     },
     predefinedConfig: {
       site: {
-        title: "Bufete de Abogados",
-        tagline: "Defendemos tus derechos con profesionalidad y compromiso",
-        heroTitle: "Justicia y excelencia legal a tu servicio",
-        heroSubtitle: "Especialistas en derecho civil, mercantil y laboral con más de 20 años de experiencia",
+        title: "Bufete de Abogados Martínez & Asociados",
+        tagline: "Excelencia legal y compromiso con la justicia desde 1995",
+        heroTitle: "Defendemos tus derechos con la máxima profesionalidad",
+        heroSubtitle: "Más de 25 años de experiencia en derecho civil, mercantil, laboral y penal. Tu confianza es nuestra responsabilidad.",
         sessionsTitle: "Nuestras Especialidades",
-        sessionsSubtitle: "Servicios legales integrales para particulares y empresas",
+        sessionsSubtitle: "Servicios legales integrales con la más alta calidad profesional",
         aboutTitle: "Nuestro Bufete",
         testimonialsTitle: "Casos de Éxito",
-        testimonialsSubtitle: "Testimonios de clientes satisfechos",
-        ctaTitle: "¿Necesitas asesoramiento legal?",
-        ctaSubtitle: "Consulta inicial gratuita"
+        testimonialsSubtitle: "Testimonios de clientes que confiaron en nosotros",
+        ctaTitle: "¿Necesitas asesoramiento legal experto?",
+        ctaSubtitle: "Primera consulta gratuita y confidencial",
+        showPrices: false
+      },
+      theme: {
+        light: {
+          backgroundColor: '#f8f9fa',
+          sectionBackground: '#ffffff',
+          navbarBackground: '#1a1a1a',
+          textColor: '#2c3e50',
+          accentColor: '#d4af37',
+          primaryButtonColor: '#1a1a1a',
+          secondaryButtonColor: '#8b8b8b',
+          outlineButtonColor: '#d4af37'
+        },
+        dark: {
+          backgroundColor: '#1a1a1a',
+          sectionBackground: '#2d2d2d',
+          navbarBackground: '#000000',
+          textColor: '#ffffff',
+          accentColor: '#d4af37',
+          primaryButtonColor: '#d4af37',
+          secondaryButtonColor: '#8b8b8b',
+          outlineButtonColor: '#ffffff'
+        }
       },
       sessions: [
         {
           id: "derecho-civil",
           name: "Derecho Civil",
-          summary: "Asesoramiento en contratos, herencias y responsabilidad civil",
-          duration: "Según complejidad",
-          price: "Desde €150",
+          summary: "Asesoramiento integral en contratos, herencias, responsabilidad civil y derecho de familia",
+          duration: "Según complejidad del caso",
+          price: "Desde €200",
           features: [
-            "Contratos y acuerdos",
+            "Contratos y acuerdos comerciales",
             "Herencias y sucesiones",
-            "Responsabilidad civil",
-            "Derecho de familia"
+            "Responsabilidad civil y daños",
+            "Derecho de familia y divorcios",
+            "Propiedad horizontal",
+            "Arrendamientos urbanos"
           ],
-          hotmartUrl: "https://pay.hotmart.com/DERECHO_CIVIL"
+          hotmartUrl: "https://pay.hotmart.com/DERECHO_CIVIL",
+          showPrice: false
+        },
+        {
+          id: "derecho-mercantil",
+          name: "Derecho Mercantil",
+          summary: "Asesoramiento empresarial y corporativo para empresas de todos los tamaños",
+          duration: "Servicio continuo",
+          price: "Desde €300/mes",
+          features: [
+            "Constitución de sociedades",
+            "Contratos comerciales",
+            "Fusiones y adquisiciones",
+            "Derecho societario",
+            "Concurrencia desleal",
+            "Propiedad intelectual"
+          ],
+          hotmartUrl: "https://pay.hotmart.com/DERECHO_MERCANTIL",
+          showPrice: false
         },
         {
           id: "derecho-laboral",
           name: "Derecho Laboral",
-          summary: "Defensa de derechos laborales y asesoramiento empresarial",
+          summary: "Defensa de derechos laborales y asesoramiento en relaciones de trabajo",
           duration: "Según caso",
-          price: "Desde €200",
+          price: "Desde €250",
           features: [
-            "Despidos y conflictos",
+            "Despidos y conflictos laborales",
             "Negociaciones colectivas",
-            "Prevención de riesgos",
-            "Auditorías laborales"
+            "Prevención de riesgos laborales",
+            "Auditorías laborales",
+            "Convenios colectivos",
+            "Accidentes de trabajo"
           ],
-          hotmartUrl: "https://pay.hotmart.com/DERECHO_LABORAL"
+          hotmartUrl: "https://pay.hotmart.com/DERECHO_LABORAL",
+          showPrice: false
+        },
+        {
+          id: "derecho-penal",
+          name: "Derecho Penal",
+          summary: "Defensa penal especializada con amplia experiencia en tribunales",
+          duration: "Según proceso",
+          price: "Desde €500",
+          features: [
+            "Defensa en juicios penales",
+            "Delitos económicos",
+            "Delitos contra la propiedad",
+            "Delitos contra las personas",
+            "Recursos penales",
+            "Medidas cautelares"
+          ],
+          hotmartUrl: "https://pay.hotmart.com/DERECHO_PENAL",
+          showPrice: false
         }
       ],
       course: {
-        title: "Curso: Derecho para Emprendedores",
-        blurb: "Conoce los aspectos legales fundamentales para proteger tu negocio",
-        price: "€399",
-        hotmartUrl: "https://pay.hotmart.com/CURSO_DERECHO",
+        title: "Curso: Fundamentos Legales para Empresarios",
+        blurb: "Conoce los aspectos legales fundamentales para proteger tu negocio y evitar conflictos jurídicos",
+        price: "€599",
+        hotmartUrl: "https://pay.hotmart.com/CURSO_DERECHO_EMPRESARIAL",
         videoUrl: "",
         bullets: [
-          "Formas jurídicas de empresa",
-          "Contratos comerciales",
-          "Protección de datos",
-          "Aspectos laborales"
-        ]
+          "Formas jurídicas de empresa y sus implicaciones",
+          "Contratos comerciales y cláusulas esenciales",
+          "Protección de datos y RGPD",
+          "Aspectos laborales básicos",
+          "Propiedad intelectual y marcas",
+          "Responsabilidad civil empresarial"
+        ],
+        showPrice: false
       },
       about: {
         photoUrl: "/placeholder.svg?height=520&width=420",
         videoUrl: "",
-        story: "Nuestro bufete cuenta con un equipo de abogados especializados en diferentes áreas del derecho, comprometidos con la excelencia y la defensa de los derechos de nuestros clientes.",
-        whyMe: "Hemos resuelto exitosamente más de 1000 casos, manteniendo la confidencialidad y profesionalidad que caracteriza a nuestro bufete."
+        story: "Fundado en 1995, nuestro bufete se ha consolidado como una referencia en el sector legal, combinando la tradición jurídica con las últimas innovaciones en el campo del derecho. Nuestro equipo de abogados especializados trabaja con dedicación para ofrecer soluciones legales efectivas y personalizadas.",
+        whyMe: "Hemos resuelto exitosamente más de 2.500 casos, manteniendo la confidencialidad, profesionalidad y excelencia que caracteriza a nuestro bufete. Nuestro compromiso es defender los derechos de nuestros clientes con la máxima eficacia."
       },
       testimonials: [
         {
-          quote: "Excelente trabajo en mi caso de despido. Recuperé mi empleo y una indemnización justa.",
-          author: "Miguel R.",
-          role: "Ingeniero"
+          quote: "Excelente trabajo en mi caso de despido improcedente. No solo recuperé mi empleo, sino que obtuve una indemnización justa. Profesionalidad y resultados excepcionales.",
+          author: "Miguel Rodríguez",
+          role: "Ingeniero Industrial"
         },
         {
-          quote: "Profesionalidad y resultados excepcionales. Recomendados 100%.",
-          author: "Laura S.",
-          role: "Empresaria"
+          quote: "Gracias a su asesoramiento, pudimos resolver un conflicto mercantil complejo de manera satisfactoria. Su experiencia y dedicación son inigualables.",
+          author: "Laura Sánchez",
+          role: "Directora General"
+        },
+        {
+          quote: "En un momento difícil de mi vida, encontré en este bufete no solo excelentes abogados, sino también personas que me apoyaron y guiaron en todo el proceso.",
+          author: "Carlos Martín",
+          role: "Empresario"
         }
       ],
       contact: {
-        email: "info@bufeteabogados.com"
+        email: "info@bufetemartinez.com"
       }
     }
   },
@@ -549,6 +624,184 @@ export const landingDesigns: Design[] = [
       ],
       contact: {
         email: "hola@tumarca.com"
+      }
+    }
+  },
+  {
+    id: 'psicologos',
+    name: 'Psicólogos',
+    description: 'Diseño profesional y confiable para psicólogos y terapeutas',
+    icon: <Brain className="h-6 w-6" />,
+    category: 'landing',
+    colorScheme: {
+      primary: '#6366f1',
+      secondary: '#64748b',
+      accent: '#8b5cf6'
+    },
+    features: [
+      'Colores púrpuras y azules',
+      'Tipografía serena y profesional',
+      'Iconografía terapéutica',
+      'Secciones de especialidades',
+      'Diseño que transmite confianza'
+    ],
+    status: 'active',
+    cssVariables: {
+      '--primary': '#6366f1',
+      '--secondary': '#64748b',
+      '--accent': '#8b5cf6',
+      '--font-family': 'Inter, sans-serif',
+      '--heading-font': 'Inter, sans-serif',
+      '--body-font': 'Inter, sans-serif'
+    },
+    predefinedConfig: {
+      site: {
+        title: "Centro de Psicología Profesional",
+        tagline: "Acompañamiento terapéutico especializado para tu bienestar emocional",
+        heroTitle: "Tu bienestar emocional es nuestra prioridad",
+        heroSubtitle: "Ofrecemos terapia individual, de pareja y familiar con un enfoque profesional, empático y basado en evidencia científica",
+        sessionsTitle: "Nuestros Servicios",
+        sessionsSubtitle: "Especialidades terapéuticas adaptadas a tus necesidades",
+        aboutTitle: "Nuestro Centro",
+        testimonialsTitle: "Experiencias de Nuestros Pacientes",
+        testimonialsSubtitle: "Testimonios de personas que han encontrado bienestar con nosotros",
+        ctaTitle: "¿Necesitas apoyo psicológico?",
+        ctaSubtitle: "Primera consulta gratuita y confidencial",
+        showPrices: false
+      },
+      theme: {
+        light: {
+          backgroundColor: '#fafafa',
+          sectionBackground: '#ffffff',
+          navbarBackground: '#ffffff',
+          textColor: '#374151',
+          accentColor: '#8b5cf6',
+          primaryButtonColor: '#6366f1',
+          secondaryButtonColor: '#64748b',
+          outlineButtonColor: '#8b5cf6'
+        },
+        dark: {
+          backgroundColor: '#111827',
+          sectionBackground: '#1f2937',
+          navbarBackground: '#111827',
+          textColor: '#f9fafb',
+          accentColor: '#8b5cf6',
+          primaryButtonColor: '#6366f1',
+          secondaryButtonColor: '#64748b',
+          outlineButtonColor: '#a78bfa'
+        }
+      },
+      sessions: [
+        {
+          id: "terapia-individual",
+          name: "Terapia Individual",
+          summary: "Proceso terapéutico personalizado para abordar tus necesidades específicas",
+          duration: "50 minutos",
+          price: "Desde €60",
+          features: [
+            "Evaluación inicial completa",
+            "Plan de tratamiento personalizado",
+            "Técnicas basadas en evidencia",
+            "Seguimiento del progreso",
+            "Confidencialidad total",
+            "Flexibilidad horaria"
+          ],
+          hotmartUrl: "https://pay.hotmart.com/TERAPIA_INDIVIDUAL",
+          showPrice: false
+        },
+        {
+          id: "terapia-pareja",
+          name: "Terapia de Pareja",
+          summary: "Acompañamiento especializado para mejorar la comunicación y resolver conflictos",
+          duration: "80 minutos",
+          price: "Desde €80",
+          features: [
+            "Análisis de dinámicas de pareja",
+            "Técnicas de comunicación efectiva",
+            "Resolución de conflictos",
+            "Fortalecimiento del vínculo",
+            "Sesiones individuales incluidas",
+            "Seguimiento conjunto"
+          ],
+          hotmartUrl: "https://pay.hotmart.com/TERAPIA_PAREJA",
+          showPrice: false
+        },
+        {
+          id: "terapia-familiar",
+          name: "Terapia Familiar",
+          summary: "Intervención sistémica para mejorar las relaciones familiares",
+          duration: "90 minutos",
+          price: "Desde €90",
+          features: [
+            "Análisis del sistema familiar",
+            "Mejora de la comunicación",
+            "Resolución de conflictos",
+            "Establecimiento de límites",
+            "Sesiones individuales incluidas",
+            "Seguimiento familiar"
+          ],
+          hotmartUrl: "https://pay.hotmart.com/TERAPIA_FAMILIAR",
+          showPrice: false
+        },
+        {
+          id: "evaluacion-psicologica",
+          name: "Evaluación Psicológica",
+          summary: "Evaluación completa para diagnóstico y planificación terapéutica",
+          duration: "120 minutos",
+          price: "Desde €150",
+          features: [
+            "Entrevista clínica detallada",
+            "Aplicación de pruebas estandarizadas",
+            "Informe psicológico completo",
+            "Recomendaciones terapéuticas",
+            "Sesión de devolución incluida",
+            "Informe por escrito"
+          ],
+          hotmartUrl: "https://pay.hotmart.com/EVALUACION_PSICOLOGICA",
+          showPrice: false
+        }
+      ],
+      course: {
+        title: "Taller Online: Gestión del Estrés y Ansiedad",
+        blurb: "Aprende técnicas prácticas para manejar el estrés y la ansiedad en tu vida diaria",
+        price: "€89",
+        hotmartUrl: "https://pay.hotmart.com/TALLER_ESTRES_ANSIEDAD",
+        videoUrl: "",
+        bullets: [
+          "Técnicas de respiración y relajación",
+          "Herramientas de mindfulness",
+          "Estrategias cognitivo-conductuales",
+          "Plan personalizado de gestión",
+          "Material descargable",
+          "Soporte durante 30 días"
+        ],
+        showPrice: false
+      },
+      about: {
+        photoUrl: "/placeholder.svg?height=520&width=420",
+        videoUrl: "",
+        story: "Somos un equipo de psicólogos especializados con amplia experiencia en diferentes enfoques terapéuticos. Nuestro compromiso es proporcionar un espacio seguro, confidencial y profesional donde puedas encontrar el apoyo necesario para superar tus dificultades y alcanzar tu bienestar emocional.",
+        whyMe: "Hemos ayudado a más de 1.000 personas a mejorar su calidad de vida a través de la terapia. Nuestro enfoque se basa en la evidencia científica y se adapta a las necesidades individuales de cada persona."
+      },
+      testimonials: [
+        {
+          quote: "Gracias a la terapia individual, pude superar mi ansiedad y recuperar la confianza en mí misma. El proceso fue transformador y me siento mucho mejor.",
+          author: "Ana Martínez",
+          role: "Paciente"
+        },
+        {
+          quote: "La terapia de pareja nos ayudó a mejorar nuestra comunicación y resolver conflictos que llevábamos arrastrando años. Ahora nuestra relación es mucho más sólida.",
+          author: "Carlos y Laura",
+          role: "Pareja"
+        },
+        {
+          quote: "El taller de gestión del estrés me dio herramientas prácticas que uso todos los días. Ha cambiado completamente mi forma de manejar las situaciones difíciles.",
+          author: "Miguel Rodríguez",
+          role: "Participante del taller"
+        }
+      ],
+      contact: {
+        email: "info@centropsicologia.com"
       }
     }
   }

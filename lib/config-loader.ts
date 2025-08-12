@@ -31,6 +31,7 @@ export interface Config {
     testimonialsSubtitle?: string
     ctaTitle?: string
     ctaSubtitle?: string
+    showPrices?: boolean
   }
   selectedTemplates?: string[]
   selectedDesigns?: {[key: string]: string}
@@ -127,6 +128,7 @@ export interface Config {
     price: string
     features: string[]
     hotmartUrl: string
+    showPrice?: boolean
   }>
   course: {
     title: string
@@ -135,6 +137,7 @@ export interface Config {
     hotmartUrl: string
     videoUrl: string
     bullets: string[]
+    showPrice?: boolean
   }
   about: {
     photoUrl: string
@@ -240,71 +243,67 @@ export function getTenantId(): string {
   return hostname.replace(/[^a-zA-Z0-9]/g, '-')
 }
 
-// Función para cargar configuración desde Firestore (multi-tenant)
-export async function loadConfig(tenantId?: string, template?: string | null): Promise<Config> {
+// Función para cargar un diseño desde archivo JSON
+export async function loadDesignFromJson(designId: string): Promise<Config | null> {
   try {
-    const tenant = tenantId || getTenantId()
-    console.log('🔍 Cargando configuración para tenant:', tenant, 'template:', template)
+    console.log(`🎨 Cargando diseño desde JSON: ${designId}`)
     
-    // Si se especifica un template, usar una configuración específica para ese template
-    if (template) {
-      const templateConfig = getTemplateConfig(template, tenant)
-      console.log('📋 Usando configuración específica para template:', template)
-      return templateConfig
+    // Mapear IDs de diseño a nombres de archivo
+    const designFileMap: { [key: string]: string } = {
+      'estudio-abogados-premium': 'abogados-design.json',
+      'estudio-abogados': 'abogados-design.json'
     }
     
-    const configDoc = doc(db, 'config', tenant)
-    const configSnapshot = await getDoc(configDoc)
-    
-    if (configSnapshot.exists()) {
-      const data = configSnapshot.data()
-      
-      // Si los datos están en el campo 'data' como string JSON
-      if (data.data && typeof data.data === 'string') {
-        try {
-          const config = JSON.parse(data.data) as Config
-          // IMPORTANTE: No aplicar template automáticamente si hay configuración personalizada
-          // Solo aplicar template si se solicita explícitamente
-          if (template && config.currentTemplate) {
-            console.log('📋 Aplicando template solicitado:', template)
-            return getTemplateConfig(template, tenant)
-          }
-          // Si no hay template solicitado, devolver la configuración personalizada
-          console.log('✅ Cargando configuración personalizada guardada')
-          console.log('📋 Título cargado:', config.site?.title)
-          console.log('📋 Tagline cargada:', config.site?.tagline)
-          return config
-        } catch (parseError) {
-          console.error('Error parsing JSON from data field:', parseError)
-          console.error('🔍 Datos que causaron el error:', data.data)
-          // En lugar de devolver configuración por defecto, intentar usar los datos directamente
-          console.log('🔄 Intentando usar datos directamente...')
-          return data as Config
-        }
-      }
-      
-      // Si los datos están directamente en el documento
-      const config = data as Config
-      // IMPORTANTE: No aplicar template automáticamente si hay configuración personalizada
-      // Solo aplicar template si se solicita explícitamente
-      if (template && config.currentTemplate) {
-        console.log('📋 Aplicando template solicitado:', template)
-        return getTemplateConfig(template, tenant)
-      }
-      // Si no hay template solicitado, devolver la configuración personalizada
-      console.log('✅ Cargando configuración personalizada guardada')
-      return config
-    } else {
-      // Si no existe, crear configuración por defecto para este tenant
-      console.log('📝 Creando configuración por defecto para tenant:', tenant)
-      const defaultConfig = getDefaultConfig(tenant)
-      await saveConfig(defaultConfig, tenant)
-      return defaultConfig
+    const fileName = designFileMap[designId]
+    if (!fileName) {
+      console.log(`⚠️ No se encontró mapeo para el diseño: ${designId}`)
+      return null
     }
+    
+    // Cargar el archivo JSON usando fs en lugar de fetch para el servidor
+    const fs = require('fs')
+    const path = require('path')
+    
+    const filePath = path.join(process.cwd(), 'public', fileName)
+    console.log(`📄 Intentando cargar archivo: ${filePath}`)
+    
+    if (!fs.existsSync(filePath)) {
+      console.error(`❌ Archivo no encontrado: ${filePath}`)
+      return null
+    }
+    
+    const fileContent = fs.readFileSync(filePath, 'utf8')
+    const designData = JSON.parse(fileContent)
+    
+    console.log(`✅ Diseño cargado exitosamente: ${designData.name}`)
+    
+    // Convertir el diseño a formato Config
+    const config: Config = {
+      site: designData.config.site,
+      sessions: designData.config.sessions,
+      course: designData.config.course,
+      about: designData.config.about,
+      testimonials: designData.config.testimonials,
+      contact: designData.config.contact,
+      integrations: {
+        calendlyUrl: "https://calendly.com/tu-usuario/sesion",
+        hotmartBaseUrl: "https://pay.hotmart.com"
+      },
+      selectedTemplates: ['landing'],
+      selectedDesigns: {
+        landing: designId
+      },
+      theme: designData.theme,
+      legal: {
+        termsUrl: "",
+        privacyUrl: ""
+      }
+    }
+    
+    return config
   } catch (error) {
-    console.error('Error loading config from Firestore:', error)
-    // En caso de error, devolver configuración por defecto
-    return getDefaultConfig(tenantId || getTenantId())
+    console.error(`❌ Error cargando diseño ${designId}:`, error)
+    return null
   }
 }
 
@@ -583,64 +582,8 @@ function getTemplateConfig(templateId: string, tenantId: string): Config {
             reviews: 89,
             category: 'tablets',
             inStock: true,
-            description: 'iPad Mini compacto con chip A17, ideal para uso portátil.',
-            features: ['Chip A17 Pro', '8.3 pulgadas', '64GB', 'WiFi']
-          },
-          {
-            id: '3',
-            name: 'iPad Air M2',
-            brand: 'iPad',
-            price: 799.00,
-            originalPrice: 899.00,
-            image: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400&h=400&fit=crop',
-            rating: 4.7,
-            reviews: 156,
-            category: 'tablets',
-            inStock: true,
-            description: 'iPad Air con chip M2, potencia profesional en formato ligero.',
-            features: ['Chip M2', '10.9 pulgadas', '256GB', 'WiFi + Cellular']
-          },
-          {
-            id: '4',
-            name: 'NUBIA FLIP',
-            brand: 'Nubia',
-            price: 757.00,
-            originalPrice: 899.00,
-            image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&h=400&fit=crop',
-            rating: 4.2,
-            reviews: 67,
-            category: 'smartphones',
-            inStock: true,
-            description: 'Smartphone plegable con diseño innovador y tecnología avanzada.',
-            features: ['Pantalla plegable', '6.9 pulgadas', '256GB', '5G']
-          },
-          {
-            id: '5',
-            name: 'ROG PHONE 8',
-            brand: 'ASUS',
-            price: 1299.00,
-            originalPrice: 1499.00,
-            image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&h=400&fit=crop',
-            rating: 4.6,
-            reviews: 234,
-            category: 'gaming',
-            inStock: true,
-            description: 'Smartphone gaming con refrigeración líquida y rendimiento extremo.',
-            features: ['Snapdragon 8 Gen 3', '16GB RAM', '512GB', 'Gaming']
-          },
-          {
-            id: '6',
-            name: 'Nubia Red Magic 6',
-            brand: 'Nubia',
-            price: 757.00,
-            originalPrice: 899.00,
-            image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&h=400&fit=crop',
-            rating: 4.4,
-            reviews: 189,
-            category: 'gaming',
-            inStock: true,
-            description: 'Smartphone gaming con ventilador integrado y pantalla de alta frecuencia.',
-            features: ['Snapdragon 888', '12GB RAM', '256GB', '165Hz']
+            description: 'iPad Mini compacto con chip A17, ideal para portabilidad y productividad.',
+            features: ['Chip A17 Pro', '8.3 pulgadas', '64GB', 'WiFi + Cellular']
           }
         ]
       }
@@ -650,51 +593,96 @@ function getTemplateConfig(templateId: string, tenantId: string): Config {
         ...baseConfig,
         site: {
           ...baseConfig.site,
-          title: `${baseConfig.site.title} - Sitio Multi-Página`,
-          tagline: "Combinación de landing, tienda y otras secciones en un solo sitio"
+          title: `${baseConfig.site.title} - Multi Página`,
+          tagline: "Sitio web completo con múltiples páginas y navegación"
         },
         buttons: {
           heroButton: "Explorar",
-          sessionsButton: "Sesiones",
+          sessionsButton: "Servicios",
           courseButton: "Cursos",
           aboutButton: "Nosotros",
           ctaButton: "Contacto"
-        },
-        testimonials: [
-          ...baseConfig.testimonials,
-          {
-            quote: "El sitio multi-página me permite tener todo en un lugar.",
-            author: "Carlos R.",
-            role: "Emprendedor"
-          }
-        ]
-      }
-      
-    case 'forum':
-      return {
-        ...baseConfig,
-        site: {
-          ...baseConfig.site,
-          title: `${baseConfig.site.title} - Foro Comunitario`,
-          tagline: "Plataforma de discusión y comunidad con moderación"
-        },
-        buttons: {
-          heroButton: "Unirse al Foro",
-          sessionsButton: "Sesiones",
-          courseButton: "Cursos",
-          aboutButton: "Comunidad",
-          ctaButton: "Registrarse"
-        },
-        testimonials: [
-          {
-            quote: "La comunidad me ha ayudado mucho en mi crecimiento.",
-            author: "Ana L.",
-            role: "Miembro Activo"
-          }
-        ]
+        }
       }
       
     default:
       return baseConfig
+  }
+}
+
+// Función para cargar configuración desde Firestore (multi-tenant)
+export async function loadConfig(tenantId?: string, template?: string | null): Promise<Config> {
+  try {
+    const tenant = tenantId || getTenantId()
+    console.log('🔍 Cargando configuración para tenant:', tenant, 'template:', template)
+    
+    // Si se especifica un template, usar una configuración específica para ese template
+    if (template) {
+      // Verificar si es un diseño específico (como estudio-abogados-premium)
+      if (template.startsWith('estudio-') || template.includes('-design')) {
+        console.log('🎨 Detectado diseño específico, cargando desde JSON...')
+        const designConfig = await loadDesignFromJson(template)
+        if (designConfig) {
+          return designConfig
+        }
+      }
+      
+      const templateConfig = getTemplateConfig(template, tenant)
+      console.log('📋 Usando configuración específica para template:', template)
+      return templateConfig
+    }
+    
+    const configDoc = doc(db, 'config', tenant)
+    const configSnapshot = await getDoc(configDoc)
+    
+    if (configSnapshot.exists()) {
+      const data = configSnapshot.data()
+      
+      // Si los datos están en el campo 'data' como string JSON
+      if (data.data && typeof data.data === 'string') {
+        try {
+          const config = JSON.parse(data.data) as Config
+          // IMPORTANTE: No aplicar template automáticamente si hay configuración personalizada
+          // Solo aplicar template si se solicita explícitamente
+          if (template && config.currentTemplate) {
+            console.log('📋 Aplicando template solicitado:', template)
+            return getTemplateConfig(template, tenant)
+          }
+          // Si no hay template solicitado, devolver la configuración personalizada
+          console.log('✅ Cargando configuración personalizada guardada')
+          console.log('📋 Título cargado:', config.site?.title)
+          console.log('📋 Tagline cargada:', config.site?.tagline)
+          return config
+        } catch (parseError) {
+          console.error('Error parsing JSON from data field:', parseError)
+          console.error('🔍 Datos que causaron el error:', data.data)
+          // En lugar de devolver configuración por defecto, intentar usar los datos directamente
+          console.log('🔄 Intentando usar datos directamente...')
+          return data as Config
+        }
+      }
+      
+      // Si los datos están directamente en el documento
+      const config = data as Config
+      // IMPORTANTE: No aplicar template automáticamente si hay configuración personalizada
+      // Solo aplicar template si se solicita explícitamente
+      if (template && config.currentTemplate) {
+        console.log('📋 Aplicando template solicitado:', template)
+        return getTemplateConfig(template, tenant)
+      }
+      // Si no hay template solicitado, devolver la configuración personalizada
+      console.log('✅ Cargando configuración personalizada guardada')
+      return config
+    } else {
+      // Si no existe, crear configuración por defecto para este tenant
+      console.log('📝 Creando configuración por defecto para tenant:', tenant)
+      const defaultConfig = getDefaultConfig(tenant)
+      await saveConfig(defaultConfig, tenant)
+      return defaultConfig
+    }
+  } catch (error) {
+    console.error('Error loading config from Firestore:', error)
+    // En caso de error, devolver configuración por defecto
+    return getDefaultConfig(tenantId || getTenantId())
   }
 }

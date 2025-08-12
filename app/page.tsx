@@ -396,17 +396,21 @@ function Sessions() {
                 />
               </div>
               <div className="flex items-baseline gap-2 mt-4">
-                <EditableText
-                  value={session.price}
-                  onSave={(newValue) => {
-                    const newSessions = [...config.sessions]
-                    newSessions[index] = { ...session, price: newValue }
-                    updateConfig({ sessions: newSessions })
-                  }}
-                  className="text-3xl font-bold"
-                  tag="span"
-                />
-                <span className="text-sm text-muted-foreground">· </span>
+                {(config.site?.showPrices !== false && session.showPrice !== false) && (
+                  <>
+                    <EditableText
+                      value={session.price}
+                      onSave={(newValue) => {
+                        const newSessions = [...config.sessions]
+                        newSessions[index] = { ...session, price: newValue }
+                        updateConfig({ sessions: newSessions })
+                      }}
+                      className="text-3xl font-bold"
+                      tag="span"
+                    />
+                    <span className="text-sm text-muted-foreground">· </span>
+                  </>
+                )}
                 <EditableText
                   value={session.duration}
                   onSave={(newValue) => {
@@ -500,15 +504,17 @@ function Course() {
             onSave={(newBullets) => updateConfig({ course: { ...course, bullets: newBullets } })}
             className="grid gap-2"
           />
-          <div className="flex items-baseline gap-2">
-            <EditableText
-              value={course.price}
-              onSave={(newValue) => updateConfig({ course: { ...course, price: newValue } })}
-              className="text-3xl font-bold"
-              tag="span"
-            />
-            <span className="text-sm text-muted-foreground">Acceso completo</span>
-          </div>
+          {(config.site?.showPrices !== false && course.showPrice !== false) && (
+            <div className="flex items-baseline gap-2">
+              <EditableText
+                value={course.price}
+                onSave={(newValue) => updateConfig({ course: { ...course, price: newValue } })}
+                className="text-3xl font-bold"
+                tag="span"
+              />
+              <span className="text-sm text-muted-foreground">Acceso completo</span>
+            </div>
+          )}
           <div className="flex flex-col sm:flex-row gap-3">
             <EditableUrl
               value={course.hotmartUrl}

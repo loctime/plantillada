@@ -1,0 +1,162 @@
+{
+  "site": {
+    "title": "Centro de Psicología Profesional",
+    "tagline": "Acompañamiento terapéutico especializado para tu bienestar emocional",
+    "heroTitle": "Tu bienestar emocional es nuestra prioridad",
+    "heroSubtitle": "Ofrecemos terapia individual, de pareja y familiar con un enfoque profesional, empático y basado en evidencia científica",
+    "sessionsTitle": "Nuestros Servicios",
+    "sessionsSubtitle": "Especialidades terapéuticas adaptadas a tus necesidades",
+    "aboutTitle": "Nuestro Centro",
+    "testimonialsTitle": "Experiencias de Nuestros Pacientes",
+    "testimonialsSubtitle": "Testimonios de personas que han encontrado bienestar con nosotros",
+    "ctaTitle": "¿Necesitas apoyo psicológico?",
+    "ctaSubtitle": "Primera consulta gratuita y confidencial",
+    "showPrices": false
+  },
+  "selectedTemplates": ["psicologos"],
+  "selectedDesigns": {
+    "psicologos": "psicologos"
+  },
+  "integrations": {
+    "calendlyUrl": "https://calendly.com/tu-psicologo/consulta-gratuita",
+    "hotmartBaseUrl": "https://pay.hotmart.com"
+  },
+  "theme": {
+    "light": {
+      "backgroundColor": "#fafafa",
+      "sectionBackground": "#ffffff",
+      "navbarBackground": "#ffffff",
+      "textColor": "#374151",
+      "accentColor": "#8b5cf6",
+      "primaryButtonColor": "#6366f1",
+      "secondaryButtonColor": "#64748b",
+      "outlineButtonColor": "#8b5cf6"
+    },
+    "dark": {
+      "backgroundColor": "#111827",
+      "sectionBackground": "#1f2937",
+      "navbarBackground": "#111827",
+      "textColor": "#f9fafb",
+      "accentColor": "#8b5cf6",
+      "primaryButtonColor": "#6366f1",
+      "secondaryButtonColor": "#64748b",
+      "outlineButtonColor": "#a78bfa"
+    }
+  },
+  "sessions": [
+    {
+      "id": "terapia-individual",
+      "name": "Terapia Individual",
+      "summary": "Proceso terapéutico personalizado para abordar tus necesidades específicas",
+      "duration": "50 minutos",
+      "price": "Desde €60",
+      "features": [
+        "Evaluación inicial completa",
+        "Plan de tratamiento personalizado",
+        "Técnicas basadas en evidencia",
+        "Seguimiento del progreso",
+        "Confidencialidad total",
+        "Flexibilidad horaria"
+      ],
+      "hotmartUrl": "https://pay.hotmart.com/TERAPIA_INDIVIDUAL",
+      "showPrice": false
+    },
+    {
+      "id": "terapia-pareja",
+      "name": "Terapia de Pareja",
+      "summary": "Acompañamiento especializado para mejorar la comunicación y resolver conflictos",
+      "duration": "80 minutos",
+      "price": "Desde €80",
+      "features": [
+        "Análisis de dinámicas de pareja",
+        "Técnicas de comunicación efectiva",
+        "Resolución de conflictos",
+        "Fortalecimiento del vínculo",
+        "Sesiones individuales incluidas",
+        "Seguimiento conjunto"
+      ],
+      "hotmartUrl": "https://pay.hotmart.com/TERAPIA_PAREJA",
+      "showPrice": false
+    },
+    {
+      "id": "terapia-familiar",
+      "name": "Terapia Familiar",
+      "summary": "Intervención sistémica para mejorar las relaciones familiares",
+      "duration": "90 minutos",
+      "price": "Desde €90",
+      "features": [
+        "Análisis del sistema familiar",
+        "Mejora de la comunicación",
+        "Resolución de conflictos",
+        "Establecimiento de límites",
+        "Sesiones individuales incluidas",
+        "Seguimiento familiar"
+      ],
+      "hotmartUrl": "https://pay.hotmart.com/TERAPIA_FAMILIAR",
+      "showPrice": false
+    },
+    {
+      "id": "evaluacion-psicologica",
+      "name": "Evaluación Psicológica",
+      "summary": "Evaluación completa para diagnóstico y planificación terapéutica",
+      "duration": "120 minutos",
+      "price": "Desde €150",
+      "features": [
+        "Entrevista clínica detallada",
+        "Aplicación de pruebas estandarizadas",
+        "Informe psicológico completo",
+        "Recomendaciones terapéuticas",
+        "Sesión de devolución incluida",
+        "Informe por escrito"
+      ],
+      "hotmartUrl": "https://pay.hotmart.com/EVALUACION_PSICOLOGICA",
+      "showPrice": false
+    }
+  ],
+  "course": {
+    "title": "Taller Online: Gestión del Estrés y Ansiedad",
+    "blurb": "Aprende técnicas prácticas para manejar el estrés y la ansiedad en tu vida diaria",
+    "price": "€89",
+    "hotmartUrl": "https://pay.hotmart.com/TALLER_ESTRES_ANSIEDAD",
+    "videoUrl": "",
+    "bullets": [
+      "Técnicas de respiración y relajación",
+      "Herramientas de mindfulness",
+      "Estrategias cognitivo-conductuales",
+      "Plan personalizado de gestión",
+      "Material descargable",
+      "Soporte durante 30 días"
+    ],
+    "showPrice": false
+  },
+  "about": {
+    "photoUrl": "/placeholder.svg?height=520&width=420",
+    "videoUrl": "",
+    "story": "Somos un equipo de psicólogos especializados con amplia experiencia en diferentes enfoques terapéuticos. Nuestro compromiso es proporcionar un espacio seguro, confidencial y profesional donde puedas encontrar el apoyo necesario para superar tus dificultades y alcanzar tu bienestar emocional.",
+    "whyMe": "Hemos ayudado a más de 1.000 personas a mejorar su calidad de vida a través de la terapia. Nuestro enfoque se basa en la evidencia científica y se adapta a las necesidades individuales de cada persona."
+  },
+  "testimonials": [
+    {
+      "quote": "Gracias a la terapia individual, pude superar mi ansiedad y recuperar la confianza en mí misma. El proceso fue transformador y me siento mucho mejor.",
+      "author": "Ana Martínez",
+      "role": "Paciente"
+    },
+    {
+      "quote": "La terapia de pareja nos ayudó a mejorar nuestra comunicación y resolver conflictos que llevábamos arrastrando años. Ahora nuestra relación es mucho más sólida.",
+      "author": "Carlos y Laura",
+      "role": "Pareja"
+    },
+    {
+      "quote": "El taller de gestión del estrés me dio herramientas prácticas que uso todos los días. Ha cambiado completamente mi forma de manejar las situaciones difíciles.",
+      "author": "Miguel Rodríguez",
+      "role": "Participante del taller"
+    }
+  ],
+  "contact": {
+    "email": "info@centropsicologia.com"
+  },
+  "legal": {
+    "termsUrl": "",
+    "privacyUrl": ""
+  }
+}
