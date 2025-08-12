@@ -23,6 +23,8 @@ import { AdminDebug } from "@/components/admin-debug"
 import { ThemeSwitch } from "@/components/theme-switch"
 import { DynamicNavigation } from "@/components/dynamic-navigation"
 import { ButtonManager, ButtonConfig } from "@/components/button-manager"
+import { DraggableButtonManager } from "@/components/draggable-button-manager"
+import { GlobalButtonManager } from "@/components/global-button-manager"
 import { ButtonInfo } from "@/components/button-info"
 
 export default function Page() {
@@ -182,6 +184,23 @@ function PageContent() {
       <Header />
       <main className="flex-1">
         <ButtonInfo />
+        <GlobalButtonManager 
+          buttons={[
+            ...(config.buttons?.heroButtons || []).map(button => ({ ...button, section: 'hero' })),
+            ...(config.buttons?.aboutButtons || []).map(button => ({ ...button, section: 'about' }))
+          ]}
+          onButtonsChange={(newButtons) => {
+            const heroButtons = newButtons.filter(button => button.section === 'hero')
+            const aboutButtons = newButtons.filter(button => button.section === 'about')
+            updateConfig({ 
+              buttons: { 
+                ...config.buttons, 
+                heroButtons,
+                aboutButtons
+              } 
+            })
+          }}
+        />
         <SectionManager 
           sections={sections}
           onSectionsChange={handleSectionsChange}
@@ -285,15 +304,25 @@ function Hero() {
             multiline
           />
           {/* Gestión de botones del Hero */}
-          <ButtonManager
-            buttons={config.buttons?.heroButtons || []}
+          <DraggableButtonManager
+            buttons={(config.buttons?.heroButtons || []).map(button => ({
+              ...button,
+              section: 'hero'
+            }))}
             onButtonsChange={(newButtons) => updateConfig({ 
               buttons: { 
                 ...config.buttons, 
-                heroButtons: newButtons 
+                heroButtons: newButtons.filter(button => button.section === 'hero')
               } 
             })}
-            sectionId="hero"
+            currentSection="hero"
+            availableSections={[
+              { id: 'hero', name: 'Hero (Inicio)' },
+              { id: 'sesiones', name: 'Sesiones' },
+              { id: 'curso', name: 'Curso Online' },
+              { id: 'testimonios', name: 'Testimonios' },
+              { id: 'contacto', name: 'Contacto' }
+            ]}
           />
           
           {/* Botones legacy (para compatibilidad) */}
@@ -581,20 +610,45 @@ function About() {
               multiline
             />
           </div>
-          <div className="flex flex-wrap gap-3">
-            <ScheduleButton
-              url={config.integrations.calendlyUrl}
-              label={config.buttons?.aboutButton || "Agendar una sesión"}
-              onLabelChange={(newValue) => updateConfig({ buttons: { ...config.buttons, aboutButton: newValue } })}
-              className="custom-primary-button-bg hover:opacity-90 text-white"
-            />
-            <a
-              href="#sesiones"
-              className="inline-flex h-10 items-center justify-center rounded-md border bg-white px-6 text-sm font-medium shadow-sm hover:bg-accent custom-outline-button-bg custom-outline-button-text"
-            >
-              Ver sesiones 1:1
-            </a>
-          </div>
+          {/* Gestión de botones de About */}
+          <DraggableButtonManager
+            buttons={(config.buttons?.aboutButtons || []).map(button => ({
+              ...button,
+              section: 'about'
+            }))}
+            onButtonsChange={(newButtons) => updateConfig({ 
+              buttons: { 
+                ...config.buttons, 
+                aboutButtons: newButtons.filter(button => button.section === 'about')
+              } 
+            })}
+            currentSection="about"
+            availableSections={[
+              { id: 'hero', name: 'Hero (Inicio)' },
+              { id: 'sesiones', name: 'Sesiones' },
+              { id: 'curso', name: 'Curso Online' },
+              { id: 'testimonios', name: 'Testimonios' },
+              { id: 'contacto', name: 'Contacto' }
+            ]}
+          />
+          
+          {/* Botones legacy (para compatibilidad) */}
+          {(!config.buttons?.aboutButtons || config.buttons.aboutButtons.length === 0) && (
+            <div className="flex flex-wrap gap-3">
+              <ScheduleButton
+                url={config.integrations.calendlyUrl}
+                label={config.buttons?.aboutButton || "Agendar una sesión"}
+                onLabelChange={(newValue) => updateConfig({ buttons: { ...config.buttons, aboutButton: newValue } })}
+                className="custom-primary-button-bg hover:opacity-90 text-white"
+              />
+              <a
+                href="#sesiones"
+                className="inline-flex h-10 items-center justify-center rounded-md border bg-white px-6 text-sm font-medium shadow-sm hover:bg-accent custom-outline-button-bg custom-outline-button-text"
+              >
+                Ver sesiones 1:1
+              </a>
+            </div>
+          )}
         </div>
       </div>
     </section>

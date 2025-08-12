@@ -50,6 +50,18 @@ export interface Config {
       icon?: string
       order: number
     }>
+    aboutButtons?: Array<{
+      id: string
+      text: string
+      type: 'url' | 'section' | 'modal'
+      url?: string
+      sectionId?: string
+      modalTitle?: string
+      modalContent?: string
+      variant?: 'default' | 'outline' | 'secondary'
+      icon?: string
+      order: number
+    }>
   }
   integrations: {
     calendlyUrl: string
