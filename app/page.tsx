@@ -1,6 +1,6 @@
 "use client"
 
-import { Calendar, Check, Quote, ShoppingCart, Menu, X } from "lucide-react"
+import { Calendar, Check, Quote, ShoppingCart, Menu, X, Settings } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { ScheduleButton } from "@/components/schedule-dialog"
@@ -227,6 +227,15 @@ function Header() {
             onLabelChange={(newValue) => updateConfig({ buttons: { ...config.buttons, heroButton: newValue } })}
           />
           
+          {/* Enlace al Panel de Administración */}
+          <Link
+            href="/admin"
+            className="hidden md:flex items-center gap-2 px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <Settings className="h-4 w-4" />
+            Admin
+          </Link>
+          
           {/* Botón de menú móvil */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -247,6 +256,15 @@ function Header() {
         <div className="md:hidden border-t custom-bg">
           <div className="container px-4 py-4">
             <DynamicNavigation config={config} isMobile={true} />
+            <div className="mt-4 pt-4 border-t">
+              <Link
+                href="/admin"
+                className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <Settings className="h-4 w-4" />
+                Panel de Administración
+              </Link>
+            </div>
           </div>
         </div>
       )}

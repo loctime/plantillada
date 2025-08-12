@@ -18,6 +18,7 @@ import BackupManager from "@/components/backup-manager"
 import { PriceVisibilityToggle } from "@/components/price-visibility-toggle"
 import { useAdminAuth } from "@/hooks/use-admin-auth"
 import { useRouter } from "next/navigation"
+import { AdminLoginModal } from "@/components/admin-login-modal"
 
 interface FormData extends Config {}
 
@@ -265,20 +266,60 @@ export default function AdminPage() {
     })
   }
 
-  // Redirigir si no está autenticado
+  // Estado para mostrar el modal de login
+  const [showLoginModal, setShowLoginModal] = useState(false)
+  const [hasCheckedAuth, setHasCheckedAuth] = useState(false)
+  
   useEffect(() => {
-    if (!isAuthenticated) {
-      router.push('/')
-    }
-  }, [isAuthenticated, router])
+    // Esperar un poco para que useAdminAuth se inicialice completamente
+    const timer = setTimeout(() => {
+      setHasCheckedAuth(true)
+      if (!isAuthenticated) {
+        setShowLoginModal(true)
+      }
+    }, 500)
+    
+    return () => clearTimeout(timer)
+  }, [isAuthenticated])
 
-  if (!isAuthenticated) {
+  // Mostrar loading mientras se verifica la autenticación
+  if (!hasCheckedAuth) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600 mx-auto"></div>
           <p className="mt-2 text-muted-foreground">Verificando autenticación...</p>
         </div>
+      </div>
+    )
+  }
+
+  // Mostrar modal de login si no está autenticado
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="mb-4">
+            <Settings className="h-12 w-12 mx-auto text-gray-400" />
+          </div>
+          <h1 className="text-2xl font-bold mb-2">Panel de Administración</h1>
+          <p className="text-muted-foreground mb-6">Necesitas autenticarte para acceder al panel</p>
+          <button
+            onClick={() => setShowLoginModal(true)}
+            className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-md transition-colors"
+          >
+            Iniciar Sesión
+          </button>
+        </div>
+        
+        {/* Modal de login */}
+        {showLoginModal && (
+          <AdminLoginModal
+            isOpen={showLoginModal}
+            onClose={() => setShowLoginModal(false)}
+            onLoginSuccess={() => setShowLoginModal(false)}
+          />
+        )}
       </div>
     )
   }
