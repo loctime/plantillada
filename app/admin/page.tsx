@@ -88,6 +88,64 @@ export default function AdminPage() {
     legal: {
       termsUrl: "",
       privacyUrl: ""
+    },
+    linkHub: {
+      profile: {
+        name: "Tu Nombre",
+        bio: "Descripción personal o profesional. Comparte tu historia, pasiones o lo que haces.",
+        avatar: "/placeholder-user.jpg",
+        location: "Ciudad, País",
+        email: "tu@email.com",
+        phone: "+34 600 000 000"
+      },
+      links: [
+        {
+          id: "website",
+          title: "Mi Sitio Web",
+          url: "https://tusitio.com",
+          icon: "🌐",
+          category: "principal",
+          isActive: true
+        },
+        {
+          id: "portfolio",
+          title: "Portfolio",
+          url: "https://portfolio.com",
+          icon: "💼",
+          category: "trabajo",
+          isActive: true
+        },
+        {
+          id: "blog",
+          title: "Blog",
+          url: "https://blog.com",
+          icon: "✍️",
+          category: "contenido",
+          isActive: true
+        },
+        {
+          id: "contact",
+          title: "Contacto",
+          url: "mailto:tu@email.com",
+          icon: "📧",
+          category: "contacto",
+          isActive: true
+        }
+      ],
+      theme: {
+        primaryColor: "#8b5cf6",
+        backgroundColor: "#ffffff",
+        textColor: "#1f2937",
+        accentColor: "#f3f4f6"
+      },
+      social: {
+        instagram: "https://instagram.com/tuusuario",
+        twitter: "https://twitter.com/tuusuario",
+        linkedin: "https://linkedin.com/in/tuusuario",
+        youtube: "https://youtube.com/@tucanal",
+        facebook: "https://facebook.com/tupagina",
+        website: "https://tusitio.com"
+      }
     }
   })
 
@@ -369,6 +427,7 @@ export default function AdminPage() {
              <TabsTrigger value="course">Curso Online</TabsTrigger>
              <TabsTrigger value="about">Sobre Mí</TabsTrigger>
              <TabsTrigger value="testimonials">Testimonios</TabsTrigger>
+             <TabsTrigger value="linkhub">Link Hub</TabsTrigger>
              <TabsTrigger value="legal">Legal</TabsTrigger>
              <TabsTrigger value="backups">Backups</TabsTrigger>
            </TabsList>
@@ -868,6 +927,484 @@ export default function AdminPage() {
                  >
                    Agregar Nuevo Testimonio
                  </Button>
+               </CardContent>
+             </Card>
+           </TabsContent>
+
+           <TabsContent value="linkhub" className="space-y-6">
+             <Card>
+               <CardHeader>
+                 <CardTitle className="flex items-center gap-2">
+                   <Globe className="h-5 w-5" />
+                   Link Hub
+                 </CardTitle>
+                 <CardDescription>
+                   Configura tu concentrador de enlaces personales
+                 </CardDescription>
+               </CardHeader>
+               <CardContent className="space-y-6">
+                 {/* Perfil */}
+                 <div className="space-y-4">
+                   <h4 className="font-medium">Perfil</h4>
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                     <div className="space-y-2">
+                       <Label>Nombre</Label>
+                       <Input
+                         value={formData.linkHub?.profile?.name || ""}
+                         onChange={(e) => {
+                           setFormData({
+                             ...formData,
+                             linkHub: {
+                               ...formData.linkHub,
+                               profile: {
+                                 ...formData.linkHub?.profile,
+                                 name: e.target.value
+                               }
+                             }
+                           })
+                         }}
+                         placeholder="Tu nombre"
+                       />
+                     </div>
+                     <div className="space-y-2">
+                       <Label>Avatar URL</Label>
+                       <Input
+                         value={formData.linkHub?.profile?.avatar || ""}
+                         onChange={(e) => {
+                           setFormData({
+                             ...formData,
+                             linkHub: {
+                               ...formData.linkHub,
+                               profile: {
+                                 ...formData.linkHub?.profile,
+                                 avatar: e.target.value
+                               }
+                             }
+                           })
+                         }}
+                         placeholder="/placeholder-user.jpg"
+                       />
+                     </div>
+                   </div>
+                   <div className="space-y-2">
+                     <Label>Biografía</Label>
+                     <Textarea
+                       value={formData.linkHub?.profile?.bio || ""}
+                       onChange={(e) => {
+                         setFormData({
+                           ...formData,
+                           linkHub: {
+                             ...formData.linkHub,
+                             profile: {
+                               ...formData.linkHub?.profile,
+                               bio: e.target.value
+                             }
+                           }
+                         })
+                       }}
+                       placeholder="Descripción personal o profesional"
+                       rows={3}
+                     />
+                   </div>
+                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                     <div className="space-y-2">
+                       <Label>Ubicación</Label>
+                       <Input
+                         value={formData.linkHub?.profile?.location || ""}
+                         onChange={(e) => {
+                           setFormData({
+                             ...formData,
+                             linkHub: {
+                               ...formData.linkHub,
+                               profile: {
+                                 ...formData.linkHub?.profile,
+                                 location: e.target.value
+                               }
+                             }
+                           })
+                         }}
+                         placeholder="Ciudad, País"
+                       />
+                     </div>
+                     <div className="space-y-2">
+                       <Label>Email</Label>
+                       <Input
+                         value={formData.linkHub?.profile?.email || ""}
+                         onChange={(e) => {
+                           setFormData({
+                             ...formData,
+                             linkHub: {
+                               ...formData.linkHub,
+                               profile: {
+                                 ...formData.linkHub?.profile,
+                                 email: e.target.value
+                               }
+                             }
+                           })
+                         }}
+                         placeholder="tu@email.com"
+                       />
+                     </div>
+                     <div className="space-y-2">
+                       <Label>Teléfono</Label>
+                       <Input
+                         value={formData.linkHub?.profile?.phone || ""}
+                         onChange={(e) => {
+                           setFormData({
+                             ...formData,
+                             linkHub: {
+                               ...formData.linkHub,
+                               profile: {
+                                 ...formData.linkHub?.profile,
+                                 phone: e.target.value
+                               }
+                             }
+                           })
+                         }}
+                         placeholder="+34 600 000 000"
+                       />
+                     </div>
+                   </div>
+                 </div>
+
+                 <Separator />
+
+                 {/* Enlaces */}
+                 <div className="space-y-4">
+                   <div className="flex items-center justify-between">
+                     <h4 className="font-medium">Enlaces</h4>
+                     <Button
+                       variant="outline"
+                       size="sm"
+                       onClick={() => {
+                         const newLink = {
+                           id: `link-${Date.now()}`,
+                           title: "Nuevo Enlace",
+                           url: "https://ejemplo.com",
+                           icon: "🔗",
+                           category: "general",
+                           isActive: true
+                         }
+                         setFormData({
+                           ...formData,
+                           linkHub: {
+                             ...formData.linkHub,
+                             links: [...(formData.linkHub?.links || []), newLink]
+                           }
+                         })
+                       }}
+                     >
+                       Agregar Enlace
+                     </Button>
+                   </div>
+                   
+                   {(formData.linkHub?.links || []).map((link, index) => (
+                     <div key={link.id} className="border rounded-lg p-4 space-y-4">
+                       <div className="flex items-center justify-between">
+                         <h5 className="font-medium">Enlace {index + 1}</h5>
+                         <Button
+                           variant="outline"
+                           size="sm"
+                           onClick={() => {
+                             const newLinks = [...(formData.linkHub?.links || [])]
+                             newLinks.splice(index, 1)
+                             setFormData({
+                               ...formData,
+                               linkHub: {
+                                 ...formData.linkHub,
+                                 links: newLinks
+                               }
+                             })
+                           }}
+                         >
+                           Eliminar
+                         </Button>
+                       </div>
+                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                         <div className="space-y-2">
+                           <Label>Título</Label>
+                           <Input
+                             value={link.title}
+                             onChange={(e) => {
+                               const newLinks = [...(formData.linkHub?.links || [])]
+                               newLinks[index].title = e.target.value
+                               setFormData({
+                                 ...formData,
+                                 linkHub: {
+                                   ...formData.linkHub,
+                                   links: newLinks
+                                 }
+                               })
+                             }}
+                           />
+                         </div>
+                         <div className="space-y-2">
+                           <Label>URL</Label>
+                           <Input
+                             value={link.url}
+                             onChange={(e) => {
+                               const newLinks = [...(formData.linkHub?.links || [])]
+                               newLinks[index].url = e.target.value
+                               setFormData({
+                                 ...formData,
+                                 linkHub: {
+                                   ...formData.linkHub,
+                                   links: newLinks
+                                 }
+                               })
+                             }}
+                           />
+                         </div>
+                       </div>
+                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                         <div className="space-y-2">
+                           <Label>Icono (emoji)</Label>
+                           <Input
+                             value={link.icon || ""}
+                             onChange={(e) => {
+                               const newLinks = [...(formData.linkHub?.links || [])]
+                               newLinks[index].icon = e.target.value
+                               setFormData({
+                                 ...formData,
+                                 linkHub: {
+                                   ...formData.linkHub,
+                                   links: newLinks
+                                 }
+                               })
+                             }}
+                             placeholder="🔗"
+                           />
+                         </div>
+                         <div className="space-y-2">
+                           <Label>Categoría</Label>
+                           <Input
+                             value={link.category || ""}
+                             onChange={(e) => {
+                               const newLinks = [...(formData.linkHub?.links || [])]
+                               newLinks[index].category = e.target.value
+                               setFormData({
+                                 ...formData,
+                                 linkHub: {
+                                   ...formData.linkHub,
+                                   links: newLinks
+                                 }
+                               })
+                             }}
+                             placeholder="general"
+                           />
+                         </div>
+                       </div>
+                     </div>
+                   ))}
+                 </div>
+
+                 <Separator />
+
+                 {/* Redes Sociales */}
+                 <div className="space-y-4">
+                   <h4 className="font-medium">Redes Sociales</h4>
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                     <div className="space-y-2">
+                       <Label>Instagram</Label>
+                       <Input
+                         value={formData.linkHub?.social?.instagram || ""}
+                         onChange={(e) => {
+                           setFormData({
+                             ...formData,
+                             linkHub: {
+                               ...formData.linkHub,
+                               social: {
+                                 ...formData.linkHub?.social,
+                                 instagram: e.target.value
+                               }
+                             }
+                           })
+                         }}
+                         placeholder="https://instagram.com/tuusuario"
+                       />
+                     </div>
+                     <div className="space-y-2">
+                       <Label>Twitter</Label>
+                       <Input
+                         value={formData.linkHub?.social?.twitter || ""}
+                         onChange={(e) => {
+                           setFormData({
+                             ...formData,
+                             linkHub: {
+                               ...formData.linkHub,
+                               social: {
+                                 ...formData.linkHub?.social,
+                                 twitter: e.target.value
+                               }
+                             }
+                           })
+                         }}
+                         placeholder="https://twitter.com/tuusuario"
+                       />
+                     </div>
+                     <div className="space-y-2">
+                       <Label>LinkedIn</Label>
+                       <Input
+                         value={formData.linkHub?.social?.linkedin || ""}
+                         onChange={(e) => {
+                           setFormData({
+                             ...formData,
+                             linkHub: {
+                               ...formData.linkHub,
+                               social: {
+                                 ...formData.linkHub?.social,
+                                 linkedin: e.target.value
+                               }
+                             }
+                           })
+                         }}
+                         placeholder="https://linkedin.com/in/tuusuario"
+                       />
+                     </div>
+                     <div className="space-y-2">
+                       <Label>YouTube</Label>
+                       <Input
+                         value={formData.linkHub?.social?.youtube || ""}
+                         onChange={(e) => {
+                           setFormData({
+                             ...formData,
+                             linkHub: {
+                               ...formData.linkHub,
+                               social: {
+                                 ...formData.linkHub?.social,
+                                 youtube: e.target.value
+                               }
+                             }
+                           })
+                         }}
+                         placeholder="https://youtube.com/@tucanal"
+                       />
+                     </div>
+                     <div className="space-y-2">
+                       <Label>Facebook</Label>
+                       <Input
+                         value={formData.linkHub?.social?.facebook || ""}
+                         onChange={(e) => {
+                           setFormData({
+                             ...formData,
+                             linkHub: {
+                               ...formData.linkHub,
+                               social: {
+                                 ...formData.linkHub?.social,
+                                 facebook: e.target.value
+                               }
+                             }
+                           })
+                         }}
+                         placeholder="https://facebook.com/tupagina"
+                       />
+                     </div>
+                     <div className="space-y-2">
+                       <Label>Sitio Web</Label>
+                       <Input
+                         value={formData.linkHub?.social?.website || ""}
+                         onChange={(e) => {
+                           setFormData({
+                             ...formData,
+                             linkHub: {
+                               ...formData.linkHub,
+                               social: {
+                                 ...formData.linkHub?.social,
+                                 website: e.target.value
+                               }
+                             }
+                           })
+                         }}
+                         placeholder="https://tusitio.com"
+                       />
+                     </div>
+                   </div>
+                 </div>
+
+                 <Separator />
+
+                 {/* Tema */}
+                 <div className="space-y-4">
+                   <h4 className="font-medium">Tema</h4>
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                     <div className="space-y-2">
+                       <Label>Color Principal</Label>
+                       <Input
+                         type="color"
+                         value={formData.linkHub?.theme?.primaryColor || "#8b5cf6"}
+                         onChange={(e) => {
+                           setFormData({
+                             ...formData,
+                             linkHub: {
+                               ...formData.linkHub,
+                               theme: {
+                                 ...formData.linkHub?.theme,
+                                 primaryColor: e.target.value
+                               }
+                             }
+                           })
+                         }}
+                       />
+                     </div>
+                     <div className="space-y-2">
+                       <Label>Color de Fondo</Label>
+                       <Input
+                         type="color"
+                         value={formData.linkHub?.theme?.backgroundColor || "#ffffff"}
+                         onChange={(e) => {
+                           setFormData({
+                             ...formData,
+                             linkHub: {
+                               ...formData.linkHub,
+                               theme: {
+                                 ...formData.linkHub?.theme,
+                                 backgroundColor: e.target.value
+                               }
+                             }
+                           })
+                         }}
+                       />
+                     </div>
+                     <div className="space-y-2">
+                       <Label>Color de Texto</Label>
+                       <Input
+                         type="color"
+                         value={formData.linkHub?.theme?.textColor || "#1f2937"}
+                         onChange={(e) => {
+                           setFormData({
+                             ...formData,
+                             linkHub: {
+                               ...formData.linkHub,
+                               theme: {
+                                 ...formData.linkHub?.theme,
+                                 textColor: e.target.value
+                               }
+                             }
+                           })
+                         }}
+                       />
+                     </div>
+                     <div className="space-y-2">
+                       <Label>Color de Acento</Label>
+                       <Input
+                         type="color"
+                         value={formData.linkHub?.theme?.accentColor || "#f3f4f6"}
+                         onChange={(e) => {
+                           setFormData({
+                             ...formData,
+                             linkHub: {
+                               ...formData.linkHub,
+                               theme: {
+                                 ...formData.linkHub?.theme,
+                                 accentColor: e.target.value
+                               }
+                             }
+                           })
+                         }}
+                       />
+                     </div>
+                   </div>
+                 </div>
                </CardContent>
              </Card>
            </TabsContent>

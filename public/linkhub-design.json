@@ -1,0 +1,208 @@
+{
+  "site": {
+    "title": "Mi Link Hub",
+    "tagline": "Conecta conmigo en todas mis plataformas",
+    "heroTitle": "¡Hola! Soy",
+    "heroSubtitle": "Encuentra todos mis enlaces importantes en un solo lugar",
+    "sessionsTitle": "Enlaces Destacados",
+    "sessionsSubtitle": "Mis plataformas principales",
+    "aboutTitle": "Sobre Mí",
+    "testimonialsTitle": "Lo que dicen de mí",
+    "testimonialsSubtitle": "Testimonios y recomendaciones",
+    "ctaTitle": "¿Quieres conectar?",
+    "ctaSubtitle": "Encuéntrame en todas mis redes sociales",
+    "showPrices": false
+  },
+  "selectedTemplates": ["linkhub"],
+  "selectedDesigns": {
+    "linkhub": "linkhub"
+  },
+  "integrations": {
+    "calendlyUrl": "https://calendly.com/tu-usuario/consulta",
+    "hotmartBaseUrl": "https://pay.hotmart.com"
+  },
+  "theme": {
+    "light": {
+      "backgroundColor": "#f8fafc",
+      "sectionBackground": "#ffffff",
+      "navbarBackground": "#ffffff",
+      "textColor": "#1e293b",
+      "accentColor": "#f1f5f9",
+      "primaryButtonColor": "#8b5cf6",
+      "secondaryButtonColor": "#64748b",
+      "outlineButtonColor": "#8b5cf6",
+      "cardBackground": "#ffffff",
+      "cardForeground": "#1e293b",
+      "borderColor": "#e2e8f0",
+      "inputBackground": "#ffffff",
+      "ringColor": "#8b5cf6",
+      "headingColor": "#1e293b",
+      "subtitleColor": "#64748b",
+      "linkColor": "#8b5cf6",
+      "linkHoverColor": "#7c3aed",
+      "gradientStart": "#8b5cf6",
+      "gradientEnd": "#ec4899",
+      "gradientDirection": "to-br"
+    },
+    "dark": {
+      "backgroundColor": "#0f172a",
+      "sectionBackground": "#1e293b",
+      "navbarBackground": "#0f172a",
+      "textColor": "#f1f5f9",
+      "accentColor": "#334155",
+      "primaryButtonColor": "#a78bfa",
+      "secondaryButtonColor": "#64748b",
+      "outlineButtonColor": "#a78bfa",
+      "cardBackground": "#1e293b",
+      "cardForeground": "#f1f5f9",
+      "borderColor": "#334155",
+      "inputBackground": "#1e293b",
+      "ringColor": "#a78bfa",
+      "headingColor": "#f1f5f9",
+      "subtitleColor": "#94a3b8",
+      "linkColor": "#a78bfa",
+      "linkHoverColor": "#c4b5fd",
+      "gradientStart": "#a78bfa",
+      "gradientEnd": "#f472b6",
+      "gradientDirection": "to-br"
+    }
+  },
+  "linkHub": {
+    "profile": {
+      "name": "Tu Nombre",
+      "bio": "Creador de contenido, emprendedor y apasionado por conectar con personas increíbles. Comparto mi viaje y conocimientos en múltiples plataformas.",
+      "avatar": "/placeholder-user.jpg",
+      "location": "Madrid, España",
+      "email": "hola@tunombre.com",
+      "phone": "+34 600 000 000"
+    },
+    "links": [
+      {
+        "id": "website",
+        "title": "Mi Sitio Web",
+        "url": "https://tusitio.com",
+        "icon": "🌐",
+        "category": "principal",
+        "isActive": true
+      },
+      {
+        "id": "portfolio",
+        "title": "Portfolio",
+        "url": "https://portfolio.com",
+        "icon": "💼",
+        "category": "trabajo",
+        "isActive": true
+      },
+      {
+        "id": "blog",
+        "title": "Blog",
+        "url": "https://blog.com",
+        "icon": "✍️",
+        "category": "contenido",
+        "isActive": true
+      },
+      {
+        "id": "youtube",
+        "title": "YouTube",
+        "url": "https://youtube.com/@tucanal",
+        "icon": "📺",
+        "category": "social",
+        "isActive": true
+      },
+      {
+        "id": "podcast",
+        "title": "Mi Podcast",
+        "url": "https://spotify.com/show/tupodcast",
+        "icon": "🎧",
+        "category": "contenido",
+        "isActive": true
+      },
+      {
+        "id": "newsletter",
+        "title": "Newsletter",
+        "url": "https://tunewsletter.com",
+        "icon": "📧",
+        "category": "contenido",
+        "isActive": true
+      },
+      {
+        "id": "contact",
+        "title": "Contacto",
+        "url": "mailto:hola@tunombre.com",
+        "icon": "💬",
+        "category": "contacto",
+        "isActive": true
+      }
+    ],
+    "theme": {
+      "primaryColor": "#8b5cf6",
+      "backgroundColor": "#f8fafc",
+      "textColor": "#1e293b",
+      "accentColor": "#f1f5f9"
+    },
+    "social": {
+      "instagram": "https://instagram.com/tuusuario",
+      "twitter": "https://twitter.com/tuusuario",
+      "linkedin": "https://linkedin.com/in/tuusuario",
+      "youtube": "https://youtube.com/@tucanal",
+      "facebook": "https://facebook.com/tupagina",
+      "website": "https://tusitio.com"
+    }
+  },
+  "sessions": [
+    {
+      "id": "consulta-gratuita",
+      "name": "Consulta Gratuita",
+      "summary": "Agenda una sesión de 15 minutos para conocernos y ver cómo puedo ayudarte",
+      "duration": "15 min",
+      "price": "Gratis",
+      "features": [
+        "Sesión introductoria",
+        "Análisis de necesidades",
+        "Propuesta personalizada",
+        "Sin compromiso"
+      ],
+      "hotmartUrl": "https://calendly.com/tu-usuario/consulta-gratuita",
+      "showPrice": false
+    }
+  ],
+  "course": {
+    "title": "Guía Gratuita: Cómo Crear tu Link Hub",
+    "blurb": "Aprende a crear tu propio concentrador de enlaces profesional en menos de 30 minutos",
+    "price": "Gratis",
+    "hotmartUrl": "https://tunewsletter.com/linkhub-guide",
+    "videoUrl": "",
+    "bullets": [
+      "Paso a paso para crear tu Link Hub",
+      "Mejores prácticas de diseño",
+      "Herramientas recomendadas",
+      "Plantillas descargables"
+    ],
+    "showPrice": false
+  },
+  "about": {
+    "photoUrl": "/placeholder-user.jpg",
+    "videoUrl": "",
+    "story": "Soy un apasionado por conectar con personas increíbles y compartir conocimiento valioso. Mi misión es ayudar a otros a crecer y alcanzar sus objetivos.",
+    "whyMe": "Con años de experiencia en múltiples industrias, he aprendido la importancia de tener una presencia digital coherente y accesible."
+  },
+  "testimonials": [
+    {
+      "quote": "Su Link Hub me ayudó a organizar toda mi presencia digital de manera profesional.",
+      "author": "Ana M.",
+      "role": "Emprendedora"
+    },
+    {
+      "quote": "Gracias a su guía, ahora tengo un punto de acceso único para todos mis seguidores.",
+      "author": "Carlos R.",
+      "role": "Creador de Contenido"
+    }
+  ],
+  "contact": {
+    "email": "hola@tunombre.com"
+  },
+  "legal": {
+    "termsUrl": "",
+    "privacyUrl": ""
+  }
+}

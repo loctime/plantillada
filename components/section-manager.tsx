@@ -114,6 +114,38 @@ const SECTION_TYPES = [
         textColor: '#ffffff'
       }
     }
+  },
+  {
+    id: 'linkhub',
+    title: 'Link Hub',
+    description: 'Página de enlaces y perfil personal',
+    template: {
+      title: 'Link Hub',
+      description: 'Sección que muestra enlaces y perfil personal',
+      type: 'linkhub',
+      content: {
+        title: 'Mis Enlaces',
+        description: 'Encuentra todos mis enlaces importantes en un solo lugar',
+        backgroundColor: 'transparent',
+        textColor: 'inherit'
+      }
+    }
+  },
+  {
+    id: 'shop',
+    title: 'Tienda',
+    description: 'Catálogo de productos y carrito de compras',
+    template: {
+      title: 'Tienda',
+      description: 'Sección que muestra productos y permite compras',
+      type: 'shop',
+      content: {
+        title: 'Nuestra Tienda',
+        description: 'Descubre nuestros productos y servicios',
+        backgroundColor: 'transparent',
+        textColor: 'inherit'
+      }
+    }
   }
 ]
 
@@ -130,29 +162,60 @@ export function SectionManager({ sections, onSectionsChange, className }: Sectio
   })
 
   // Persistir cambios en la configuración
-  const persistSections = (updatedSections: Section[]) => {
-    // Aquí podrías guardar en Firebase o localStorage
-    // Por ahora, actualizamos el estado local
+  const persistSections = async (updatedSections: Section[]) => {
+    // Actualizar el estado local
     onSectionsChange(updatedSections)
     
-    // También podrías guardar en la configuración global
-    // if (updateConfig) {
-    //   updateConfig({ sections: updatedSections })
-    // }
+    // Guardar en localStorage
+    try {
+      localStorage.setItem('landing-sections', JSON.stringify(updatedSections))
+    } catch (error) {
+      console.warn('No se pudo guardar en localStorage:', error)
+    }
+    
+    // Guardar en la configuración global de Firebase
+    if (updateConfig) {
+      try {
+        // Obtener la configuración actual
+        const response = await fetch('/api/config')
+        if (response.ok) {
+          const currentConfig = await response.json()
+          
+          // Actualizar la configuración con las secciones
+          const updatedConfig = {
+            ...currentConfig,
+            sections: updatedSections.map(section => ({
+              id: section.id,
+              title: section.title,
+              visible: section.visible,
+              description: section.description,
+              type: section.type,
+              content: section.content
+            }))
+          }
+          
+          // Guardar en Firebase
+          await updateConfig(updatedConfig)
+          console.log('✅ Secciones guardadas en configuración global')
+        }
+      } catch (error) {
+        console.warn('No se pudo guardar en configuración global:', error)
+      }
+    }
   }
 
-  const toggleSectionVisibility = (sectionId: string) => {
+  const toggleSectionVisibility = async (sectionId: string) => {
     const updatedSections = sections.map(section =>
       section.id === sectionId 
         ? { ...section, visible: !section.visible }
         : section
     )
-    persistSections(updatedSections)
+    await persistSections(updatedSections)
   }
 
-  const removeSection = (sectionId: string) => {
+  const removeSection = async (sectionId: string) => {
     const updatedSections = sections.filter(section => section.id !== sectionId)
-    persistSections(updatedSections)
+    await persistSections(updatedSections)
   }
 
   const toggleSectionExpanded = (sectionId: string) => {
@@ -175,7 +238,7 @@ export function SectionManager({ sections, onSectionsChange, className }: Sectio
     e.dataTransfer.dropEffect = 'move'
   }
 
-  const handleDrop = (e: React.DragEvent, targetSectionId: string) => {
+  const handleDrop = async (e: React.DragEvent, targetSectionId: string) => {
     e.preventDefault()
     if (!draggedSection || draggedSection === targetSectionId) return
 
@@ -186,11 +249,11 @@ export function SectionManager({ sections, onSectionsChange, className }: Sectio
     const [draggedSectionData] = newSections.splice(draggedIndex, 1)
     newSections.splice(targetIndex, 0, draggedSectionData)
     
-    persistSections(newSections)
+    await persistSections(newSections)
     setDraggedSection(null)
   }
 
-  const addSection = () => {
+  const addSection = async () => {
     const selectedType = SECTION_TYPES.find(t => t.id === newSectionData.type)
     const template = selectedType?.template || SECTION_TYPES[0].template
     
@@ -212,39 +275,39 @@ export function SectionManager({ sections, onSectionsChange, className }: Sectio
             content: template.content,
             component: <div />
           }}
-          onUpdate={(newContent) => {
+          onUpdate={async (newContent) => {
             const updatedSections = sections.map(s =>
               s.id === `section-${Date.now()}` 
                 ? { ...s, content: newContent }
                 : s
             )
-            persistSections(updatedSections)
+            await persistSections(updatedSections)
           }}
         />
       )
     }
     
-    persistSections([...sections, newSection])
+    await persistSections([...sections, newSection])
     setShowAddDialog(false)
     setNewSectionData({ title: '', description: '', type: 'content' })
   }
 
-  const updateSectionTitle = (sectionId: string, newTitle: string) => {
+  const updateSectionTitle = async (sectionId: string, newTitle: string) => {
     const updatedSections = sections.map(section =>
       section.id === sectionId 
         ? { ...section, title: newTitle }
         : section
     )
-    persistSections(updatedSections)
+    await persistSections(updatedSections)
   }
 
-  const updateSectionContent = (sectionId: string, newContent: any) => {
+  const updateSectionContent = async (sectionId: string, newContent: any) => {
     const updatedSections = sections.map(section =>
       section.id === sectionId 
         ? { ...section, content: newContent }
         : section
     )
-    persistSections(updatedSections)
+    await persistSections(updatedSections)
   }
 
   if (!isAdminMode) {

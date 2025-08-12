@@ -16,6 +16,8 @@ import { EditableImage } from "@/components/editable-image"
 import { EditableMedia } from "@/components/editable-media"
 import { SectionManager } from "@/components/section-manager"
 import { DynamicSection } from "@/components/dynamic-section"
+import { LinkHubSection } from "@/components/linkhub-section"
+import { ShopSection } from "@/components/shop-section"
 import { SessionManager } from "@/components/session-manager"
 import { TestimonialManager } from "@/components/testimonial-manager"
 import { AdminNotifications } from "@/components/admin-notifications"
@@ -105,30 +107,103 @@ function PageContent() {
 
   // Cargar secciones guardadas al iniciar
   useEffect(() => {
-    try {
-      const savedSections = localStorage.getItem('landing-sections')
-      if (savedSections) {
-        const parsedSections = JSON.parse(savedSections)
-        // Actualizar solo las propiedades de configuración, mantener los componentes
-        setSections(prevSections => 
-          prevSections.map(section => {
-            const savedSection = parsedSections.find((s: any) => s.id === section.id)
-            if (savedSection) {
+    const loadSections = async () => {
+      try {
+        // Primero intentar cargar desde la configuración global
+        const response = await fetch('/api/config')
+        if (response.ok) {
+          const globalConfig = await response.json()
+          if (globalConfig.sections && globalConfig.sections.length > 0) {
+            console.log('✅ Cargando secciones desde configuración global')
+            const sectionsWithComponents = globalConfig.sections.map((section: any) => {
+              let component: React.ReactNode
+              
+              // Mapear secciones existentes
+              switch (section.id) {
+                case 'hero':
+                  component = <Hero />
+                  break
+                case 'sessions':
+                  component = <Sessions />
+                  break
+                case 'course':
+                  component = <Course />
+                  break
+                case 'about':
+                  component = <About />
+                  break
+                case 'testimonials':
+                  component = <Testimonials />
+                  break
+                case 'cta':
+                  component = <CTABanner />
+                  break
+                default:
+                  // Para secciones dinámicas
+                  if (section.type) {
+                    switch (section.type) {
+                      case 'linkhub':
+                        component = <LinkHubSection />
+                        break
+                      case 'shop':
+                        component = <ShopSection />
+                        break
+                      default:
+                        component = (
+                          <DynamicSection 
+                            section={section}
+                            onUpdate={(newContent: any) => {
+                              const updatedSections = globalConfig.sections.map((s: any) =>
+                                s.id === section.id 
+                                  ? { ...s, content: newContent }
+                                  : s
+                              )
+                              handleSectionsChange(updatedSections)
+                            }}
+                          />
+                        )
+                    }
+                  }
+              }
+              
               return {
                 ...section,
-                title: savedSection.title,
-                visible: savedSection.visible,
-                description: savedSection.description,
-                type: savedSection.type
+                component
               }
-            }
-            return section
-          })
-        )
+            })
+            setSections(sectionsWithComponents)
+            return
+          }
+        }
+        
+        // Si no hay configuración global, cargar desde localStorage
+        const savedSections = localStorage.getItem('landing-sections')
+        if (savedSections) {
+          console.log('📱 Cargando secciones desde localStorage')
+          const parsedSections = JSON.parse(savedSections)
+          // Actualizar solo las propiedades de configuración, mantener los componentes
+          setSections(prevSections => 
+            prevSections.map(section => {
+              const savedSection = parsedSections.find((s: any) => s.id === section.id)
+              if (savedSection) {
+                return {
+                  ...section,
+                  title: savedSection.title,
+                  visible: savedSection.visible,
+                  description: savedSection.description,
+                  type: savedSection.type
+                }
+              }
+              return section
+            })
+          )
+        }
+      } catch (error) {
+        console.warn('Error al cargar secciones guardadas:', error)
       }
-    } catch (error) {
-      console.warn('Error al cargar secciones guardadas:', error)
     }
+    
+    loadSections()
   }, [])
 
   if (loading || !config) {
@@ -145,23 +220,36 @@ function PageContent() {
   const handleSectionsChange = (newSections: any[]) => {
     // Actualizar las secciones con los componentes correctos
     const updatedSections = newSections.map(section => {
-      // Si es una sección dinámica (nueva), crear el componente DynamicSection
+      // Si es una sección dinámica (nueva), crear el componente correspondiente
       if (section.type && section.content) {
+        let component: React.ReactNode
+        
+        switch (section.type) {
+          case 'linkhub':
+            component = <LinkHubSection />
+            break
+          case 'shop':
+            component = <ShopSection />
+            break
+          default:
+            component = (
+              <DynamicSection 
+                section={section}
+                onUpdate={(newContent: any) => {
+                  const updatedSections = newSections.map(s =>
+                    s.id === section.id 
+                      ? { ...s, content: newContent }
+                      : s
+                  )
+                  handleSectionsChange(updatedSections)
+                }}
+              />
+            )
+        }
+        
         return {
           ...section,
-          component: (
-            <DynamicSection 
-              section={section}
-              onUpdate={(newContent: any) => {
-                const updatedSections = newSections.map(s =>
-                  s.id === section.id 
-                    ? { ...s, content: newContent }
-                    : s
-                )
-                handleSectionsChange(updatedSections)
-              }}
-            />
-          )
+          component
         }
       }
       return section

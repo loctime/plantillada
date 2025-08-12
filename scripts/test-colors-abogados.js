@@ -149,3 +149,4 @@ console.log('   - Los fondos son elegantes y profesionales')
 console.log('   - El contraste cumple con estándares de accesibilidad')
 console.log('   - Los colores se pueden editar desde el panel de administración')
 
+

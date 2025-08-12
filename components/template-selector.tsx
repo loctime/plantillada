@@ -12,7 +12,8 @@ import {
   CheckCircle,
   ExternalLink,
   Settings,
-  Brain
+  Brain,
+  Link
 } from "lucide-react"
 
 interface Template {
@@ -92,6 +93,23 @@ const templates: Template[] = [
     status: 'active',
     route: '/psicologos',
     color: 'bg-purple-500'
+  },
+  {
+    id: 'linkhub',
+    name: 'Link Hub',
+    description: 'Concentrador de enlaces personales estilo Linktree para redes sociales y portafolios',
+    icon: <Link className="h-6 w-6" />,
+    features: [
+      'Enlaces personalizables',
+      'Diseño móvil optimizado',
+      'Estadísticas de clics',
+      'Temas personalizables',
+      'Integración social',
+      'Bio editable'
+    ],
+    status: 'active',
+    route: '/linkhub',
+    color: 'bg-pink-500'
   }
 ]
 

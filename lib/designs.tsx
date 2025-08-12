@@ -9,7 +9,8 @@ import {
   ShoppingBag,
   Dumbbell,
   Sparkles,
-  Brain
+  Brain,
+  Link
 } from "lucide-react"
 import { Config } from "./config-loader"
 
@@ -910,19 +911,278 @@ export const shopDesigns: Design[] = [
   }
 ]
 
+export const linkHubDesigns: Design[] = [
+  {
+    id: 'linkhub',
+    name: 'Link Hub Clásico',
+    description: 'Diseño limpio y moderno para concentrador de enlaces personales',
+    icon: <Link className="h-6 w-6" />,
+    category: 'linkhub',
+    colorScheme: {
+      primary: '#8b5cf6',
+      secondary: '#64748b',
+      accent: '#ec4899'
+    },
+    features: [
+      'Colores púrpura modernos',
+      'Diseño móvil optimizado',
+      'Iconografía de redes sociales',
+      'Enlaces personalizables'
+    ],
+    status: 'active',
+    cssVariables: {
+      '--primary': '#8b5cf6',
+      '--secondary': '#64748b',
+      '--accent': '#ec4899',
+      '--font-family': 'Inter, sans-serif'
+    },
+    predefinedConfig: {
+      site: {
+        title: "Mi Link Hub",
+        tagline: "Conecta conmigo en todas mis plataformas",
+        heroTitle: "¡Hola! Soy",
+        heroSubtitle: "Encuentra todos mis enlaces importantes en un solo lugar",
+        sessionsTitle: "Enlaces Destacados",
+        sessionsSubtitle: "Mis plataformas principales",
+        aboutTitle: "Sobre Mí",
+        testimonialsTitle: "Lo que dicen de mí",
+        testimonialsSubtitle: "Testimonios y recomendaciones",
+        ctaTitle: "¿Quieres conectar?",
+        ctaSubtitle: "Encuéntrame en todas mis redes sociales",
+        showPrices: false
+      },
+      selectedTemplates: ["linkhub"],
+      selectedDesigns: {
+        "linkhub": "linkhub"
+      },
+      linkHub: {
+        profile: {
+          name: "Tu Nombre",
+          bio: "Creador de contenido, emprendedor y apasionado por conectar con personas increíbles. Comparto mi viaje y conocimientos en múltiples plataformas.",
+          avatar: "/placeholder-user.jpg",
+          location: "Madrid, España",
+          email: "hola@tunombre.com",
+          phone: "+34 600 000 000"
+        },
+        links: [
+          {
+            id: "website",
+            title: "Mi Sitio Web",
+            url: "https://tusitio.com",
+            icon: "🌐",
+            category: "principal",
+            isActive: true
+          },
+          {
+            id: "portfolio",
+            title: "Portfolio",
+            url: "https://portfolio.com",
+            icon: "💼",
+            category: "trabajo",
+            isActive: true
+          },
+          {
+            id: "blog",
+            title: "Blog",
+            url: "https://blog.com",
+            icon: "✍️",
+            category: "contenido",
+            isActive: true
+          },
+          {
+            id: "youtube",
+            title: "YouTube",
+            url: "https://youtube.com/@tucanal",
+            icon: "📺",
+            category: "social",
+            isActive: true
+          },
+          {
+            id: "podcast",
+            title: "Mi Podcast",
+            url: "https://spotify.com/show/tupodcast",
+            icon: "🎧",
+            category: "contenido",
+            isActive: true
+          },
+          {
+            id: "newsletter",
+            title: "Newsletter",
+            url: "https://tunewsletter.com",
+            icon: "📧",
+            category: "contenido",
+            isActive: true
+          },
+          {
+            id: "contact",
+            title: "Contacto",
+            url: "mailto:hola@tunombre.com",
+            icon: "💬",
+            category: "contacto",
+            isActive: true
+          }
+        ],
+        theme: {
+          primaryColor: "#8b5cf6",
+          backgroundColor: "#f8fafc",
+          textColor: "#1e293b",
+          accentColor: "#f1f5f9"
+        },
+        social: {
+          instagram: "https://instagram.com/tuusuario",
+          twitter: "https://twitter.com/tuusuario",
+          linkedin: "https://linkedin.com/in/tuusuario",
+          youtube: "https://youtube.com/@tucanal",
+          facebook: "https://facebook.com/tupagina",
+          website: "https://tusitio.com"
+        }
+      }
+    }
+  },
+  {
+    id: 'linkhub-dark',
+    name: 'Link Hub Oscuro',
+    description: 'Diseño elegante con tema oscuro para concentrador de enlaces',
+    icon: <Link className="h-6 w-6" />,
+    category: 'linkhub',
+    colorScheme: {
+      primary: '#a78bfa',
+      secondary: '#94a3b8',
+      accent: '#f472b6'
+    },
+    features: [
+      'Tema oscuro elegante',
+      'Colores púrpura suaves',
+      'Diseño minimalista',
+      'Enlaces con efectos hover'
+    ],
+    status: 'active',
+    cssVariables: {
+      '--primary': '#a78bfa',
+      '--secondary': '#94a3b8',
+      '--accent': '#f472b6',
+      '--font-family': 'Inter, sans-serif'
+    },
+    predefinedConfig: {
+      site: {
+        title: "Mi Link Hub",
+        tagline: "Conecta conmigo en todas mis plataformas",
+        heroTitle: "¡Hola! Soy",
+        heroSubtitle: "Encuentra todos mis enlaces importantes en un solo lugar",
+        sessionsTitle: "Enlaces Destacados",
+        sessionsSubtitle: "Mis plataformas principales",
+        aboutTitle: "Sobre Mí",
+        testimonialsTitle: "Lo que dicen de mí",
+        testimonialsSubtitle: "Testimonios y recomendaciones",
+        ctaTitle: "¿Quieres conectar?",
+        ctaSubtitle: "Encuéntrame en todas mis redes sociales",
+        showPrices: false
+      },
+      selectedTemplates: ["linkhub"],
+      selectedDesigns: {
+        "linkhub": "linkhub-dark"
+      },
+      linkHub: {
+        profile: {
+          name: "Tu Nombre",
+          bio: "Creador de contenido, emprendedor y apasionado por conectar con personas increíbles. Comparto mi viaje y conocimientos en múltiples plataformas.",
+          avatar: "/placeholder-user.jpg",
+          location: "Madrid, España",
+          email: "hola@tunombre.com",
+          phone: "+34 600 000 000"
+        },
+        links: [
+          {
+            id: "website",
+            title: "Mi Sitio Web",
+            url: "https://tusitio.com",
+            icon: "🌐",
+            category: "principal",
+            isActive: true
+          },
+          {
+            id: "portfolio",
+            title: "Portfolio",
+            url: "https://portfolio.com",
+            icon: "💼",
+            category: "trabajo",
+            isActive: true
+          },
+          {
+            id: "blog",
+            title: "Blog",
+            url: "https://blog.com",
+            icon: "✍️",
+            category: "contenido",
+            isActive: true
+          },
+          {
+            id: "youtube",
+            title: "YouTube",
+            url: "https://youtube.com/@tucanal",
+            icon: "📺",
+            category: "social",
+            isActive: true
+          },
+          {
+            id: "podcast",
+            title: "Mi Podcast",
+            url: "https://spotify.com/show/tupodcast",
+            icon: "🎧",
+            category: "contenido",
+            isActive: true
+          },
+          {
+            id: "newsletter",
+            title: "Newsletter",
+            url: "https://tunewsletter.com",
+            icon: "📧",
+            category: "contenido",
+            isActive: true
+          },
+          {
+            id: "contact",
+            title: "Contacto",
+            url: "mailto:hola@tunombre.com",
+            icon: "💬",
+            category: "contacto",
+            isActive: true
+          }
+        ],
+        theme: {
+          primaryColor: "#a78bfa",
+          backgroundColor: "#0f172a",
+          textColor: "#f1f5f9",
+          accentColor: "#334155"
+        },
+        social: {
+          instagram: "https://instagram.com/tuusuario",
+          twitter: "https://twitter.com/tuusuario",
+          linkedin: "https://linkedin.com/in/tuusuario",
+          youtube: "https://youtube.com/@tucanal",
+          facebook: "https://facebook.com/tupagina",
+          website: "https://tusitio.com"
+        }
+      }
+    }
+  }
+]
+
 export function getDesignsForTemplate(templateType: string): Design[] {
   switch (templateType) {
     case 'landing':
       return landingDesigns
     case 'shop':
       return shopDesigns
+    case 'linkhub':
+      return linkHubDesigns
     default:
       return []
   }
 }
 
 export function getDesignById(designId: string): Design | undefined {
-  const allDesigns = [...landingDesigns, ...shopDesigns]
+  const allDesigns = [...landingDesigns, ...shopDesigns, ...linkHubDesigns]
   return allDesigns.find(design => design.id === designId)
 }
 

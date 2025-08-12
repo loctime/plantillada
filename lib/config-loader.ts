@@ -89,6 +89,23 @@ export interface Config {
     ctaSubtitle?: string
     showPrices?: boolean
   }
+  sections?: Array<{
+    id: string
+    title: string
+    visible: boolean
+    description?: string
+    type?: string
+    content?: {
+      title?: string
+      subtitle?: string
+      description?: string
+      imageUrl?: string
+      buttonText?: string
+      buttonUrl?: string
+      backgroundColor?: string
+      textColor?: string
+    }
+  }>
   selectedTemplates?: string[]
   selectedDesigns?: {[key: string]: string}
   buttons?: {
@@ -246,6 +263,39 @@ export interface Config {
     description: string
     features: string[]
   }>
+  // Configuración específica para Link Hub
+  linkHub?: {
+    profile: {
+      name: string
+      bio: string
+      avatar: string
+      location?: string
+      email?: string
+      phone?: string
+    }
+    links: Array<{
+      id: string
+      title: string
+      url: string
+      icon?: string
+      category?: string
+      isActive?: boolean
+    }>
+    theme: {
+      primaryColor: string
+      backgroundColor: string
+      textColor: string
+      accentColor: string
+    }
+    social: {
+      instagram?: string
+      twitter?: string
+      linkedin?: string
+      youtube?: string
+      facebook?: string
+      website?: string
+    }
+  }
 }
 
 // Función para obtener el tenant ID basado en el dominio

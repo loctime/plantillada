@@ -33,6 +33,18 @@ const templateNavigation: Record<string, NavigationItem> = {
     name: 'Foro',
     route: '/forum',
     icon: '💬'
+  },
+  psicologos: {
+    id: 'psicologos',
+    name: 'Psicología',
+    route: '/psicologos',
+    icon: '🧠'
+  },
+  linkhub: {
+    id: 'linkhub',
+    name: 'Links',
+    route: '/linkhub',
+    icon: '🔗'
   }
 }
 
