@@ -32,6 +32,8 @@ export interface Config {
     ctaTitle?: string
     ctaSubtitle?: string
   }
+  selectedTemplates?: string[]
+  selectedDesigns?: {[key: string]: string}
   buttons?: {
     heroButton?: string
     sessionsButton?: string
@@ -51,6 +53,54 @@ export interface Config {
       order: number
     }>
     aboutButtons?: Array<{
+      id: string
+      text: string
+      type: 'url' | 'section' | 'modal'
+      url?: string
+      sectionId?: string
+      modalTitle?: string
+      modalContent?: string
+      variant?: 'default' | 'outline' | 'secondary'
+      icon?: string
+      order: number
+    }>
+    sessionsButtons?: Array<{
+      id: string
+      text: string
+      type: 'url' | 'section' | 'modal'
+      url?: string
+      sectionId?: string
+      modalTitle?: string
+      modalContent?: string
+      variant?: 'default' | 'outline' | 'secondary'
+      icon?: string
+      order: number
+    }>
+    courseButtons?: Array<{
+      id: string
+      text: string
+      type: 'url' | 'section' | 'modal'
+      url?: string
+      sectionId?: string
+      modalTitle?: string
+      modalContent?: string
+      variant?: 'default' | 'outline' | 'secondary'
+      icon?: string
+      order: number
+    }>
+    testimonialsButtons?: Array<{
+      id: string
+      text: string
+      type: 'url' | 'section' | 'modal'
+      url?: string
+      sectionId?: string
+      modalTitle?: string
+      modalContent?: string
+      variant?: 'default' | 'outline' | 'secondary'
+      icon?: string
+      order: number
+    }>
+    ctaButtons?: Array<{
       id: string
       text: string
       type: 'url' | 'section' | 'modal'
@@ -323,6 +373,10 @@ function getDefaultConfig(tenantId: string): Config {
     site: {
       title: `Tu Marca Personal - ${tenantId}`,
       tagline: "Acompañamiento 1:1 y formación práctica para cambios reales."
+    },
+    selectedTemplates: ['landing'],
+    selectedDesigns: {
+      landing: 'coach-personal'
     },
     integrations: {
       calendlyUrl: "https://calendly.com/tu-usuario/sesion",

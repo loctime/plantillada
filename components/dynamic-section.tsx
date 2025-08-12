@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { EditableText } from '@/components/editable-text'
 import { EditableImage } from '@/components/editable-image'
 import { EditableUrl } from '@/components/editable-url'
-import { ButtonManager, ButtonConfig } from '@/components/button-manager'
+import { SectionButtonManager, ButtonConfig } from '@/components/section-button-manager'
 
 interface SectionContent {
   title?: string
@@ -87,10 +87,11 @@ export function DynamicSection({ section, onUpdate }: DynamicSectionProps) {
             )}
             
             {/* Gestión de botones */}
-            <ButtonManager
+            <SectionButtonManager
               buttons={content.buttons || []}
               onButtonsChange={(newButtons) => handleContentUpdate('buttons', newButtons)}
               sectionId={section.id}
+              sectionName={section.title}
             />
             
             {/* Botón legacy (para compatibilidad) */}

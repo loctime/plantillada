@@ -9,9 +9,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Separator } from "@/components/ui/separator"
-import { Save, Eye, EyeOff, Settings, User, ShoppingCart, Calendar, Quote, Globe, Layers } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Save, Eye, EyeOff, Settings, User, ShoppingCart, Calendar, Quote, Globe, Layers, Palette } from "lucide-react"
 import { Config, getTenantId } from "@/lib/config-loader"
 import { TemplateSelector } from "@/components/template-selector"
+import { DesignSelector } from "@/components/design-selector"
 
 interface FormData extends Config {}
 
@@ -25,6 +27,8 @@ export default function AdminPage() {
   const [currentTenant, setCurrentTenant] = useState("")
   const [selectedTemplates, setSelectedTemplates] = useState<string[]>(['landing'])
   const [showTemplateSelector, setShowTemplateSelector] = useState(false)
+  const [showDesignSelector, setShowDesignSelector] = useState(false)
+  const [selectedDesigns, setSelectedDesigns] = useState<{[key: string]: string}>({})
   const [formData, setFormData] = useState<FormData>({
     site: {
       title: "Tu Marca Personal",
@@ -95,6 +99,14 @@ export default function AdminPage() {
         if (response.ok) {
           const config = await response.json()
           setFormData(config)
+          
+          // Cargar plantillas y diseños seleccionados
+          if (config.selectedTemplates) {
+            setSelectedTemplates(config.selectedTemplates)
+          }
+          if (config.selectedDesigns) {
+            setSelectedDesigns(config.selectedDesigns)
+          }
         }
       } catch (error) {
         console.error('Error loading config:', error)
@@ -136,6 +148,41 @@ export default function AdminPage() {
     } catch (error) {
       console.error('Error saving templates:', error)
       setMessage("❌ Error al guardar las plantillas")
+    }
+  }
+
+  const handleDesignSelect = async (design: any) => {
+    const newSelectedDesigns = {
+      ...selectedDesigns,
+      [design.category]: design.id
+    }
+    setSelectedDesigns(newSelectedDesigns)
+    
+    // Guardar automáticamente la configuración con el diseño seleccionado
+    const updatedConfig = {
+      ...formData,
+      selectedDesigns: newSelectedDesigns
+    }
+    setFormData(updatedConfig)
+    
+    // Guardar en Firestore
+    try {
+      const response = await fetch('/api/config', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedConfig),
+      })
+      
+      if (response.ok) {
+        setMessage(`✅ Diseño seleccionado: ${design.name}`)
+      } else {
+        setMessage("❌ Error al guardar el diseño")
+      }
+    } catch (error) {
+      console.error('Error saving design:', error)
+      setMessage("❌ Error al guardar el diseño")
     }
   }
 
@@ -383,12 +430,64 @@ export default function AdminPage() {
                      </Button>
                    </div>
                    
-                                       {showTemplateSelector && (
-                      <TemplateSelector 
-                        onTemplateSelect={handleTemplateSelect}
-                        selectedTemplates={selectedTemplates}
-                      />
-                    )}
+                   {showTemplateSelector && (
+                     <TemplateSelector 
+                       onTemplateSelect={handleTemplateSelect}
+                       selectedTemplates={selectedTemplates}
+                     />
+                   )}
+                 </div>
+
+                 <Separator />
+
+                 <div className="space-y-4">
+                   <div className="flex items-center justify-between">
+                     <div>
+                       <h3 className="text-lg font-medium">Diseño Visual</h3>
+                       <p className="text-sm text-muted-foreground">
+                         Personaliza el estilo visual según tu tipo de negocio
+                       </p>
+                     </div>
+                     <Button 
+                       variant="outline" 
+                       onClick={() => setShowDesignSelector(!showDesignSelector)}
+                     >
+                       <Palette className="h-4 w-4 mr-2" />
+                       {showDesignSelector ? "Ocultar" : "Seleccionar Diseño"}
+                     </Button>
+                   </div>
+                   
+                   {showDesignSelector && selectedTemplates.length > 0 && (
+                     <div className="space-y-6">
+                       {selectedTemplates.map((templateType) => (
+                         <div key={templateType} className="space-y-4">
+                           <div className="flex items-center gap-2">
+                             <h4 className="text-md font-medium capitalize">
+                               Diseño para {templateType === 'landing' ? 'Landing Page' : templateType === 'shop' ? 'Tienda Online' : templateType}
+                             </h4>
+                             {selectedDesigns[templateType] && (
+                               <Badge variant="secondary" className="text-xs">
+                                 Diseño seleccionado
+                               </Badge>
+                             )}
+                           </div>
+                           <DesignSelector 
+                             onDesignSelect={handleDesignSelect}
+                             selectedDesign={selectedDesigns[templateType]}
+                             templateType={templateType}
+                           />
+                         </div>
+                       ))}
+                     </div>
+                   )}
+                   
+                   {showDesignSelector && selectedTemplates.length === 0 && (
+                     <div className="text-center py-8">
+                       <Palette className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                       <h3 className="text-lg font-medium text-gray-900 mb-2">Selecciona una plantilla primero</h3>
+                       <p className="text-gray-500">Necesitas seleccionar al menos una plantilla para poder elegir su diseño.</p>
+                     </div>
+                   )}
                  </div>
                </CardContent>
              </Card>

@@ -4,6 +4,7 @@ import { GeistMono } from 'geist/font/mono'
 import './globals.css'
 import { ThemeProvider } from '@/components/theme-provider'
 import { AdminProvider } from '@/lib/admin-context'
+import { DesignApplier } from '@/components/design-applier'
 
 export const metadata: Metadata = {
   title: 'Landing Page - Hotmart + Calendly',
@@ -99,6 +100,7 @@ html {
           disableTransitionOnChange
         >
           <AdminProvider initialConfig={defaultConfig}>
+            <DesignApplier currentTemplate="landing" />
             {children}
           </AdminProvider>
         </ThemeProvider>

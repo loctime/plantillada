@@ -22,10 +22,8 @@ import { AdminNotifications } from "@/components/admin-notifications"
 import { AdminDebug } from "@/components/admin-debug"
 import { ThemeSwitch } from "@/components/theme-switch"
 import { DynamicNavigation } from "@/components/dynamic-navigation"
-import { ButtonManager, ButtonConfig } from "@/components/button-manager"
-import { DraggableButtonManager } from "@/components/draggable-button-manager"
-import { GlobalButtonManager } from "@/components/global-button-manager"
-import { ButtonInfo } from "@/components/button-info"
+import { SectionButtonManager } from "@/components/section-button-manager"
+
 
 export default function Page() {
   return <PageContent />
@@ -183,24 +181,6 @@ function PageContent() {
     <div className="min-h-[100dvh] flex flex-col custom-bg">
       <Header />
       <main className="flex-1">
-        <ButtonInfo />
-        <GlobalButtonManager 
-          buttons={[
-            ...(config.buttons?.heroButtons || []).map(button => ({ ...button, section: 'hero' })),
-            ...(config.buttons?.aboutButtons || []).map(button => ({ ...button, section: 'about' }))
-          ]}
-          onButtonsChange={(newButtons) => {
-            const heroButtons = newButtons.filter(button => button.section === 'hero')
-            const aboutButtons = newButtons.filter(button => button.section === 'about')
-            updateConfig({ 
-              buttons: { 
-                ...config.buttons, 
-                heroButtons,
-                aboutButtons
-              } 
-            })
-          }}
-        />
         <SectionManager 
           sections={sections}
           onSectionsChange={handleSectionsChange}
@@ -304,25 +284,16 @@ function Hero() {
             multiline
           />
           {/* Gestión de botones del Hero */}
-          <DraggableButtonManager
-            buttons={(config.buttons?.heroButtons || []).map(button => ({
-              ...button,
-              section: 'hero'
-            }))}
+          <SectionButtonManager
+            buttons={config.buttons?.heroButtons || []}
             onButtonsChange={(newButtons) => updateConfig({ 
               buttons: { 
                 ...config.buttons, 
-                heroButtons: newButtons.filter(button => button.section === 'hero')
+                heroButtons: newButtons
               } 
             })}
-            currentSection="hero"
-            availableSections={[
-              { id: 'hero', name: 'Hero (Inicio)' },
-              { id: 'sesiones', name: 'Sesiones' },
-              { id: 'curso', name: 'Curso Online' },
-              { id: 'testimonios', name: 'Testimonios' },
-              { id: 'contacto', name: 'Contacto' }
-            ]}
+            sectionId="hero"
+            sectionName="Hero"
           />
           
           {/* Botones legacy (para compatibilidad) */}
@@ -480,6 +451,19 @@ function Sessions() {
             </article>
           ))}
         </div>
+        
+        {/* Gestión de botones de Sessions */}
+        <SectionButtonManager
+          buttons={config.buttons?.sessionsButtons || []}
+          onButtonsChange={(newButtons) => updateConfig({ 
+            buttons: { 
+              ...config.buttons, 
+              sessionsButtons: newButtons
+            } 
+          })}
+          sectionId="sessions"
+          sectionName="Sesiones"
+        />
       </div>
     </section>
   )
@@ -540,6 +524,19 @@ function Course() {
               />
           </div>
           <p className="text-xs text-muted-foreground">Pago seguro en Hotmart. Enlace externo.</p>
+          
+          {/* Gestión de botones de Course */}
+          <SectionButtonManager
+            buttons={config.buttons?.courseButtons || []}
+            onButtonsChange={(newButtons) => updateConfig({ 
+              buttons: { 
+                ...config.buttons, 
+                courseButtons: newButtons
+              } 
+            })}
+            sectionId="course"
+            sectionName="Curso Online"
+          />
         </div>
         <div className="relative">
           <EditableMedia
@@ -611,25 +608,16 @@ function About() {
             />
           </div>
           {/* Gestión de botones de About */}
-          <DraggableButtonManager
-            buttons={(config.buttons?.aboutButtons || []).map(button => ({
-              ...button,
-              section: 'about'
-            }))}
+          <SectionButtonManager
+            buttons={config.buttons?.aboutButtons || []}
             onButtonsChange={(newButtons) => updateConfig({ 
               buttons: { 
                 ...config.buttons, 
-                aboutButtons: newButtons.filter(button => button.section === 'about')
+                aboutButtons: newButtons
               } 
             })}
-            currentSection="about"
-            availableSections={[
-              { id: 'hero', name: 'Hero (Inicio)' },
-              { id: 'sesiones', name: 'Sesiones' },
-              { id: 'curso', name: 'Curso Online' },
-              { id: 'testimonios', name: 'Testimonios' },
-              { id: 'contacto', name: 'Contacto' }
-            ]}
+            sectionId="about"
+            sectionName="Sobre Mí"
           />
           
           {/* Botones legacy (para compatibilidad) */}
@@ -720,6 +708,19 @@ function Testimonials() {
             </figure>
           ))}
         </div>
+        
+        {/* Gestión de botones de Testimonials */}
+        <SectionButtonManager
+          buttons={config.buttons?.testimonialsButtons || []}
+          onButtonsChange={(newButtons) => updateConfig({ 
+            buttons: { 
+              ...config.buttons, 
+              testimonialsButtons: newButtons
+            } 
+          })}
+          sectionId="testimonials"
+          sectionName="Testimonios"
+        />
       </div>
     </section>
   )
@@ -762,6 +763,19 @@ function CTABanner() {
             Comprar el curso
           </a>
         </div>
+        
+        {/* Gestión de botones de CTA */}
+        <SectionButtonManager
+          buttons={config.buttons?.ctaButtons || []}
+          onButtonsChange={(newButtons) => updateConfig({ 
+            buttons: { 
+              ...config.buttons, 
+              ctaButtons: newButtons
+            } 
+          })}
+          sectionId="cta"
+          sectionName="Call to Action"
+        />
       </div>
     </section>
   )
