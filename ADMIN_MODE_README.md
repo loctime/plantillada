@@ -131,7 +131,31 @@ El modo admin inline permite editar la landing page directamente mientras navega
 - **Eliminar secciones**: Botón de papelera para cada sección
 - **Agregar secciones**: Nuevas secciones personalizables
 
-### 9. **Gestión de Colores y Temas**
+### 9. **Gestión del LinkHub (NUEVO)**
+- **Botón "Gestionar LinkHub"**: Panel completo de gestión del LinkHub
+- **Edición del perfil**:
+  - Nombre del perfil (edición inline)
+  - Biografía/descripción personal (multilínea)
+  - Avatar/foto de perfil (con vista previa en tiempo real)
+  - Ubicación, email y teléfono (campos opcionales)
+- **Gestión de enlaces**:
+  - Agregar nuevos enlaces con datos por defecto
+  - Editar título, URL e icono de cada enlace
+  - Mostrar/ocultar enlaces individuales (toggle de visibilidad)
+  - Eliminar enlaces con confirmación visual
+  - Panel de gestión avanzada con vista de todos los enlaces
+- **Gestión de redes sociales**:
+  - Instagram, Twitter, LinkedIn, YouTube, Facebook, Website
+  - Edición de URLs de cada plataforma
+  - Vista previa de iconos y estados
+  - Campos opcionales que se muestran solo si tienen contenido
+- **Funcionalidades avanzadas**:
+  - Reordenamiento de enlaces (preparado para drag & drop)
+  - Validación de URLs en tiempo real
+  - Indicadores visuales de estado (activo/inactivo)
+  - Guardado automático de todos los cambios
+
+### 10. **Gestión de Colores y Temas**
 - **Botón "Colores"**: Panel completo de gestión de colores
 - **Switch de modo nocturno/claro**: Cambiar entre temas
 - **Configuración independiente**: Colores separados para cada modo
@@ -214,6 +238,28 @@ El modo admin inline permite editar la landing page directamente mientras navega
 - ✅ Título del CTA
 - ✅ Subtítulo del CTA
 
+### Sección LinkHub (NUEVO)
+- ✅ **Gestión completa del perfil**:
+  - Nombre del perfil
+  - Biografía/descripción personal
+  - Avatar/foto de perfil (con vista previa en tiempo real)
+  - Ubicación
+  - Email de contacto
+  - Teléfono de contacto
+- ✅ **Gestión completa de enlaces**:
+  - Agregar nuevos enlaces
+  - Editar título de cada enlace
+  - Editar URL de cada enlace
+  - Editar icono de cada enlace
+  - Mostrar/ocultar enlaces individuales
+  - Eliminar enlaces
+  - Panel de gestión avanzada con vista de todos los enlaces
+- ✅ **Gestión de redes sociales**:
+  - Instagram, Twitter, LinkedIn, YouTube, Facebook, Website
+  - Edición de URLs de cada plataforma
+  - Vista previa de iconos
+- ✅ **Botón de gestión específico**: Panel completo para gestionar todos los elementos del LinkHub
+
 ### Footer
 - ✅ Email de contacto
 - ✅ URLs de términos y privacidad
@@ -235,14 +281,19 @@ El modo admin inline permite editar la landing page directamente mientras navega
 5. **Edita textos de botones** haciendo clic en el ícono de edición sobre cualquier botón
 6. **Gestiona sesiones** usando el botón "Gestionar Sesiones"
 7. **Gestiona testimonios** usando el botón "Gestionar Testimonios"
-8. **Configura colores** usando el botón "Colores":
+8. **Gestiona el LinkHub** usando el botón "Gestionar LinkHub":
+   - Edita el perfil (nombre, bio, avatar, contacto)
+   - Agrega, edita y elimina enlaces
+   - Configura redes sociales
+   - Usa el panel de gestión avanzada para una vista completa
+9. **Configura colores** usando el botón "Colores":
    - Selecciona modo claro o nocturno
    - Ajusta los colores de cada elemento
    - Ve la vista previa en tiempo real
    - Guarda los cambios automáticamente
-9. **Prueba el switch de tema** en el header para ver los cambios
-10. **Verifica los cambios** desactivando el modo admin
-11. **Los cambios se guardan automáticamente** en la base de datos
+10. **Prueba el switch de tema** en el header para ver los cambios
+11. **Verifica los cambios** desactivando el modo admin
+12. **Los cambios se guardan automáticamente** en la base de datos
 
 ## 🔧 Características Técnicas
 

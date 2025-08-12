@@ -144,5 +144,63 @@
         "order": 2
       }
     ]
+  },
+  "linkHub": {
+    "profile": {
+      "name": "Tu Nombre",
+      "bio": "Descripción personal o profesional. Comparte tu historia, pasiones o lo que haces.",
+      "avatar": "/placeholder-user.jpg",
+      "location": "Ciudad, País",
+      "email": "tu@email.com",
+      "phone": "+34 600 000 000"
+    },
+    "links": [
+      {
+        "id": "website",
+        "title": "Mi Sitio Web",
+        "url": "https://tusitio.com",
+        "icon": "🌐",
+        "category": "principal",
+        "isActive": true
+      },
+      {
+        "id": "portfolio",
+        "title": "Portfolio",
+        "url": "https://portfolio.com",
+        "icon": "💼",
+        "category": "trabajo",
+        "isActive": true
+      },
+      {
+        "id": "blog",
+        "title": "Blog",
+        "url": "https://blog.com",
+        "icon": "✍️",
+        "category": "contenido",
+        "isActive": true
+      },
+      {
+        "id": "contact",
+        "title": "Contacto",
+        "url": "mailto:tu@email.com",
+        "icon": "📧",
+        "category": "contacto",
+        "isActive": true
+      }
+    ],
+    "theme": {
+      "primaryColor": "#8b5cf6",
+      "backgroundColor": "#ffffff",
+      "textColor": "#1f2937",
+      "accentColor": "#f3f4f6"
+    },
+    "social": {
+      "instagram": "https://instagram.com/tuusuario",
+      "twitter": "https://twitter.com/tuusuario",
+      "linkedin": "https://linkedin.com/in/tuusuario",
+      "youtube": "https://youtube.com/@tucanal",
+      "facebook": "https://facebook.com/tupagina",
+      "website": "https://tusitio.com"
+    }
   }
 }

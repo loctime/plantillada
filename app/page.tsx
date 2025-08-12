@@ -77,6 +77,14 @@ function PageContent() {
       component: <Testimonials />
     },
     {
+      id: 'linkhub',
+      title: 'LinkHub',
+      visible: false,
+      description: 'Página de enlaces personales y redes sociales',
+      type: 'linkhub',
+      component: <LinkHubSection />
+    },
+    {
       id: 'cta',
       title: 'Call to Action',
       visible: true,
@@ -134,6 +142,9 @@ function PageContent() {
                   break
                 case 'testimonials':
                   component = <Testimonials />
+                  break
+                case 'linkhub':
+                  component = <LinkHubSection />
                   break
                 case 'cta':
                   component = <CTABanner />
