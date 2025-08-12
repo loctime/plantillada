@@ -3,12 +3,16 @@
 import { useState, useEffect } from 'react'
 import { Config } from '@/lib/config-loader'
 import { cn } from '@/lib/utils'
+import { useAdminAuth } from '@/hooks/use-admin-auth'
+import { AdminLoginModal } from '@/components/admin-login-modal'
+import { Settings } from 'lucide-react'
 
 interface NavigationItem {
   id: string
   name: string
   route: string
   icon: string
+  onClick?: () => void
 }
 
 const templateNavigation: Record<string, NavigationItem> = {
@@ -39,6 +43,8 @@ interface DynamicNavigationProps {
 
 export function DynamicNavigation({ config, isMobile = false }: DynamicNavigationProps) {
   const [navigationItems, setNavigationItems] = useState<NavigationItem[]>([])
+  const [showLoginModal, setShowLoginModal] = useState(false)
+  const { isAuthenticated, login } = useAdminAuth()
 
   useEffect(() => {
     if (config?.selectedTemplates) {
@@ -51,33 +57,88 @@ export function DynamicNavigation({ config, isMobile = false }: DynamicNavigatio
         items.unshift(templateNavigation.landing)
       }
       
+      // Agregar enlace de admin si está autenticado
+      if (isAuthenticated) {
+        items.push({
+          id: 'admin',
+          name: 'Admin',
+          route: '/admin',
+          icon: '⚙️'
+        })
+      } else {
+        // Agregar botón de login de admin si no está autenticado
+        items.push({
+          id: 'admin-login',
+          name: 'Admin',
+          route: '#',
+          icon: '⚙️',
+          onClick: () => setShowLoginModal(true)
+        })
+      }
+      
       setNavigationItems(items)
     } else {
       // Fallback: mostrar navegación por defecto
-      setNavigationItems([
+      const defaultItems = [
         templateNavigation.landing,
         templateNavigation.shop
-      ])
+      ]
+      
+      // Agregar enlace de admin si está autenticado
+      if (isAuthenticated) {
+        defaultItems.push({
+          id: 'admin',
+          name: 'Admin',
+          route: '/admin',
+          icon: '⚙️'
+        })
+      } else {
+        // Agregar botón de login de admin si no está autenticado
+        defaultItems.push({
+          id: 'admin-login',
+          name: 'Admin',
+          route: '#',
+          icon: '⚙️',
+          onClick: () => setShowLoginModal(true)
+        })
+      }
+      
+      setNavigationItems(defaultItems)
     }
-  }, [config?.selectedTemplates])
+  }, [config?.selectedTemplates, isAuthenticated])
+
+  const handleLoginSuccess = () => {
+    login()
+    setShowLoginModal(false)
+  }
 
   return (
-    <nav className={isMobile ? "flex flex-col space-y-4" : "hidden md:flex space-x-8"}>
-      {navigationItems.map((item) => (
-        <a
-          key={item.id}
-          href={item.route}
-          className={cn(
-            "transition-colors flex items-center gap-2",
-            isMobile 
-              ? "text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white py-2 px-3 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800" 
-              : "text-gray-700 hover:text-gray-900"
-          )}
-        >
-          <span>{item.icon}</span>
-          <span>{item.name}</span>
-        </a>
-      ))}
-    </nav>
+    <>
+      <nav className={isMobile ? "flex flex-col space-y-4" : "hidden md:flex space-x-8"}>
+        {navigationItems.map((item) => (
+          <a
+            key={item.id}
+            href={item.route}
+            onClick={item.onClick}
+            className={cn(
+              "transition-colors flex items-center gap-2",
+              isMobile 
+                ? "text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white py-2 px-3 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800" 
+                : "text-gray-700 hover:text-gray-900",
+              item.onClick && "cursor-pointer"
+            )}
+          >
+            <span>{item.icon}</span>
+            <span>{item.name}</span>
+          </a>
+        ))}
+      </nav>
+      
+      <AdminLoginModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        onLoginSuccess={handleLoginSuccess}
+      />
+    </>
   )
 }

@@ -632,14 +632,14 @@ export function ThemeManager() {
   }
 
   return (
-    <Card className="w-full max-w-md max-h-[80vh] flex flex-col">
-      <CardHeader className="pb-3 flex-shrink-0">
-        <CardTitle className="flex items-center gap-2 text-lg">
-          <Palette className="h-5 w-5" />
+    <Card className="w-full max-w-md max-h-[70vh] flex flex-col shadow-xl">
+      <CardHeader className="pb-2 flex-shrink-0 bg-gray-50/50 dark:bg-gray-800/50">
+        <CardTitle className="flex items-center gap-2 text-base">
+          <Palette className="h-4 w-4" />
           Gestor de Colores
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4 flex-1 overflow-y-auto pr-2">
+      <CardContent className="space-y-3 flex-1 overflow-y-auto pr-2 max-h-[calc(70vh-80px)]">
         {/* Selector de modo */}
         <div className="flex items-center justify-between">
           <Label className="text-sm font-medium">Modo de Tema</Label>
@@ -683,7 +683,7 @@ export function ThemeManager() {
         </div>
 
         {/* Switch de modo oscuro/claro más prominente */}
-        <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+        <div className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
           <div className="flex items-center gap-2">
             {isDarkMode ? (
               <Moon className="h-4 w-4 text-blue-600" />
@@ -713,7 +713,7 @@ export function ThemeManager() {
         <Separator />
 
         {/* Selector de paletas de colores */}
-        <div className="space-y-3">
+        <div className="space-y-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Brush className="h-4 w-4" />
@@ -730,7 +730,7 @@ export function ThemeManager() {
                         setSelectedPalette('default')
                         console.log('🎨 ThemeManager: Reseteando a tema configurado')
                       }}
-                      className="h-8 px-2 text-xs"
+                      className="h-7 px-2 text-xs"
                     >
                       Resetear
                     </Button>
@@ -743,7 +743,7 @@ export function ThemeManager() {
             )}
           </div>
           
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-1.5">
             {colorPalettes.map((palette) => {
               const paletteColors = isDarkMode ? palette.colors.dark : palette.colors.light
               return (
@@ -754,19 +754,19 @@ export function ThemeManager() {
                         variant={selectedPalette === palette.id ? "default" : "outline"}
                         size="sm"
                         onClick={() => applyPalette(palette.id)}
-                        className="h-auto p-3 flex flex-col items-center gap-2"
+                        className="h-auto p-2 flex flex-col items-center gap-1.5"
                       >
                         <div className="flex gap-1">
                           <div
-                            className="w-3 h-3 rounded border"
+                            className="w-2.5 h-2.5 rounded border"
                             style={{ backgroundColor: paletteColors.accentColor }}
                           />
                           <div
-                            className="w-3 h-3 rounded border"
+                            className="w-2.5 h-2.5 rounded border"
                             style={{ backgroundColor: paletteColors.primaryButtonColor }}
                           />
                           <div
-                            className="w-3 h-3 rounded border"
+                            className="w-2.5 h-2.5 rounded border"
                             style={{ backgroundColor: paletteColors.secondaryButtonColor }}
                           />
                         </div>

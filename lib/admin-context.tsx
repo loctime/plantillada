@@ -49,12 +49,35 @@ export function AdminProvider({ children, initialConfig }: { children: ReactNode
     loadConfig()
   }, [initialConfig])
 
-  // Detectar modo admin con Ctrl+Shift+A
+  // Detectar modo admin con Ctrl+Shift+A solo si está autenticado
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.shiftKey && e.key === 'A') {
         e.preventDefault()
-        setIsAdminMode(prev => !prev)
+        
+        // Verificar si está autenticado antes de permitir el atajo
+        if (typeof window !== 'undefined') {
+          const authStatus = localStorage.getItem('admin-authenticated')
+          const loginTime = localStorage.getItem('admin-login-time')
+          
+          if (authStatus === 'true' && loginTime) {
+            // Verificar si han pasado más de 24 horas desde el login
+            const loginTimestamp = parseInt(loginTime)
+            const currentTime = Date.now()
+            const hoursSinceLogin = (currentTime - loginTimestamp) / (1000 * 60 * 60)
+            
+            if (hoursSinceLogin < 24) {
+              setIsAdminMode(prev => !prev)
+            } else {
+              // Sesión expirada, limpiar localStorage
+              localStorage.removeItem('admin-authenticated')
+              localStorage.removeItem('admin-login-time')
+              console.log('Sesión expirada, atajo de teclado deshabilitado')
+            }
+          } else {
+            console.log('Usuario no autenticado, atajo de teclado deshabilitado')
+          }
+        }
       }
     }
 
