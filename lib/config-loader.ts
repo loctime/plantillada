@@ -38,6 +38,18 @@ export interface Config {
     courseButton?: string
     aboutButton?: string
     ctaButton?: string
+    heroButtons?: Array<{
+      id: string
+      text: string
+      type: 'url' | 'section' | 'modal'
+      url?: string
+      sectionId?: string
+      modalTitle?: string
+      modalContent?: string
+      variant?: 'default' | 'outline' | 'secondary'
+      icon?: string
+      order: number
+    }>
   }
   integrations: {
     calendlyUrl: string

@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { EditableText } from '@/components/editable-text'
 import { EditableImage } from '@/components/editable-image'
 import { EditableUrl } from '@/components/editable-url'
+import { ButtonManager, ButtonConfig } from '@/components/button-manager'
 
 interface SectionContent {
   title?: string
@@ -15,6 +16,7 @@ interface SectionContent {
   buttonUrl?: string
   backgroundColor?: string
   textColor?: string
+  buttons?: ButtonConfig[]
 }
 
 interface Section {
@@ -84,7 +86,15 @@ export function DynamicSection({ section, onUpdate }: DynamicSectionProps) {
               />
             )}
             
-            {content.buttonText && (
+            {/* Gestión de botones */}
+            <ButtonManager
+              buttons={content.buttons || []}
+              onButtonsChange={(newButtons) => handleContentUpdate('buttons', newButtons)}
+              sectionId={section.id}
+            />
+            
+            {/* Botón legacy (para compatibilidad) */}
+            {content.buttonText && !content.buttons?.length && (
               <div className="flex flex-col sm:flex-row gap-3">
                 <EditableText
                   value={content.buttonText}

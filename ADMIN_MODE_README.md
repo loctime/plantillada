@@ -9,6 +9,65 @@ El modo admin inline permite editar la landing page directamente mientras navega
 ### Método 1: Atajo de Teclado
 - Presiona `Ctrl + Shift + A` en cualquier momento para activar/desactivar el modo admin
 
+## 🎯 Gestión de Botones (NUEVO)
+
+### Características Principales
+- **Agregar/Eliminar botones** en cualquier sección
+- **Editar texto** de los botones directamente
+- **Configurar URL destino** para enlaces externos
+- **Navegación interna** a secciones de la web
+- **Modales personalizables** con contenido HTML
+- **Iconos configurables** (calendario, enlace, sección, etc.)
+- **Estilos personalizables** (principal, borde, secundario)
+
+### Tipos de Botones Disponibles
+
+#### 1. URL Externa
+- Abre enlaces externos en nueva pestaña
+- Ejemplo: `https://ejemplo.com`
+
+#### 2. Sección de la Web
+- Navegación interna con scroll suave
+- Secciones disponibles: Hero, Sesiones, Curso Online, Testimonios, Contacto
+
+#### 3. Modal Personalizable
+- Abre un modal con contenido personalizado
+- Título y contenido editables
+- Soporte para HTML básico
+
+### Cómo Usar
+
+1. **Activar modo admin** con `Ctrl + Shift + A`
+2. **Hacer clic en "Gestionar Botones"** en cualquier sección
+3. **Agregar nuevo botón** con el botón verde "+"
+4. **Configurar tipo, texto, URL y estilo**
+5. **Guardar** - los cambios se aplican automáticamente
+
+### Ejemplos de Uso
+
+```json
+{
+  "id": "button-agendar",
+  "text": "Agendar Sesión",
+  "type": "modal",
+  "modalTitle": "Agenda tu sesión",
+  "modalContent": "Completa el formulario...",
+  "variant": "default",
+  "icon": "calendar"
+}
+```
+
+```json
+{
+  "id": "button-curso",
+  "text": "Ver Curso",
+  "type": "section",
+  "sectionId": "curso",
+  "variant": "outline",
+  "icon": "play"
+}
+```
+
 ### Método 2: Botón Flotante
 - Haz clic en el botón "Admin" que aparece en la esquina inferior derecha de la pantalla
 

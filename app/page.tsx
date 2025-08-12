@@ -22,6 +22,8 @@ import { AdminNotifications } from "@/components/admin-notifications"
 import { AdminDebug } from "@/components/admin-debug"
 import { ThemeSwitch } from "@/components/theme-switch"
 import { DynamicNavigation } from "@/components/dynamic-navigation"
+import { ButtonManager, ButtonConfig } from "@/components/button-manager"
+import { ButtonInfo } from "@/components/button-info"
 
 export default function Page() {
   return <PageContent />
@@ -179,6 +181,7 @@ function PageContent() {
     <div className="min-h-[100dvh] flex flex-col custom-bg">
       <Header />
       <main className="flex-1">
+        <ButtonInfo />
         <SectionManager 
           sections={sections}
           onSectionsChange={handleSectionsChange}
@@ -281,22 +284,37 @@ function Hero() {
             tag="p"
             multiline
           />
-          <div className="flex flex-col sm:flex-row gap-3">
-            <ScheduleButton
-              url={config.integrations.calendlyUrl}
-              label={config.buttons?.heroButton || "Agendar una sesión"}
-              onLabelChange={(newValue) => updateConfig({ buttons: { ...config.buttons, heroButton: newValue } })}
-              className="custom-primary-button-bg hover:opacity-90 text-white"
-            />
-            <a
-              href="#curso"
-              className={cn(
-                "inline-flex h-10 items-center justify-center rounded-md border bg-white px-6 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground custom-outline-button-bg custom-outline-button-text",
-              )}
-            >
-              Ver curso online
-            </a>
-          </div>
+          {/* Gestión de botones del Hero */}
+          <ButtonManager
+            buttons={config.buttons?.heroButtons || []}
+            onButtonsChange={(newButtons) => updateConfig({ 
+              buttons: { 
+                ...config.buttons, 
+                heroButtons: newButtons 
+              } 
+            })}
+            sectionId="hero"
+          />
+          
+          {/* Botones legacy (para compatibilidad) */}
+          {(!config.buttons?.heroButtons || config.buttons.heroButtons.length === 0) && (
+            <div className="flex flex-col sm:flex-row gap-3">
+              <ScheduleButton
+                url={config.integrations.calendlyUrl}
+                label={config.buttons?.heroButton || "Agendar una sesión"}
+                onLabelChange={(newValue) => updateConfig({ buttons: { ...config.buttons, heroButton: newValue } })}
+                className="custom-primary-button-bg hover:opacity-90 text-white"
+              />
+              <a
+                href="#curso"
+                className={cn(
+                  "inline-flex h-10 items-center justify-center rounded-md border bg-white px-6 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground custom-outline-button-bg custom-outline-button-text",
+                )}
+              >
+                Ver curso online
+              </a>
+            </div>
+          )}
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
             <div className="inline-flex items-center gap-2">
               <Calendar className="h-4 w-4" aria-hidden="true" />

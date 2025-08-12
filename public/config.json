@@ -112,5 +112,37 @@
   "legal": {
     "termsUrl": "",
     "privacyUrl": ""
+  },
+  "buttons": {
+    "heroButtons": [
+      {
+        "id": "button-hero-agendar",
+        "text": "Agendar una sesión",
+        "type": "modal",
+        "modalTitle": "Agenda tu sesión",
+        "modalContent": "Aquí puedes agendar tu sesión personalizada. Completa el formulario y te contactaremos pronto.",
+        "variant": "default",
+        "icon": "calendar",
+        "order": 0
+      },
+      {
+        "id": "button-hero-curso",
+        "text": "Ver curso online",
+        "type": "section",
+        "sectionId": "curso",
+        "variant": "outline",
+        "icon": "play",
+        "order": 1
+      },
+      {
+        "id": "button-hero-contacto",
+        "text": "Contactar",
+        "type": "url",
+        "url": "mailto:contacto@ejemplo.com",
+        "variant": "secondary",
+        "icon": "mail",
+        "order": 2
+      }
+    ]
   }
 }
