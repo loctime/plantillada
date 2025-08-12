@@ -109,7 +109,7 @@ export function ButtonManager({ buttons, onButtonsChange, className, sectionId }
       modalTitle: '',
       modalContent: '',
       variant: 'default',
-      icon: 'none'
+      icon: 'no-icon'
     })
   }
 
@@ -331,7 +331,7 @@ export function ButtonManager({ buttons, onButtonsChange, className, sectionId }
                     </Select>
                     
                     <Select
-                      value={button.icon || 'none'}
+                      value={button.icon || 'no-icon'}
                       onValueChange={(value) => updateButton(button.id, { icon: value })}
                     >
                       <SelectTrigger className="w-20 h-7">
