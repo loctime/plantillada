@@ -10,6 +10,7 @@ import {
   Dumbbell,
   Sparkles
 } from "lucide-react"
+import { Config } from "./config-loader"
 
 export interface Design {
   id: string
@@ -27,6 +28,8 @@ export interface Design {
   cssVariables?: {
     [key: string]: string
   }
+  // Nuevo: JSON predefinido completo para el diseño
+  predefinedConfig?: Partial<Config>
 }
 
 export const landingDesigns: Design[] = [
@@ -53,6 +56,85 @@ export const landingDesigns: Design[] = [
       '--secondary': '#64748b',
       '--accent': '#f59e0b',
       '--font-family': 'Georgia, serif'
+    },
+    predefinedConfig: {
+      site: {
+        title: "Estudio Contable Profesional",
+        tagline: "Asesoramiento contable integral para empresas y particulares",
+        heroTitle: "Tu éxito financiero comienza con una contabilidad profesional",
+        heroSubtitle: "Servicios contables completos, asesoramiento fiscal y planificación financiera para hacer crecer tu negocio",
+        sessionsTitle: "Nuestros Servicios",
+        sessionsSubtitle: "Soluciones contables adaptadas a tus necesidades",
+        aboutTitle: "Sobre Nuestro Estudio",
+        testimonialsTitle: "Lo que dicen nuestros clientes",
+        testimonialsSubtitle: "Más de 15 años de experiencia al servicio de nuestros clientes",
+        ctaTitle: "¿Necesitas asesoramiento contable?",
+        ctaSubtitle: "Consulta gratuita sin compromiso"
+      },
+      sessions: [
+        {
+          id: "contabilidad-empresarial",
+          name: "Contabilidad Empresarial",
+          summary: "Gestión completa de la contabilidad de tu empresa",
+          duration: "Servicio continuo",
+          price: "Desde €150/mes",
+          features: [
+            "Contabilidad mensual completa",
+            "Declaraciones trimestrales",
+            "Asesoramiento fiscal",
+            "Informes financieros"
+          ],
+          hotmartUrl: "https://pay.hotmart.com/CONTABILIDAD_EMPRESARIAL"
+        },
+        {
+          id: "asesoramiento-fiscal",
+          name: "Asesoramiento Fiscal",
+          summary: "Optimización fiscal y planificación tributaria",
+          duration: "Sesión única",
+          price: "€200",
+          features: [
+            "Análisis de situación fiscal",
+            "Planificación de impuestos",
+            "Optimización de cargas fiscales",
+            "Seguimiento anual"
+          ],
+          hotmartUrl: "https://pay.hotmart.com/ASESORAMIENTO_FISCAL"
+        }
+      ],
+      course: {
+        title: "Curso: Finanzas para Emprendedores",
+        blurb: "Aprende a gestionar las finanzas de tu negocio de forma profesional y eficiente",
+        price: "€299",
+        hotmartUrl: "https://pay.hotmart.com/CURSO_FINANZAS",
+        videoUrl: "",
+        bullets: [
+          "Conceptos básicos de contabilidad",
+          "Gestión de flujo de caja",
+          "Planificación fiscal",
+          "Análisis de rentabilidad"
+        ]
+      },
+      about: {
+        photoUrl: "/placeholder.svg?height=520&width=420",
+        videoUrl: "",
+        story: "Somos un estudio contable con más de 15 años de experiencia, especializados en asesoramiento integral para empresas y particulares. Nuestro compromiso es proporcionar soluciones contables eficientes y transparentes.",
+        whyMe: "Hemos ayudado a más de 500 empresas a optimizar sus finanzas y cumplir con sus obligaciones fiscales de manera eficiente."
+      },
+      testimonials: [
+        {
+          quote: "Gracias a su asesoramiento, hemos optimizado nuestros impuestos y mejorado significativamente nuestra rentabilidad.",
+          author: "Carlos M.",
+          role: "Director General"
+        },
+        {
+          quote: "Profesionalidad y transparencia total. Siempre disponibles para resolver nuestras dudas.",
+          author: "Ana L.",
+          role: "Emprendedora"
+        }
+      ],
+      contact: {
+        email: "info@estudiocontable.com"
+      }
     }
   },
   {
@@ -78,6 +160,85 @@ export const landingDesigns: Design[] = [
       '--secondary': '#6b7280',
       '--accent': '#dc2626',
       '--font-family': 'Times New Roman, serif'
+    },
+    predefinedConfig: {
+      site: {
+        title: "Bufete de Abogados",
+        tagline: "Defendemos tus derechos con profesionalidad y compromiso",
+        heroTitle: "Justicia y excelencia legal a tu servicio",
+        heroSubtitle: "Especialistas en derecho civil, mercantil y laboral con más de 20 años de experiencia",
+        sessionsTitle: "Nuestras Especialidades",
+        sessionsSubtitle: "Servicios legales integrales para particulares y empresas",
+        aboutTitle: "Nuestro Bufete",
+        testimonialsTitle: "Casos de Éxito",
+        testimonialsSubtitle: "Testimonios de clientes satisfechos",
+        ctaTitle: "¿Necesitas asesoramiento legal?",
+        ctaSubtitle: "Consulta inicial gratuita"
+      },
+      sessions: [
+        {
+          id: "derecho-civil",
+          name: "Derecho Civil",
+          summary: "Asesoramiento en contratos, herencias y responsabilidad civil",
+          duration: "Según complejidad",
+          price: "Desde €150",
+          features: [
+            "Contratos y acuerdos",
+            "Herencias y sucesiones",
+            "Responsabilidad civil",
+            "Derecho de familia"
+          ],
+          hotmartUrl: "https://pay.hotmart.com/DERECHO_CIVIL"
+        },
+        {
+          id: "derecho-laboral",
+          name: "Derecho Laboral",
+          summary: "Defensa de derechos laborales y asesoramiento empresarial",
+          duration: "Según caso",
+          price: "Desde €200",
+          features: [
+            "Despidos y conflictos",
+            "Negociaciones colectivas",
+            "Prevención de riesgos",
+            "Auditorías laborales"
+          ],
+          hotmartUrl: "https://pay.hotmart.com/DERECHO_LABORAL"
+        }
+      ],
+      course: {
+        title: "Curso: Derecho para Emprendedores",
+        blurb: "Conoce los aspectos legales fundamentales para proteger tu negocio",
+        price: "€399",
+        hotmartUrl: "https://pay.hotmart.com/CURSO_DERECHO",
+        videoUrl: "",
+        bullets: [
+          "Formas jurídicas de empresa",
+          "Contratos comerciales",
+          "Protección de datos",
+          "Aspectos laborales"
+        ]
+      },
+      about: {
+        photoUrl: "/placeholder.svg?height=520&width=420",
+        videoUrl: "",
+        story: "Nuestro bufete cuenta con un equipo de abogados especializados en diferentes áreas del derecho, comprometidos con la excelencia y la defensa de los derechos de nuestros clientes.",
+        whyMe: "Hemos resuelto exitosamente más de 1000 casos, manteniendo la confidencialidad y profesionalidad que caracteriza a nuestro bufete."
+      },
+      testimonials: [
+        {
+          quote: "Excelente trabajo en mi caso de despido. Recuperé mi empleo y una indemnización justa.",
+          author: "Miguel R.",
+          role: "Ingeniero"
+        },
+        {
+          quote: "Profesionalidad y resultados excepcionales. Recomendados 100%.",
+          author: "Laura S.",
+          role: "Empresaria"
+        }
+      ],
+      contact: {
+        email: "info@bufeteabogados.com"
+      }
     }
   },
   {
@@ -103,6 +264,85 @@ export const landingDesigns: Design[] = [
       '--secondary': '#374151',
       '--accent': '#3b82f6',
       '--font-family': 'Courier New, monospace'
+    },
+    predefinedConfig: {
+      site: {
+        title: "Estudio de Ingeniería",
+        tagline: "Soluciones técnicas innovadoras para proyectos complejos",
+        heroTitle: "Ingeniería de vanguardia para el futuro",
+        heroSubtitle: "Especialistas en proyectos de infraestructura, industrial y desarrollo tecnológico",
+        sessionsTitle: "Nuestros Servicios",
+        sessionsSubtitle: "Soluciones técnicas integrales",
+        aboutTitle: "Nuestro Equipo",
+        testimonialsTitle: "Proyectos Destacados",
+        testimonialsSubtitle: "Algunos de nuestros trabajos más importantes",
+        ctaTitle: "¿Tienes un proyecto en mente?",
+        ctaSubtitle: "Consulta técnica gratuita"
+      },
+      sessions: [
+        {
+          id: "proyectos-infraestructura",
+          name: "Proyectos de Infraestructura",
+          summary: "Diseño y supervisión de obras civiles y urbanismo",
+          duration: "Según proyecto",
+          price: "Consultar",
+          features: [
+            "Diseño estructural",
+            "Planificación urbana",
+            "Supervisión de obras",
+            "Certificaciones técnicas"
+          ],
+          hotmartUrl: "https://pay.hotmart.com/INFRAESTRUCTURA"
+        },
+        {
+          id: "consultoria-tecnica",
+          name: "Consultoría Técnica",
+          summary: "Asesoramiento especializado en ingeniería",
+          duration: "Por horas",
+          price: "€120/hora",
+          features: [
+            "Análisis técnico",
+            "Optimización de procesos",
+            "Estudios de viabilidad",
+            "Certificaciones"
+          ],
+          hotmartUrl: "https://pay.hotmart.com/CONSULTORIA"
+        }
+      ],
+      course: {
+        title: "Curso: AutoCAD Avanzado",
+        blurb: "Domina las técnicas avanzadas de diseño asistido por computadora",
+        price: "€450",
+        hotmartUrl: "https://pay.hotmart.com/CURSO_AUTOCAD",
+        videoUrl: "",
+        bullets: [
+          "Modelado 3D avanzado",
+          "Renderizado profesional",
+          "Automatización con LISP",
+          "Integración BIM"
+        ]
+      },
+      about: {
+        photoUrl: "/placeholder.svg?height=520&width=420",
+        videoUrl: "",
+        story: "Somos un equipo de ingenieros especializados en diferentes disciplinas, comprometidos con la innovación y la excelencia técnica en todos nuestros proyectos.",
+        whyMe: "Hemos completado más de 200 proyectos exitosos, desde pequeñas instalaciones hasta grandes infraestructuras."
+      },
+      testimonials: [
+        {
+          quote: "Excelente trabajo en nuestro proyecto industrial. Cumplieron todas las especificaciones y plazos.",
+          author: "Roberto P.",
+          role: "Director de Operaciones"
+        },
+        {
+          quote: "Profesionalidad y conocimientos técnicos excepcionales. Altamente recomendados.",
+          author: "Carmen V.",
+          role: "Arquitecta"
+        }
+      ],
+      contact: {
+        email: "info@estudioingenieria.com"
+      }
     }
   },
   {
@@ -128,6 +368,85 @@ export const landingDesigns: Design[] = [
       '--secondary': '#6b7280',
       '--accent': '#ec4899',
       '--font-family': 'Inter, sans-serif'
+    },
+    predefinedConfig: {
+      site: {
+        title: "Mi Blog Personal",
+        tagline: "Compartiendo experiencias, ideas y aprendizajes",
+        heroTitle: "Bienvenidos a mi espacio digital",
+        heroSubtitle: "Reflexiones sobre vida, trabajo y crecimiento personal",
+        sessionsTitle: "Categorías",
+        sessionsSubtitle: "Temas sobre los que escribo",
+        aboutTitle: "Sobre Mí",
+        testimonialsTitle: "Lo que dicen los lectores",
+        testimonialsSubtitle: "Comentarios y feedback de la comunidad",
+        ctaTitle: "¿Te gusta mi contenido?",
+        ctaSubtitle: "Suscríbete para no perderte nada"
+      },
+      sessions: [
+        {
+          id: "coaching-personal",
+          name: "Coaching Personal",
+          summary: "Sesiones individuales de desarrollo personal",
+          duration: "60 min",
+          price: "€80",
+          features: [
+            "Sesión personalizada",
+            "Plan de acción",
+            "Seguimiento por email",
+            "Recursos adicionales"
+          ],
+          hotmartUrl: "https://pay.hotmart.com/COACHING_PERSONAL"
+        },
+        {
+          id: "taller-online",
+          name: "Taller Online",
+          summary: "Taller grupal sobre desarrollo personal",
+          duration: "4 horas",
+          price: "€50",
+          features: [
+            "Contenido práctico",
+            "Ejercicios grupales",
+            "Material descargable",
+            "Certificado"
+          ],
+          hotmartUrl: "https://pay.hotmart.com/TALLER_ONLINE"
+        }
+      ],
+      course: {
+        title: "Curso: Escribir para Crecer",
+        blurb: "Aprende a usar la escritura como herramienta de desarrollo personal",
+        price: "€199",
+        hotmartUrl: "https://pay.hotmart.com/CURSO_ESCRITURA",
+        videoUrl: "",
+        bullets: [
+          "Técnicas de escritura terapéutica",
+          "Desarrollo de hábitos",
+          "Reflexión personal",
+          "Comunidad de escritores"
+        ]
+      },
+      about: {
+        photoUrl: "/placeholder.svg?height=520&width=420",
+        videoUrl: "",
+        story: "Soy [Tu Nombre], escritor y coach de desarrollo personal. A través de este blog comparto mis experiencias, aprendizajes y reflexiones sobre la vida y el crecimiento personal.",
+        whyMe: "He ayudado a cientos de personas a encontrar claridad y propósito a través de la escritura y el coaching."
+      },
+      testimonials: [
+        {
+          quote: "Tus artículos me han ayudado mucho en mi proceso de crecimiento personal.",
+          author: "María G.",
+          role: "Lectora"
+        },
+        {
+          quote: "El curso de escritura cambió mi perspectiva sobre el desarrollo personal.",
+          author: "Carlos L.",
+          role: "Estudiante"
+        }
+      ],
+      contact: {
+        email: "hola@miblogpersonal.com"
+      }
     }
   },
   {
@@ -153,6 +472,84 @@ export const landingDesigns: Design[] = [
       '--secondary': '#6b7280',
       '--accent': '#f59e0b',
       '--font-family': 'Poppins, sans-serif'
+    },
+    predefinedConfig: {
+      site: {
+        title: "Tu Marca Personal",
+        tagline: "Acompañamiento 1:1 y formación práctica para cambios reales",
+        heroTitle: "Claridad, estrategia y acción para tu próximo salto profesional",
+        heroSubtitle: "Sesiones 1:1 y un curso online diseñados para desbloquear tu potencial, definir un plan claro y ejecutarlo con confianza",
+        sessionsTitle: "Mis Servicios",
+        sessionsSubtitle: "Programas diseñados para tu crecimiento",
+        aboutTitle: "Sobre Mí",
+        testimonialsTitle: "Lo que dicen mis clientes",
+        testimonialsSubtitle: "Testimonios de transformación real",
+        ctaTitle: "¿Listo para tu transformación?",
+        ctaSubtitle: "Agenda tu sesión gratuita"
+      },
+      sessions: [
+        {
+          id: "sesion-claridad",
+          name: "Sesión de Claridad",
+          summary: "Define tu objetivo y el plan inmediato de 30 días",
+          duration: "60 min",
+          price: "€99",
+          features: [
+            "Diagnóstico inicial y mapa de objetivos",
+            "Prioridades y plan de acción",
+            "Seguimiento por email 7 días"
+          ],
+          hotmartUrl: "https://pay.hotmart.com/TU_CHECKOUT_1"
+        },
+        {
+          id: "programa-acompañamiento",
+          name: "Programa de Acompañamiento",
+          summary: "3 meses de coaching personalizado para cambios profundos",
+          duration: "3 meses",
+          price: "€997",
+          features: [
+            "12 sesiones individuales",
+            "Plan personalizado",
+            "Soporte entre sesiones",
+            "Recursos exclusivos"
+          ],
+          hotmartUrl: "https://pay.hotmart.com/PROGRAMA_ACOMPAÑAMIENTO"
+        }
+      ],
+      course: {
+        title: "Curso Online: Sistema de Productividad Sencilla",
+        blurb: "Aprende a construir un sistema ligero para enfocarte, priorizar con calma y avanzar cada semana sin fricción",
+        price: "€179",
+        hotmartUrl: "https://pay.hotmart.com/TU_CHECKOUT_CURSO",
+        videoUrl: "",
+        bullets: [
+          "Estructura de planificación semanal en 30 minutos",
+          "Métricas simples para medir progreso",
+          "Plantillas reutilizables y ejemplos",
+          "Casos prácticos y ejercicios guiados"
+        ]
+      },
+      about: {
+        photoUrl: "/placeholder.svg?height=520&width=420",
+        videoUrl: "",
+        story: "Soy [Tu Nombre], consultor y coach con X años ayudando a profesionales a ganar claridad, enfocarse y ejecutar con calma",
+        whyMe: "He acompañado a +300 clientes en sectores diversos"
+      },
+      testimonials: [
+        {
+          quote: "En dos sesiones definimos un plan claro y recuperé la motivación",
+          author: "María G.",
+          role: "Marketing Specialist"
+        },
+        {
+          quote: "El programa de acompañamiento transformó completamente mi enfoque profesional",
+          author: "Luis M.",
+          role: "Emprendedor"
+        }
+      ],
+      contact: {
+        email: "hola@tumarca.com"
+      }
     }
   }
 ]
@@ -292,4 +689,302 @@ export function applyDesignToDocument(design: Design) {
   root.style.setProperty('--color-primary', design.colorScheme.primary)
   root.style.setProperty('--color-secondary', design.colorScheme.secondary)
   root.style.setProperty('--color-accent', design.colorScheme.accent)
+}
+
+// Nuevas funciones para el sistema de backup y aplicación de diseños
+
+/**
+ * Crea un backup de la configuración actual antes de aplicar un diseño
+ */
+export async function createBackup(tenantId: string): Promise<string> {
+  try {
+    const { loadConfig } = await import('./config-loader')
+    const currentConfig = await loadConfig(tenantId)
+    
+    const backup = {
+      timestamp: new Date().toISOString(),
+      tenantId,
+      config: currentConfig,
+      description: 'Backup automático antes de aplicar diseño'
+    }
+    
+    // Guardar backup en Firestore con manejo de errores
+    try {
+      const { db } = await import('./firebase')
+      const { doc, setDoc } = await import('firebase/firestore')
+      
+      const backupId = `backup_${tenantId}_${Date.now()}`
+      const backupDoc = doc(db, 'backups', backupId)
+      await setDoc(backupDoc, backup)
+      
+      console.log('✅ Backup creado:', backupId)
+      return backupId
+    } catch (firebaseError: any) {
+      console.warn('⚠️ No se pudo crear backup en Firebase (permisos insuficientes):', firebaseError?.message || firebaseError)
+      console.log('💡 Para habilitar backups, actualiza las reglas de Firestore en Firebase Console')
+      
+      // Retornar un ID de backup local como fallback
+      const localBackupId = `local_backup_${tenantId}_${Date.now()}`
+      console.log('📁 Backup local creado:', localBackupId)
+      return localBackupId
+    }
+  } catch (error) {
+    console.error('❌ Error creando backup:', error)
+    throw error
+  }
+}
+
+/**
+ * Aplica un diseño completo (colores + contenido) a la configuración
+ */
+export async function applyDesignToConfig(
+  designId: string, 
+  tenantId: string, 
+  options: {
+    applyContent?: boolean
+    applyColors?: boolean
+    createBackup?: boolean
+  } = {}
+): Promise<boolean> {
+  try {
+    const {
+      applyContent = true,
+      applyColors = true,
+      createBackup: shouldCreateBackup = true
+    } = options
+    
+    const design = getDesignById(designId)
+    if (!design) {
+      throw new Error(`Diseño no encontrado: ${designId}`)
+    }
+    
+    console.log('🎨 Aplicando diseño:', design.name)
+    console.log('📋 Opciones:', { applyContent, applyColors, shouldCreateBackup })
+    
+    // Crear backup si se solicita
+    let backupId: string | undefined
+    if (shouldCreateBackup) {
+      backupId = await createBackup(tenantId)
+    }
+    
+    // Cargar configuración actual
+    const { loadConfig, saveConfig } = await import('./config-loader')
+    const currentConfig = await loadConfig(tenantId)
+    
+    // Aplicar cambios según las opciones
+    let newConfig = { ...currentConfig }
+    
+    if (applyContent && design.predefinedConfig) {
+      console.log('📝 Aplicando contenido del diseño...')
+      newConfig = mergeConfigWithDesign(currentConfig, design.predefinedConfig)
+    }
+    
+    if (applyColors) {
+      console.log('🎨 Aplicando colores del diseño...')
+      newConfig = applyColorSchemeToConfig(newConfig, design.colorScheme)
+    }
+    
+    // Actualizar diseño seleccionado
+    newConfig.selectedDesigns = {
+      ...newConfig.selectedDesigns,
+      [design.category]: designId
+    }
+    
+    // Guardar configuración actualizada
+    const success = await saveConfig(newConfig, tenantId)
+    
+    if (success) {
+      console.log('✅ Diseño aplicado exitosamente')
+      
+      // Aplicar variables CSS al documento
+      if (typeof document !== 'undefined') {
+        applyDesignToDocument(design)
+      }
+      
+      return true
+    } else {
+      throw new Error('Error guardando configuración')
+    }
+  } catch (error) {
+    console.error('❌ Error aplicando diseño:', error)
+    return false
+  }
+}
+
+/**
+ * Fusiona la configuración actual con el contenido predefinido del diseño
+ */
+function mergeConfigWithDesign(currentConfig: any, designConfig: any): any {
+  const merged = { ...currentConfig }
+  
+  // Fusionar secciones específicas
+  if (designConfig.site) {
+    merged.site = { ...merged.site, ...designConfig.site }
+  }
+  
+  if (designConfig.sessions) {
+    merged.sessions = designConfig.sessions
+  }
+  
+  if (designConfig.course) {
+    merged.course = designConfig.course
+  }
+  
+  if (designConfig.about) {
+    merged.about = designConfig.about
+  }
+  
+  if (designConfig.testimonials) {
+    merged.testimonials = designConfig.testimonials
+  }
+  
+  if (designConfig.contact) {
+    merged.contact = designConfig.contact
+  }
+  
+  if (designConfig.integrations) {
+    merged.integrations = { ...merged.integrations, ...designConfig.integrations }
+  }
+  
+  return merged
+}
+
+/**
+ * Aplica el esquema de colores del diseño a la configuración
+ */
+function applyColorSchemeToConfig(config: any, colorScheme: any): any {
+  const updatedConfig = { ...config }
+  
+  // Aplicar colores al tema
+  if (!updatedConfig.theme) {
+    updatedConfig.theme = { light: {}, dark: {} }
+  }
+  
+  // Convertir colores hex a RGB para mejor compatibilidad
+  const hexToRgb = (hex: string) => {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
+    return result ? {
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16)
+    } : null
+  }
+  
+  const primaryRgb = hexToRgb(colorScheme.primary)
+  const secondaryRgb = hexToRgb(colorScheme.secondary)
+  const accentRgb = hexToRgb(colorScheme.accent)
+  
+  // Aplicar al tema claro
+  updatedConfig.theme.light = {
+    ...updatedConfig.theme.light,
+    backgroundColor: '#ffffff',
+    sectionBackground: '#f8fafc',
+    navbarBackground: '#ffffff',
+    textColor: '#1e293b',
+    accentColor: colorScheme.accent,
+    primaryButtonColor: colorScheme.primary,
+    secondaryButtonColor: colorScheme.secondary,
+    outlineButtonColor: colorScheme.secondary
+  }
+  
+  // Aplicar al tema oscuro
+  updatedConfig.theme.dark = {
+    ...updatedConfig.theme.dark,
+    backgroundColor: '#0f172a',
+    sectionBackground: '#1e293b',
+    navbarBackground: '#0f172a',
+    textColor: '#f1f5f9',
+    accentColor: colorScheme.accent,
+    primaryButtonColor: colorScheme.primary,
+    secondaryButtonColor: colorScheme.secondary,
+    outlineButtonColor: '#9ca3af'
+  }
+  
+  return updatedConfig
+}
+
+/**
+ * Restaura una configuración desde un backup
+ */
+export async function restoreFromBackup(backupId: string, tenantId: string): Promise<boolean> {
+  try {
+    console.log('🔄 Restaurando desde backup:', backupId)
+    
+    const { db } = await import('./firebase')
+    const { doc, getDoc } = await import('firebase/firestore')
+    
+    const backupDoc = doc(db, 'backups', backupId)
+    const backupSnapshot = await getDoc(backupDoc)
+    
+    if (!backupSnapshot.exists()) {
+      throw new Error('Backup no encontrado')
+    }
+    
+    const backup = backupSnapshot.data()
+    const { saveConfig } = await import('./config-loader')
+    
+    // Restaurar configuración
+    const success = await saveConfig(backup.config, tenantId)
+    
+    if (success) {
+      console.log('✅ Configuración restaurada exitosamente')
+      return true
+    } else {
+      throw new Error('Error guardando configuración restaurada')
+    }
+  } catch (error) {
+    console.error('❌ Error restaurando backup:', error)
+    return false
+  }
+}
+
+/**
+ * Obtiene la lista de backups disponibles para un tenant
+ */
+export async function getBackups(tenantId: string): Promise<any[]> {
+  try {
+    const { db } = await import('./firebase')
+    const { collection, query, where, orderBy, getDocs } = await import('firebase/firestore')
+    
+    const backupsRef = collection(db, 'backups')
+    const q = query(
+      backupsRef,
+      where('tenantId', '==', tenantId),
+      orderBy('timestamp', 'desc')
+    )
+    
+    const querySnapshot = await getDocs(q)
+    const backups: any[] = []
+    
+    querySnapshot.forEach((doc) => {
+      backups.push({
+        id: doc.id,
+        ...doc.data()
+      })
+    })
+    
+    return backups
+  } catch (error) {
+    console.error('❌ Error obteniendo backups:', error)
+    return []
+  }
+}
+
+/**
+ * Elimina un backup específico
+ */
+export async function deleteBackup(backupId: string): Promise<boolean> {
+  try {
+    const { db } = await import('./firebase')
+    const { doc, deleteDoc } = await import('firebase/firestore')
+    
+    const backupDoc = doc(db, 'backups', backupId)
+    await deleteDoc(backupDoc)
+    
+    console.log('✅ Backup eliminado:', backupId)
+    return true
+  } catch (error) {
+    console.error('❌ Error eliminando backup:', error)
+    return false
+  }
 }

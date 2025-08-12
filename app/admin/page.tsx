@@ -10,10 +10,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
-import { Save, Eye, EyeOff, Settings, User, ShoppingCart, Calendar, Quote, Globe, Layers, Palette } from "lucide-react"
+import { Save, Eye, EyeOff, Settings, User, ShoppingCart, Calendar, Quote, Globe, Layers, Palette, Download } from "lucide-react"
 import { Config, getTenantId } from "@/lib/config-loader"
 import { TemplateSelector } from "@/components/template-selector"
 import { DesignSelector } from "@/components/design-selector"
+import BackupManager from "@/components/backup-manager"
 
 interface FormData extends Config {}
 
@@ -367,6 +368,7 @@ export default function AdminPage() {
              <TabsTrigger value="about">Sobre Mí</TabsTrigger>
              <TabsTrigger value="testimonials">Testimonios</TabsTrigger>
              <TabsTrigger value="legal">Legal</TabsTrigger>
+             <TabsTrigger value="backups">Backups</TabsTrigger>
            </TabsList>
 
                      <TabsContent value="general" className="space-y-6">
@@ -885,6 +887,10 @@ export default function AdminPage() {
                  </div>
                </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="backups" className="space-y-6">
+            <BackupManager />
           </TabsContent>
         </Tabs>
 

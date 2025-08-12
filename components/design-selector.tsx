@@ -3,20 +3,33 @@
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Label } from "@/components/ui/label"
+import { Separator } from "@/components/ui/separator"
 import { 
   Palette,
-  CheckCircle
+  CheckCircle,
+  FileText,
+  Paintbrush,
+  AlertTriangle,
+  Info
 } from "lucide-react"
-import { Design, getDesignsForTemplate } from "@/lib/designs"
+import { Design, getDesignsForTemplate, applyDesignToConfig } from "@/lib/designs"
+import { getTenantId } from "@/lib/config-loader"
 
 interface DesignSelectorProps {
   onDesignSelect: (design: Design) => void
   selectedDesign?: string
   templateType: string
+  onApply?: () => void
 }
 
-export function DesignSelector({ onDesignSelect, selectedDesign, templateType }: DesignSelectorProps) {
+export function DesignSelector({ onDesignSelect, selectedDesign, templateType, onApply }: DesignSelectorProps) {
   const [selectedDesignState, setSelectedDesignState] = useState<string>(selectedDesign || '')
+  const [applyContent, setApplyContent] = useState(true)
+  const [applyColors, setApplyColors] = useState(true)
+  const [applying, setApplying] = useState(false)
 
   // Sincronizar el estado interno con las props
   useEffect(() => {
@@ -32,6 +45,37 @@ export function DesignSelector({ onDesignSelect, selectedDesign, templateType }:
     }
   }
 
+  const handleApplyDesign = async () => {
+    if (!selectedDesignState) return
+
+    try {
+      setApplying(true)
+      const tenantId = getTenantId()
+      
+      const success = await applyDesignToConfig(selectedDesignState, tenantId, {
+        applyContent,
+        applyColors,
+        createBackup: true
+      })
+
+      if (success) {
+        if (onApply) {
+          onApply()
+        } else {
+          // Recargar la página para aplicar los cambios
+          window.location.reload()
+        }
+      } else {
+        alert('Error aplicando el diseño')
+      }
+    } catch (error) {
+      console.error('Error aplicando diseño:', error)
+      alert('Error aplicando el diseño')
+    } finally {
+      setApplying(false)
+    }
+  }
+
   const getStatusBadge = (status: Design['status']) => {
     switch (status) {
       case 'active':
@@ -44,6 +88,7 @@ export function DesignSelector({ onDesignSelect, selectedDesign, templateType }:
   }
 
   const designs = getDesignsForTemplate(templateType)
+  const selectedDesignObj = designs.find(d => d.id === selectedDesignState)
 
   if (designs.length === 0) {
     return (
@@ -136,19 +181,115 @@ export function DesignSelector({ onDesignSelect, selectedDesign, templateType }:
                   )}
                 </ul>
               </div>
+
+              {design.predefinedConfig && (
+                <div className="pt-2 border-t">
+                  <div className="flex items-center gap-1 text-xs text-blue-600">
+                    <FileText className="h-3 w-3" />
+                    Incluye contenido predefinido
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
         ))}
       </div>
 
-      {selectedDesignState && (
-        <div className="text-center">
-          <p className="text-sm text-muted-foreground">
-            Diseño seleccionado: <strong>{designs.find(d => d.id === selectedDesignState)?.name}</strong>
-          </p>
-          <p className="text-xs text-muted-foreground mt-1">
-            Este diseño se aplicará a toda la plantilla {templateType}
-          </p>
+      {selectedDesignState && selectedDesignObj && (
+        <div className="space-y-4">
+          <Separator />
+          
+          <div className="text-center">
+            <h3 className="text-lg font-semibold mb-2">
+              Diseño seleccionado: {selectedDesignObj.name}
+            </h3>
+            <p className="text-sm text-muted-foreground">
+              Este diseño se aplicará a toda la plantilla {templateType}
+            </p>
+          </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Opciones de Aplicación</CardTitle>
+              <CardDescription>
+                Elige qué elementos del diseño quieres aplicar
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="apply-colors" 
+                  checked={applyColors}
+                  onCheckedChange={(checked) => setApplyColors(checked as boolean)}
+                />
+                <Label htmlFor="apply-colors" className="flex items-center gap-2">
+                  <Paintbrush className="h-4 w-4" />
+                  Aplicar colores y tipografías
+                </Label>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="apply-content" 
+                  checked={applyContent}
+                  onCheckedChange={(checked) => setApplyContent(checked as boolean)}
+                />
+                <Label htmlFor="apply-content" className="flex items-center gap-2">
+                  <FileText className="h-4 w-4" />
+                  Aplicar contenido predefinido
+                  {selectedDesignObj.predefinedConfig && (
+                    <Badge variant="secondary" className="text-xs">Disponible</Badge>
+                  )}
+                </Label>
+              </div>
+
+              {selectedDesignObj.predefinedConfig && applyContent && (
+                <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div className="flex items-start gap-2">
+                    <Info className="h-4 w-4 text-blue-600 mt-0.5" />
+                    <div className="text-sm text-blue-800">
+                      <p className="font-medium mb-1">Contenido que se aplicará:</p>
+                      <ul className="space-y-1 text-xs">
+                        <li>• Título y descripción del sitio</li>
+                        <li>• Servicios/sesiones específicos del sector</li>
+                        <li>• Información "Sobre mí" adaptada</li>
+                        <li>• Testimonios relevantes</li>
+                        <li>• Información de contacto</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                <div className="flex items-start gap-2">
+                  <AlertTriangle className="h-4 w-4 text-amber-600 mt-0.5" />
+                  <div className="text-sm text-amber-800">
+                    <p className="font-medium mb-1">⚠️ Importante:</p>
+                    <p className="text-xs">
+                      Se creará automáticamente un backup de tu configuración actual antes de aplicar el diseño.
+                      Podrás restaurarlo desde la sección de backups si lo necesitas.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <Button 
+                onClick={handleApplyDesign}
+                disabled={applying || (!applyColors && !applyContent)}
+                className="w-full"
+              >
+                {applying ? (
+                  'Aplicando diseño...'
+                ) : (
+                  <>
+                    <Palette className="h-4 w-4 mr-2" />
+                    Aplicar Diseño
+                  </>
+                )}
+              </Button>
+            </CardContent>
+          </Card>
         </div>
       )}
     </div>
