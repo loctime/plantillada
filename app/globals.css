@@ -48,6 +48,59 @@
   --primary-button-color: #10b981;
   --secondary-button-color: #3b82f6;
   --outline-button-color: #6b7280;
+  
+  /* Nuevas variables CSS expandidas */
+  --card-background: #ffffff;
+  --card-foreground: #1e293b;
+  --popover-background: #ffffff;
+  --popover-foreground: #1e293b;
+  --muted-background: #f8fafc;
+  --muted-foreground: #64748b;
+  --border-color: #e2e8f0;
+  --input-background: #ffffff;
+  --ring-color: #3b82f6;
+  
+  /* Colores de estado */
+  --destructive-color: #ef4444;
+  --destructive-foreground: #ffffff;
+  --success-color: #10b981;
+  --success-foreground: #ffffff;
+  --warning-color: #f59e0b;
+  --warning-foreground: #ffffff;
+  --info-color: #3b82f6;
+  --info-foreground: #ffffff;
+  
+  /* Colores de navegación */
+  --sidebar-background: #ffffff;
+  --sidebar-foreground: #1e293b;
+  --sidebar-primary: #3b82f6;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f1f5f9;
+  --sidebar-accent-foreground: #1e293b;
+  --sidebar-border: #e2e8f0;
+  --sidebar-ring: #3b82f6;
+  
+  /* Colores de tipografía */
+  --heading-color: #0f172a;
+  --subtitle-color: #475569;
+  --link-color: #3b82f6;
+  --link-hover-color: #2563eb;
+  
+  /* Colores de elementos específicos */
+  --footer-background: #f8fafc;
+  --header-background: #ffffff;
+  --modal-background: #ffffff;
+  --tooltip-background: #1e293b;
+  --tooltip-foreground: #ffffff;
+  
+  /* Colores de gradientes */
+  --gradient-start: #3b82f6;
+  --gradient-end: #10b981;
+  --gradient-direction: to right;
+  
+  /* Colores de sombras */
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --shadow-opacity: 0.1;
 }
 
 .dark {
@@ -94,6 +147,59 @@
   --primary-button-color: #10b981;
   --secondary-button-color: #3b82f6;
   --outline-button-color: #9ca3af;
+  
+  /* Nuevas variables CSS expandidas para modo oscuro */
+  --card-background: #1e293b;
+  --card-foreground: #f1f5f9;
+  --popover-background: #1e293b;
+  --popover-foreground: #f1f5f9;
+  --muted-background: #334155;
+  --muted-foreground: #94a3b8;
+  --border-color: #334155;
+  --input-background: #1e293b;
+  --ring-color: #3b82f6;
+  
+  /* Colores de estado para modo oscuro */
+  --destructive-color: #ef4444;
+  --destructive-foreground: #ffffff;
+  --success-color: #10b981;
+  --success-foreground: #ffffff;
+  --warning-color: #f59e0b;
+  --warning-foreground: #ffffff;
+  --info-color: #3b82f6;
+  --info-foreground: #ffffff;
+  
+  /* Colores de navegación para modo oscuro */
+  --sidebar-background: #0f172a;
+  --sidebar-foreground: #f1f5f9;
+  --sidebar-primary: #3b82f6;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #334155;
+  --sidebar-accent-foreground: #f1f5f9;
+  --sidebar-border: #334155;
+  --sidebar-ring: #3b82f6;
+  
+  /* Colores de tipografía para modo oscuro */
+  --heading-color: #f8fafc;
+  --subtitle-color: #cbd5e1;
+  --link-color: #60a5fa;
+  --link-hover-color: #93c5fd;
+  
+  /* Colores de elementos específicos para modo oscuro */
+  --footer-background: #1e293b;
+  --header-background: #0f172a;
+  --modal-background: #1e293b;
+  --tooltip-background: #334155;
+  --tooltip-foreground: #f1f5f9;
+  
+  /* Colores de gradientes para modo oscuro */
+  --gradient-start: #3b82f6;
+  --gradient-end: #10b981;
+  --gradient-direction: to right;
+  
+  /* Colores de sombras para modo oscuro */
+  --shadow-color: rgba(0, 0, 0, 0.3);
+  --shadow-opacity: 0.3;
 }
 
 @theme inline {
@@ -139,39 +245,50 @@
   * {
     @apply border-border outline-ring/50;
   }
+  
+  /* Aplicar variables personalizadas con máxima prioridad */
+  html {
+    background-color: var(--background-color) !important;
+  }
+  
   body {
-    @apply bg-background text-foreground;
-    background-color: var(--background-color);
-    color: var(--text-color);
+    @apply text-foreground;
+    background-color: var(--background-color) !important;
+    color: var(--text-color) !important;
+  }
+  
+  /* Aplicar a todos los elementos principales */
+  #__next {
+    background-color: var(--background-color) !important;
   }
   
   /* Estilos para usar las variables CSS personalizadas */
   .custom-bg {
-    background-color: var(--background-color);
+    background-color: var(--background-color) !important;
   }
   
   .custom-section-bg {
-    background-color: var(--section-background);
+    background-color: var(--section-background) !important;
   }
   
   .custom-navbar-bg {
-    background-color: var(--navbar-background);
+    background-color: var(--navbar-background) !important;
   }
   
   .custom-navbar-bg-transparent {
-    background-color: var(--navbar-background-transparent, var(--navbar-background));
+    background-color: var(--navbar-background-transparent, var(--navbar-background)) !important;
   }
   
   .custom-text {
-    color: var(--text-color);
+    color: var(--text-color) !important;
   }
   
   .custom-accent {
-    color: var(--accent-color);
+    color: var(--accent-color) !important;
   }
   
   .custom-accent-bg {
-    background-color: var(--accent-color);
+    background-color: var(--accent-color) !important;
   }
   
   .custom-primary-button-bg {
@@ -209,6 +326,124 @@
     color: var(--outline-button-color) !important;
   }
   
+  /* Nuevas clases para colores expandidos */
+  .custom-card-bg {
+    background-color: var(--card-background) !important;
+  }
+  
+  .custom-card-text {
+    color: var(--card-foreground) !important;
+  }
+  
+  .custom-popover-bg {
+    background-color: var(--popover-background) !important;
+  }
+  
+  .custom-popover-text {
+    color: var(--popover-foreground) !important;
+  }
+  
+  .custom-muted-bg {
+    background-color: var(--muted-background) !important;
+  }
+  
+  .custom-muted-text {
+    color: var(--muted-foreground) !important;
+  }
+  
+  .custom-border {
+    border-color: var(--border-color) !important;
+  }
+  
+  .custom-input-bg {
+    background-color: var(--input-background) !important;
+  }
+  
+  .custom-ring {
+    --tw-ring-color: var(--ring-color) !important;
+  }
+  
+  /* Colores de estado */
+  .custom-destructive {
+    color: var(--destructive-color) !important;
+  }
+  
+  .custom-destructive-bg {
+    background-color: var(--destructive-color) !important;
+  }
+  
+  .custom-success {
+    color: var(--success-color) !important;
+  }
+  
+  .custom-success-bg {
+    background-color: var(--success-color) !important;
+  }
+  
+  .custom-warning {
+    color: var(--warning-color) !important;
+  }
+  
+  .custom-warning-bg {
+    background-color: var(--warning-color) !important;
+  }
+  
+  .custom-info {
+    color: var(--info-color) !important;
+  }
+  
+  .custom-info-bg {
+    background-color: var(--info-color) !important;
+  }
+  
+  /* Colores de tipografía */
+  .custom-heading {
+    color: var(--heading-color) !important;
+  }
+  
+  .custom-subtitle {
+    color: var(--subtitle-color) !important;
+  }
+  
+  .custom-link {
+    color: var(--link-color) !important;
+  }
+  
+  .custom-link:hover {
+    color: var(--link-hover-color) !important;
+  }
+  
+  /* Colores de elementos específicos */
+  .custom-footer-bg {
+    background-color: var(--footer-background) !important;
+  }
+  
+  .custom-header-bg {
+    background-color: var(--header-background) !important;
+  }
+  
+  .custom-modal-bg {
+    background-color: var(--modal-background) !important;
+  }
+  
+  .custom-tooltip-bg {
+    background-color: var(--tooltip-background) !important;
+  }
+  
+  .custom-tooltip-text {
+    color: var(--tooltip-foreground) !important;
+  }
+  
+  /* Gradientes */
+  .custom-gradient {
+    background: linear-gradient(var(--gradient-direction), var(--gradient-start), var(--gradient-end)) !important;
+  }
+  
+  /* Sombras */
+  .custom-shadow {
+    box-shadow: 0 4px 6px -1px var(--shadow-color) !important;
+  }
+  
   /* Estilos para el scroll del gestor de colores */
   .overflow-y-auto::-webkit-scrollbar {
     width: 6px;
@@ -227,6 +462,33 @@
   .overflow-y-auto::-webkit-scrollbar-thumb:hover {
     background: #94a3b8;
   }
+  
+  /* Estilos para modo oscuro */
+  .dark .overflow-y-auto::-webkit-scrollbar-track {
+    background: #374151;
+  }
+  
+  .dark .overflow-y-auto::-webkit-scrollbar-thumb {
+    background: #6b7280;
+  }
+  
+  .dark .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+  }
+}
+
+/* Aplicar variables personalizadas a elementos específicos */
+section {
+  background-color: var(--section-background) !important;
+}
+
+main {
+  background-color: var(--background-color) !important;
+}
+
+/* Forzar aplicación de colores personalizados */
+[class*="custom-"] {
+  transition: all 0.3s ease;
 }
 
 /* Line clamp utilities */

@@ -28,13 +28,21 @@ export function useTheme() {
     const theme = isDarkMode ? 'dark' : 'light'
     localStorage.setItem('theme', theme)
     
+    // Aplicar clase de tema al documentElement
+    const root = document.documentElement
+    if (isDarkMode) {
+      root.classList.add('dark')
+    } else {
+      root.classList.remove('dark')
+    }
+    console.log(`🎭 useTheme: Clase 'dark' ${isDarkMode ? 'agregada' : 'removida'} del documentElement`)
+    
     // Aplicar estilos CSS personalizados si existen en la configuración
     if (config?.theme) {
       console.log('✅ useTheme: Configuración de tema disponible')
       const activeTheme = config.theme[isDarkMode ? 'dark' : 'light']
       
       // Aplicar variables CSS personalizadas
-      const root = document.documentElement
       console.log('🎨 useTheme: Aplicando variables CSS personalizadas')
       root.style.setProperty('--background-color', activeTheme.backgroundColor)
       root.style.setProperty('--section-background', activeTheme.sectionBackground)
@@ -61,10 +69,6 @@ export function useTheme() {
       }
       
       root.style.setProperty('--navbar-background-transparent', navbarWithOpacity)
-      
-      // Aplicar clase de tema
-      document.body.classList.toggle('dark', isDarkMode)
-      console.log(`🎭 useTheme: Clase 'dark' ${isDarkMode ? 'agregada' : 'removida'} del body`)
     } else {
       console.log('⚠️ useTheme: No hay configuración de tema disponible')
     }

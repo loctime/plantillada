@@ -2,14 +2,70 @@ import { db } from './firebase'
 import { doc, getDoc, setDoc } from 'firebase/firestore'
 
 export interface ColorConfig {
+  // Colores principales
   backgroundColor: string
   sectionBackground: string
   navbarBackground: string
   textColor: string
   accentColor: string
+  
+  // Colores de botones
   primaryButtonColor: string
   secondaryButtonColor: string
   outlineButtonColor: string
+  
+  // Colores de UI Components
+  cardBackground?: string
+  cardForeground?: string
+  popoverBackground?: string
+  popoverForeground?: string
+  mutedBackground?: string
+  mutedForeground?: string
+  borderColor?: string
+  inputBackground?: string
+  ringColor?: string
+  
+  // Colores de estado
+  destructiveColor?: string
+  destructiveForeground?: string
+  successColor?: string
+  successForeground?: string
+  warningColor?: string
+  warningForeground?: string
+  infoColor?: string
+  infoForeground?: string
+  
+  // Colores de navegación
+  sidebarBackground?: string
+  sidebarForeground?: string
+  sidebarPrimary?: string
+  sidebarPrimaryForeground?: string
+  sidebarAccent?: string
+  sidebarAccentForeground?: string
+  sidebarBorder?: string
+  sidebarRing?: string
+  
+  // Colores de tipografía
+  headingColor?: string
+  subtitleColor?: string
+  linkColor?: string
+  linkHoverColor?: string
+  
+  // Colores de elementos específicos
+  footerBackground?: string
+  headerBackground?: string
+  modalBackground?: string
+  tooltipBackground?: string
+  tooltipForeground?: string
+  
+  // Colores de gradientes
+  gradientStart?: string
+  gradientEnd?: string
+  gradientDirection?: string
+  
+  // Colores de sombras
+  shadowColor?: string
+  shadowOpacity?: string
 }
 
 export interface ThemeConfig {
