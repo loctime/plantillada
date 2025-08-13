@@ -143,9 +143,9 @@ export function EditableButton({
         variant={variant}
         size={size}
         className={cn(
-          "transition-all duration-200",
-          isSaving && "opacity-75",
-          isAdminMode && "ring-2 ring-emerald-200 ring-opacity-50",
+          "theme-transition",
+          isSaving && "theme-opacity-75",
+          isAdminMode && "theme-focus",
           className
         )}
         disabled={disabled || isSaving}
@@ -162,7 +162,7 @@ export function EditableButton({
         onClick={() => setIsEditing(true)}
         disabled={isSaving}
         className={cn(
-          "absolute -top-2 -right-2 h-6 w-6 p-0 transition-opacity bg-white border shadow-sm hover:bg-gray-50 z-10",
+          "absolute -top-2 -right-2 h-6 w-6 p-0 theme-transition theme-bg-card theme-border theme-shadow theme-hover-bg z-10",
           isAdminMode ? "opacity-100" : "opacity-0 group-hover:opacity-100"
         )}
       >

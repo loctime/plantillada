@@ -133,10 +133,10 @@ export function DynamicNavigation({ config, isMobile = false }: DynamicNavigatio
             href={item.route}
             onClick={item.onClick}
             className={cn(
-              "transition-colors flex items-center gap-2",
+              "theme-transition flex items-center gap-2",
               isMobile 
-                ? "text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white py-2 px-3 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800" 
-                : "text-gray-700 hover:text-gray-900",
+                ? "theme-text-primary theme-hover-text py-2 px-3 rounded-md theme-hover-bg" 
+                : "theme-nav-link theme-hover-text",
               item.onClick && "cursor-pointer"
             )}
           >

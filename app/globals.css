@@ -88,6 +88,7 @@
   
   /* Colores de elementos específicos */
   --footer-background: #f8fafc;
+  --footer-text-color: #475569;
   --header-background: #ffffff;
   --modal-background: #ffffff;
   --tooltip-background: #1e293b;
@@ -187,6 +188,7 @@
   
   /* Colores de elementos específicos para modo oscuro */
   --footer-background: #1e293b;
+  --footer-text-color: #cbd5e1;
   --header-background: #0f172a;
   --modal-background: #1e293b;
   --tooltip-background: #334155;
@@ -245,270 +247,359 @@
   * {
     @apply border-border outline-ring/50;
   }
-  
-  /* Aplicar variables personalizadas con máxima prioridad */
-  html {
-    background-color: var(--background-color) !important;
-  }
-  
   body {
-    @apply text-foreground;
-    background-color: var(--background-color) !important;
-    color: var(--text-color) !important;
-  }
-  
-  /* Aplicar a todos los elementos principales */
-  #__next {
-    background-color: var(--background-color) !important;
-  }
-  
-  /* Estilos para usar las variables CSS personalizadas */
-  .custom-bg {
-    background-color: var(--background-color) !important;
-  }
-  
-  .custom-section-bg {
-    background-color: var(--section-background) !important;
-  }
-  
-  .custom-navbar-bg {
-    background-color: var(--navbar-background) !important;
-  }
-  
-  .custom-navbar-bg-transparent {
-    background-color: var(--navbar-background-transparent, var(--navbar-background)) !important;
-  }
-  
-  .custom-text {
-    color: var(--text-color) !important;
-  }
-  
-  .custom-accent {
-    color: var(--accent-color) !important;
-  }
-  
-  .custom-accent-bg {
-    background-color: var(--accent-color) !important;
-  }
-  
-  .custom-primary-button-bg {
-    background-color: var(--primary-button-color) !important;
-  }
-  
-  .custom-primary-button-bg:hover {
-    background-color: var(--primary-button-color) !important;
-    opacity: 0.9 !important;
-  }
-  
-  .custom-primary-button-text {
-    color: var(--primary-button-color) !important;
-  }
-  
-  .custom-secondary-button-bg {
-    background-color: var(--secondary-button-color) !important;
-  }
-  
-  .custom-secondary-button-bg:hover {
-    background-color: var(--secondary-button-color) !important;
-    opacity: 0.9 !important;
-  }
-  
-  .custom-secondary-button-text {
-    color: var(--secondary-button-color) !important;
-  }
-  
-  .custom-outline-button-bg {
-    background-color: transparent !important;
-    border-color: var(--outline-button-color) !important;
-  }
-  
-  .custom-outline-button-text {
-    color: var(--outline-button-color) !important;
-  }
-  
-  /* Nuevas clases para colores expandidos */
-  .custom-card-bg {
-    background-color: var(--card-background) !important;
-  }
-  
-  .custom-card-text {
-    color: var(--card-foreground) !important;
-  }
-  
-  .custom-popover-bg {
-    background-color: var(--popover-background) !important;
-  }
-  
-  .custom-popover-text {
-    color: var(--popover-foreground) !important;
-  }
-  
-  .custom-muted-bg {
-    background-color: var(--muted-background) !important;
-  }
-  
-  .custom-muted-text {
-    color: var(--muted-foreground) !important;
-  }
-  
-  .custom-border {
-    border-color: var(--border-color) !important;
-  }
-  
-  .custom-input-bg {
-    background-color: var(--input-background) !important;
-  }
-  
-  .custom-ring {
-    --tw-ring-color: var(--ring-color) !important;
-  }
-  
-  /* Colores de estado */
-  .custom-destructive {
-    color: var(--destructive-color) !important;
-  }
-  
-  .custom-destructive-bg {
-    background-color: var(--destructive-color) !important;
-  }
-  
-  .custom-success {
-    color: var(--success-color) !important;
-  }
-  
-  .custom-success-bg {
-    background-color: var(--success-color) !important;
-  }
-  
-  .custom-warning {
-    color: var(--warning-color) !important;
-  }
-  
-  .custom-warning-bg {
-    background-color: var(--warning-color) !important;
-  }
-  
-  .custom-info {
-    color: var(--info-color) !important;
-  }
-  
-  .custom-info-bg {
-    background-color: var(--info-color) !important;
-  }
-  
-  /* Colores de tipografía */
-  .custom-heading {
-    color: var(--heading-color) !important;
-  }
-  
-  .custom-subtitle {
-    color: var(--subtitle-color) !important;
-  }
-  
-  .custom-link {
-    color: var(--link-color) !important;
-  }
-  
-  .custom-link:hover {
-    color: var(--link-hover-color) !important;
-  }
-  
-  /* Colores de elementos específicos */
-  .custom-footer-bg {
-    background-color: var(--footer-background) !important;
-  }
-  
-  .custom-header-bg {
-    background-color: var(--header-background) !important;
-  }
-  
-  .custom-modal-bg {
-    background-color: var(--modal-background) !important;
-  }
-  
-  .custom-tooltip-bg {
-    background-color: var(--tooltip-background) !important;
-  }
-  
-  .custom-tooltip-text {
-    color: var(--tooltip-foreground) !important;
-  }
-  
-  /* Gradientes */
-  .custom-gradient {
-    background: linear-gradient(var(--gradient-direction), var(--gradient-start), var(--gradient-end)) !important;
-  }
-  
-  /* Sombras */
-  .custom-shadow {
-    box-shadow: 0 4px 6px -1px var(--shadow-color) !important;
-  }
-  
-  /* Estilos para el scroll del gestor de colores */
-  .overflow-y-auto::-webkit-scrollbar {
-    width: 6px;
-  }
-  
-  .overflow-y-auto::-webkit-scrollbar-track {
-    background: #f1f5f9;
-    border-radius: 3px;
-  }
-  
-  .overflow-y-auto::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 3px;
-  }
-  
-  .overflow-y-auto::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
-  }
-  
-  /* Estilos para modo oscuro */
-  .dark .overflow-y-auto::-webkit-scrollbar-track {
-    background: #374151;
-  }
-  
-  .dark .overflow-y-auto::-webkit-scrollbar-thumb {
-    background: #6b7280;
-  }
-  
-  .dark .overflow-y-auto::-webkit-scrollbar-thumb:hover {
-    background: #9ca3af;
+    @apply bg-background text-foreground;
   }
 }
 
-/* Aplicar variables personalizadas a elementos específicos */
-section {
-  background-color: var(--section-background) !important;
-}
+/* ===== CLASES CSS PERSONALIZADAS PARA EL SISTEMA DE TEMAS ===== */
 
-main {
+/* Clases de fondo */
+.theme-bg-primary {
   background-color: var(--background-color) !important;
 }
 
-/* Forzar aplicación de colores personalizados */
-[class*="custom-"] {
-  transition: all 0.3s ease;
+.theme-bg-section {
+  background-color: var(--section-background) !important;
 }
 
-/* Line clamp utilities */
-.line-clamp-1 {
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 1;
+.theme-bg-navbar {
+  background-color: var(--navbar-background) !important;
 }
 
-.line-clamp-2 {
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+.theme-bg-navbar-transparent {
+  background-color: var(--navbar-background-transparent) !important;
 }
 
-.line-clamp-3 {
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
+.theme-bg-card {
+  background-color: var(--card-background) !important;
+}
+
+.theme-bg-footer {
+  background-color: var(--footer-background) !important;
+}
+
+.theme-bg-header {
+  background-color: var(--header-background) !important;
+}
+
+.theme-bg-modal {
+  background-color: var(--modal-background) !important;
+}
+
+/* Clases de texto */
+.theme-text-primary {
+  color: var(--text-color) !important;
+}
+
+.theme-text-accent {
+  color: var(--accent-color) !important;
+}
+
+.theme-text-heading {
+  color: var(--heading-color) !important;
+}
+
+.theme-text-subtitle {
+  color: var(--subtitle-color) !important;
+}
+
+.theme-text-link {
+  color: var(--link-color) !important;
+}
+
+.theme-text-link-hover {
+  color: var(--link-hover-color) !important;
+}
+
+/* Clases de botones */
+.theme-btn-primary {
+  background-color: var(--primary-button-color) !important;
+  color: white !important;
+}
+
+.theme-btn-primary:hover {
+  background-color: var(--primary-button-color) !important;
+  opacity: 0.9;
+}
+
+.theme-btn-secondary {
+  background-color: var(--secondary-button-color) !important;
+  color: white !important;
+}
+
+.theme-btn-secondary:hover {
+  background-color: var(--secondary-button-color) !important;
+  opacity: 0.9;
+}
+
+.theme-btn-outline {
+  background-color: transparent !important;
+  color: var(--outline-button-color) !important;
+  border: 1px solid var(--outline-button-color) !important;
+}
+
+.theme-btn-outline:hover {
+  background-color: var(--outline-button-color) !important;
+  color: white !important;
+}
+
+/* Clases de bordes */
+.theme-border {
+  border-color: var(--border-color) !important;
+}
+
+.theme-border-accent {
+  border-color: var(--accent-color) !important;
+}
+
+/* Clases de sombras */
+.theme-shadow {
+  box-shadow: 0 1px 3px 0 var(--shadow-color), 0 1px 2px 0 var(--shadow-color) !important;
+}
+
+.theme-shadow-lg {
+  box-shadow: 0 10px 15px -3px var(--shadow-color), 0 4px 6px -2px var(--shadow-color) !important;
+}
+
+/* Clases de gradientes */
+.theme-gradient {
+  background: linear-gradient(var(--gradient-direction), var(--gradient-start), var(--gradient-end)) !important;
+}
+
+/* Clases de estado */
+.theme-success {
+  background-color: var(--success-color) !important;
+  color: var(--success-foreground) !important;
+}
+
+.theme-warning {
+  background-color: var(--warning-color) !important;
+  color: var(--warning-foreground) !important;
+}
+
+.theme-error {
+  background-color: var(--destructive-color) !important;
+  color: var(--destructive-foreground) !important;
+}
+
+.theme-info {
+  background-color: var(--info-color) !important;
+  color: var(--info-foreground) !important;
+}
+
+/* Clases de navegación */
+.theme-nav-bg {
+  background-color: var(--navbar-background) !important;
+}
+
+.theme-nav-text {
+  color: var(--text-color) !important;
+}
+
+.theme-nav-link {
+  color: var(--text-color) !important;
+}
+
+.theme-nav-link:hover {
+  color: var(--accent-color) !important;
+}
+
+/* Clases de secciones */
+.theme-section-bg {
+  background-color: var(--section-background) !important;
+}
+
+.theme-section-text {
+  color: var(--text-color) !important;
+}
+
+/* Clases de formularios */
+.theme-input-bg {
+  background-color: var(--input-background) !important;
+}
+
+.theme-input-border {
+  border-color: var(--border-color) !important;
+}
+
+.theme-input-text {
+  color: var(--text-color) !important;
+}
+
+/* Clases de tooltips */
+.theme-tooltip-bg {
+  background-color: var(--tooltip-background) !important;
+}
+
+.theme-tooltip-text {
+  color: var(--tooltip-foreground) !important;
+}
+
+/* Clases de sidebar */
+.theme-sidebar-bg {
+  background-color: var(--sidebar-background) !important;
+}
+
+.theme-sidebar-text {
+  color: var(--sidebar-foreground) !important;
+}
+
+.theme-sidebar-border {
+  border-color: var(--sidebar-border) !important;
+}
+
+/* Clases de hover */
+.theme-hover-bg:hover {
+  background-color: var(--section-background) !important;
+}
+
+.theme-hover-text:hover {
+  color: var(--accent-color) !important;
+}
+
+/* Clases de transiciones */
+.theme-transition {
+  transition: all 0.2s ease-in-out !important;
+}
+
+/* Clases de opacidad */
+.theme-opacity-80 {
+  opacity: 0.8 !important;
+}
+
+.theme-opacity-90 {
+  opacity: 0.9 !important;
+}
+
+/* Clases de backdrop */
+.theme-backdrop-blur {
+  backdrop-filter: blur(8px) !important;
+}
+
+/* Clases de scrollbar */
+.theme-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.theme-scrollbar::-webkit-scrollbar-track {
+  background: var(--section-background);
+}
+
+.theme-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+
+.theme-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-color);
+}
+
+/* Clases de focus */
+.theme-focus:focus {
+  outline: 2px solid var(--accent-color) !important;
+  outline-offset: 2px !important;
+}
+
+/* Clases de selección */
+.theme-selection::selection {
+  background-color: var(--accent-color) !important;
+  color: white !important;
+}
+
+/* Clases de placeholder */
+.theme-placeholder::placeholder {
+  color: var(--muted-foreground) !important;
+}
+
+/* Clases de disabled */
+.theme-disabled {
+  opacity: 0.5 !important;
+  pointer-events: none !important;
+}
+
+/* Clases de loading */
+.theme-loading {
+  background: linear-gradient(90deg, var(--section-background) 25%, var(--border-color) 50%, var(--section-background) 75%) !important;
+  background-size: 200% 100% !important;
+  animation: loading 1.5s infinite !important;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Clases de responsive */
+@media (max-width: 768px) {
+  .theme-mobile-bg {
+    background-color: var(--background-color) !important;
+  }
+  
+  .theme-mobile-text {
+    color: var(--text-color) !important;
+  }
+}
+
+/* Clases de print */
+@media print {
+  .theme-print-bg {
+    background-color: white !important;
+  }
+  
+  .theme-print-text {
+    color: black !important;
+  }
+}
+
+/* ===== CLASES ADICIONALES PARA FUMIGACIONES ===== */
+
+/* Clases de bordes específicos */
+.theme-border-b {
+  border-bottom: 1px solid var(--border-color) !important;
+}
+
+.theme-border-t {
+  border-top: 1px solid var(--border-color) !important;
+}
+
+.theme-border-2 {
+  border-width: 2px !important;
+}
+
+/* Clases de sombras adicionales */
+.theme-shadow-xl {
+  box-shadow: 0 20px 25px -5px var(--shadow-color), 0 10px 10px -5px var(--shadow-color) !important;
+}
+
+/* Clases de texto para footer */
+.theme-text-footer {
+  color: var(--footer-text-color) !important;
+}
+
+/* Clases de opacidad adicionales */
+.theme-opacity-20 {
+  opacity: 0.2 !important;
+}
+
+.theme-opacity-70 {
+  opacity: 0.7 !important;
+}
+
+/* Clases de hover adicionales */
+.theme-hover-bg {
+  transition: background-color 0.2s ease-in-out !important;
+}
+
+.theme-hover-bg:hover {
+  background-color: var(--section-background) !important;
+}
+
+/* Clases de transición adicionales */
+.theme-transition {
+  transition: all 0.3s ease-in-out !important;
 }

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { useAdmin } from '@/lib/admin-context'
 import { useTheme } from '@/hooks/use-theme'
 import { ColorConfig, ThemeConfig } from '@/lib/config-loader'
@@ -411,47 +411,43 @@ export function ThemeManager() {
     outlineButtonColor: '#6b7280'
   })
 
+  // Ref para throttling
+  const throttleTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const lastAppliedColorsRef = useRef<string>('')
+
   // Función para obtener el tema activo basado en la plantilla seleccionada
-  const getActiveTheme = (): ThemeConfig => {
+  const getActiveTheme = useCallback((): ThemeConfig => {
     if (!config?.selectedDesigns) {
-      console.log('🎨 ThemeManager: No hay diseños seleccionados, usando tema por defecto')
       return defaultTheme
     }
 
     // Buscar el diseño activo para la plantilla landing
     const activeDesignId = config.selectedDesigns.landing
     if (!activeDesignId) {
-      console.log('🎨 ThemeManager: No hay diseño activo para landing, usando tema por defecto')
       return defaultTheme
     }
-
-    console.log('🎨 ThemeManager: Diseño activo encontrado:', activeDesignId)
 
     // Buscar en los temas de plantillas
     const templateTheme = templateThemes[activeDesignId]
     if (templateTheme) {
-      console.log('🎨 ThemeManager: Usando tema de plantilla:', activeDesignId)
       return templateTheme
     }
 
     // Si no se encuentra en las plantillas, usar el tema de la configuración
     if (config.theme) {
-      console.log('🎨 ThemeManager: Usando tema de configuración personalizada')
       return config.theme
     }
 
-    console.log('🎨 ThemeManager: Usando tema por defecto')
     return defaultTheme
-  }
+  }, [config?.selectedDesigns, config?.theme])
 
   // Función para obtener los colores activos considerando la paleta seleccionada
-  const getActiveColors = (): ColorConfig => {
+  const getActiveColors = useCallback((): ColorConfig => {
     // Si hay una paleta seleccionada, usar sus colores
     if (selectedPalette !== 'default') {
       const palette = colorPalettes.find(p => p.id === selectedPalette)
       if (palette) {
         const paletteColors = isDarkMode ? palette.colors.dark : palette.colors.light
-        console.log(`🎨 ThemeManager: Usando colores de paleta ${selectedPalette} en modo ${isDarkMode ? 'oscuro' : 'claro'}`)
         return paletteColors
       }
     }
@@ -459,118 +455,110 @@ export function ThemeManager() {
     // Si no hay paleta seleccionada o no se encuentra, usar el tema configurado
     const currentTheme = getActiveTheme()
     const activeTheme = isDarkMode ? currentTheme.dark : currentTheme.light
-    console.log(`🎨 ThemeManager: Usando colores del tema configurado en modo ${isDarkMode ? 'oscuro' : 'claro'}`)
     return activeTheme
-  }
+  }, [selectedPalette, isDarkMode, getActiveTheme])
 
   // Obtener configuración actual o usar valores por defecto
-  const currentTheme = getActiveTheme()
-  const activeTheme = getActiveColors()
+  const currentTheme = useMemo(() => getActiveTheme(), [getActiveTheme])
+  const activeTheme = useMemo(() => getActiveColors(), [getActiveColors])
 
-  // Aplicar colores del tema activo cuando cambia el modo o el tema
-  useEffect(() => {
-    console.log(`🎨 ThemeManager: Aplicando tema ${isDarkMode ? 'oscuro' : 'claro'}`)
-    applyColors(activeTheme)
-  }, [isDarkMode, activeTheme])
-
-  // Inicializar colores editados cuando se activa la edición
-  useEffect(() => {
-    if (isEditing) {
-      console.log('🎨 ThemeManager: Inicializando colores editados')
-      setEditedColors(activeTheme)
-    }
-  }, [isEditing, activeTheme])
-
-  // Función para aplicar colores inmediatamente
-  const applyColors = (colors: ColorConfig) => {
+  // Función para aplicar colores inmediatamente (optimizada)
+  const applyColors = useCallback((colors: ColorConfig) => {
     if (typeof document === 'undefined') {
-      console.log('❌ ThemeManager: Document no disponible')
+      return
+    }
+
+    // Crear una clave única para los colores
+    const colorsKey = JSON.stringify(colors)
+    
+    // Evitar aplicar los mismos colores múltiples veces
+    if (lastAppliedColorsRef.current === colorsKey) {
       return
     }
 
     const root = document.documentElement
     const body = document.body
-    console.log('🎨 ThemeManager: Aplicando colores:', colors)
 
-    Object.entries(colors).forEach(([key, value]) => {
-      if (value) {
-        const cssVar = `--${key.replace(/([A-Z])/g, '-$1').toLowerCase()}`
-        root.style.setProperty(cssVar, value)
-        console.log(`🎨 Aplicando CSS: ${cssVar} = ${value}`)
+    // Aplicar colores de forma más eficiente
+    const updates = [
+      () => {
+        Object.entries(colors).forEach(([key, value]) => {
+          if (value) {
+            const cssVar = `--${key.replace(/([A-Z])/g, '-$1').toLowerCase()}`
+            root.style.setProperty(cssVar, value)
+          }
+        })
+      },
+      () => {
+        // Crear color de navegación con transparencia
+        if (colors.navbarBackground) {
+          const navbarColor = colors.navbarBackground
+          let navbarWithOpacity = navbarColor
+          
+          if (navbarColor.startsWith('#')) {
+            const r = parseInt(navbarColor.slice(1, 3), 16)
+            const g = parseInt(navbarColor.slice(3, 5), 16)
+            const b = parseInt(navbarColor.slice(5, 7), 16)
+            navbarWithOpacity = `rgba(${r}, ${g}, ${b}, 0.8)`
+          } else if (navbarColor.startsWith('rgb(')) {
+            navbarWithOpacity = navbarColor.replace('rgb(', 'rgba(').replace(')', ', 0.8)')
+          }
+          
+          root.style.setProperty('--navbar-background-transparent', navbarWithOpacity)
+        }
+      },
+      () => {
+        // Aplicar colores directamente a elementos principales
+        if (colors.backgroundColor) {
+          body.style.backgroundColor = colors.backgroundColor
+          root.style.backgroundColor = colors.backgroundColor
+        }
+
+        if (colors.textColor) {
+          body.style.color = colors.textColor
+        }
       }
-    })
+    ]
 
-    // Crear color de navegación con transparencia
-    if (colors.navbarBackground) {
-      const navbarColor = colors.navbarBackground
-      let navbarWithOpacity = navbarColor
-      
-      if (navbarColor.startsWith('#')) {
-        const r = parseInt(navbarColor.slice(1, 3), 16)
-        const g = parseInt(navbarColor.slice(3, 5), 16)
-        const b = parseInt(navbarColor.slice(5, 7), 16)
-        navbarWithOpacity = `rgba(${r}, ${g}, ${b}, 0.8)`
-      } else if (navbarColor.startsWith('rgb(')) {
-        navbarWithOpacity = navbarColor.replace('rgb(', 'rgba(').replace(')', ', 0.8)')
-      }
-      
-      root.style.setProperty('--navbar-background-transparent', navbarWithOpacity)
-      console.log(`🎨 Aplicando CSS: --navbar-background-transparent = ${navbarWithOpacity}`)
-    }
-
-    // Aplicar colores directamente a elementos principales
-    if (colors.backgroundColor) {
-      body.style.backgroundColor = colors.backgroundColor
-      root.style.backgroundColor = colors.backgroundColor
-      console.log(`🎨 Aplicando fondo directo: ${colors.backgroundColor}`)
-    }
-
-    if (colors.textColor) {
-      body.style.color = colors.textColor
-      console.log(`🎨 Aplicando color de texto directo: ${colors.textColor}`)
-    }
-
-    // Verificar que las variables se aplicaron
-    console.log('🔍 ThemeManager: Verificando variables aplicadas:')
-    const computedStyle = getComputedStyle(root)
-    console.log('--background-color:', computedStyle.getPropertyValue('--background-color'))
-    console.log('--text-color:', computedStyle.getPropertyValue('--text-color'))
-    console.log('--accent-color:', computedStyle.getPropertyValue('--accent-color'))
+    // Ejecutar todas las actualizaciones de una vez
+    updates.forEach(update => update())
     
-    // Verificar que el body tiene el color aplicado
-    const bodyStyle = getComputedStyle(document.body)
-    console.log('Body background-color:', bodyStyle.backgroundColor)
-  }
+    // Actualizar la referencia de colores aplicados
+    lastAppliedColorsRef.current = colorsKey
+  }, [])
+
+  // Aplicar colores del tema activo cuando cambia el modo o el tema
+  useEffect(() => {
+    applyColors(activeTheme)
+  }, [activeTheme, applyColors])
+
+  // Inicializar colores editados cuando se activa la edición
+  useEffect(() => {
+    if (isEditing) {
+      setEditedColors(activeTheme)
+    }
+  }, [isEditing, activeTheme])
 
   // Función para aplicar paleta de colores
-  const applyPalette = (paletteId: string) => {
+  const applyPalette = useCallback((paletteId: string) => {
     const palette = colorPalettes.find(p => p.id === paletteId)
     if (!palette) {
-      console.log(`❌ ThemeManager: Paleta ${paletteId} no encontrada`)
       return
     }
-
-    console.log(`🎨 ThemeManager: Aplicando paleta ${paletteId} en modo ${isDarkMode ? 'oscuro' : 'claro'}`)
     
     // Actualizar la paleta seleccionada
     setSelectedPalette(paletteId)
-    
-    // Los colores se aplicarán automáticamente en el useEffect cuando cambie activeTheme
-    // debido a que getActiveColors() ahora considera la paleta seleccionada
     
     // Si estamos editando, actualizar los colores editados
     if (isEditing) {
       const paletteColors = isDarkMode ? palette.colors.dark : palette.colors.light
       setEditedColors(paletteColors)
-      console.log('🎨 ThemeManager: Actualizando colores editados con la nueva paleta')
     }
-  }
+  }, [isEditing, isDarkMode])
 
   // Función para guardar cambios
-  const saveChanges = async () => {
+  const saveChanges = useCallback(async () => {
     try {
-      console.log('💾 ThemeManager: Guardando cambios de colores...')
-      
       // Si hay una paleta seleccionada, crear un tema completo con ambos modos
       let newTheme: ThemeConfig
       
@@ -582,7 +570,6 @@ export function ThemeManager() {
             light: palette.colors.light,
             dark: palette.colors.dark
           }
-          console.log('💾 ThemeManager: Guardando paleta completa:', selectedPalette)
         } else {
           // Fallback al tema actual
           newTheme = {
@@ -598,38 +585,50 @@ export function ThemeManager() {
         }
       }
 
-      // Actualizar configuración
-      const updatedConfig = {
-        ...config,
-        theme: newTheme
+      // Actualizar la configuración
+      if (updateConfig) {
+        await updateConfig({
+          ...config,
+          theme: newTheme
+        })
       }
 
-      await updateConfig(updatedConfig)
-      console.log('✅ ThemeManager: Cambios guardados exitosamente')
       setIsEditing(false)
-      
-      // Resetear la paleta seleccionada ya que ahora está guardada en la configuración
-      setSelectedPalette('default')
     } catch (error) {
-      console.error('❌ ThemeManager: Error guardando cambios:', error)
+      console.error('Error al guardar cambios:', error)
     }
-  }
+  }, [selectedPalette, currentTheme, isDarkMode, editedColors, config, updateConfig])
 
   // Función para cancelar edición
-  const cancelEditing = () => {
+  const cancelEditing = useCallback(() => {
     setEditedColors(activeTheme)
     setIsEditing(false)
-    // Los colores se aplicarán automáticamente en el useEffect
-    console.log('🎨 ThemeManager: Cancelando edición, volviendo a colores activos')
-  }
+  }, [activeTheme])
 
-  // Función para manejar cambios en colores
-  const handleColorChange = (key: keyof ColorConfig, value: string) => {
+  // Función para manejar cambios en colores (con throttling)
+  const handleColorChange = useCallback((key: keyof ColorConfig, value: string) => {
     const newColors = { ...editedColors, [key]: value }
     setEditedColors(newColors)
-    // Aplicar cambios inmediatamente
-    applyColors(newColors)
-  }
+    
+    // Limpiar timeout anterior si existe
+    if (throttleTimeoutRef.current) {
+      clearTimeout(throttleTimeoutRef.current)
+    }
+    
+    // Aplicar cambios con throttling para mejorar rendimiento
+    throttleTimeoutRef.current = setTimeout(() => {
+      applyColors(newColors)
+    }, 16) // ~60fps
+  }, [editedColors, applyColors])
+
+  // Limpiar timeout al desmontar
+  useEffect(() => {
+    return () => {
+      if (throttleTimeoutRef.current) {
+        clearTimeout(throttleTimeoutRef.current)
+      }
+    }
+  }, [])
 
   return (
     <Card className="w-full max-w-md max-h-[70vh] flex flex-col shadow-xl">

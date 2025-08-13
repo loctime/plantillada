@@ -294,7 +294,7 @@ function PageContent() {
 
   // Layout estándar para otros diseños
   return (
-    <div className="min-h-[100dvh] flex flex-col custom-bg">
+    <div className="min-h-[100dvh] flex flex-col theme-bg-primary">
       <Header />
       <main className="flex-1">
         <SectionManager 
@@ -317,14 +317,14 @@ function Header() {
   if (!config) return null
 
   return (
-    <header className="sticky top-0 z-50 custom-navbar-bg-transparent backdrop-blur-md border-b">
+    <header className="sticky top-0 z-50 theme-bg-navbar-transparent theme-backdrop-blur theme-border theme-transition">
       <div className="container px-4 md:px-6 h-16 flex items-center justify-between">
         {/* Lado izquierdo: Título */}
         <div className="flex items-center">
           <EditableText
             value={config.site.title}
             onSave={(newValue) => updateConfig({ site: { ...config.site, title: newValue } })}
-            className="font-semibold tracking-tight text-lg"
+            className="font-semibold tracking-tight text-lg theme-text-heading"
             tag="span"
           />
         </div>
@@ -346,7 +346,7 @@ function Header() {
           {/* Enlace al Panel de Administración */}
           <Link
             href="/admin"
-            className="hidden md:flex items-center gap-2 px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            className="hidden md:flex items-center gap-2 px-3 py-2 text-sm font-medium theme-text-subtitle theme-hover-text theme-transition"
           >
             <Settings className="h-4 w-4" />
             Admin
@@ -355,13 +355,13 @@ function Header() {
           {/* Botón de menú móvil */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            className="md:hidden p-2 rounded-md theme-hover-bg theme-transition"
             aria-label="Abrir menú de navegación"
           >
             {isMobileMenuOpen ? (
-              <X className="h-5 w-5" />
+              <X className="h-5 w-5 theme-text-primary" />
             ) : (
-              <Menu className="h-5 w-5" />
+              <Menu className="h-5 w-5 theme-text-primary" />
             )}
           </button>
         </div>
@@ -369,13 +369,13 @@ function Header() {
       
       {/* Menú móvil */}
       {isMobileMenuOpen && (
-        <div className="md:hidden border-t custom-bg">
+        <div className="md:hidden theme-border-t theme-bg-primary">
           <div className="container px-4 py-4">
             <DynamicNavigation config={config} isMobile={true} />
-            <div className="mt-4 pt-4 border-t">
+            <div className="mt-4 pt-4 theme-border-t">
               <Link
                 href="/admin"
-                className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                className="flex items-center gap-2 px-3 py-2 text-sm font-medium theme-text-subtitle theme-hover-text theme-transition"
               >
                 <Settings className="h-4 w-4" />
                 Panel de Administración
@@ -394,10 +394,10 @@ function Hero() {
   if (!config) return null
 
   return (
-    <section className="w-full py-16 md:py-24 lg:py-28">
+    <section className="w-full py-16 md:py-24 lg:py-28 theme-bg-primary">
       <div className="container px-4 md:px-6 grid gap-10 lg:grid-cols-2 items-center">
         <div className="space-y-6">
-          <div className="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs text-muted-foreground">
+          <div className="inline-flex items-center gap-2 rounded-full theme-border px-3 py-1 text-xs theme-text-subtitle">
             <EditableText
               value={config.site.tagline}
               onSave={(newValue) => updateConfig({ site: { ...config.site, tagline: newValue } })}
@@ -407,13 +407,13 @@ function Hero() {
           <EditableText
             value={config.site.heroTitle || "Claridad, estrategia y acción para tu próximo salto profesional"}
             onSave={(newValue) => updateConfig({ site: { ...config.site, heroTitle: newValue } })}
-            className="text-4xl/tight sm:text-5xl/tight font-bold tracking-tighter"
+            className="text-4xl/tight sm:text-5xl/tight font-bold tracking-tighter theme-text-heading"
             tag="h1"
           />
           <EditableText
             value={config.site.heroSubtitle || "Sesiones 1:1 y un curso online diseñados para desbloquear tu potencial, definir un plan claro y ejecutarlo con confianza."}
             onSave={(newValue) => updateConfig({ site: { ...config.site, heroSubtitle: newValue } })}
-            className="text-muted-foreground text-lg"
+            className="theme-text-subtitle text-lg"
             tag="p"
             multiline
           />
@@ -437,19 +437,19 @@ function Hero() {
                 url={config.integrations.calendlyUrl}
                 label={config.buttons?.heroButton || "Agendar una sesión"}
                 onLabelChange={(newValue) => updateConfig({ buttons: { ...config.buttons, heroButton: newValue } })}
-                className="custom-primary-button-bg hover:opacity-90 text-white"
+                className="theme-btn-primary theme-opacity-90"
               />
               <a
                 href="#curso"
                 className={cn(
-                  "inline-flex h-10 items-center justify-center rounded-md border bg-white px-6 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground custom-outline-button-bg custom-outline-button-text",
+                  "inline-flex h-10 items-center justify-center rounded-md theme-border theme-bg-card px-6 text-sm font-medium theme-shadow theme-transition theme-hover-bg theme-btn-outline",
                 )}
               >
                 Ver curso online
               </a>
             </div>
           )}
-          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+          <div className="flex items-center gap-4 text-sm theme-text-subtitle">
             <div className="inline-flex items-center gap-2">
               <Calendar className="h-4 w-4" aria-hidden="true" />
               <span>{"Agenda en 2 minutos"}</span>
@@ -482,7 +482,7 @@ function Sessions() {
   if (!config) return null
 
   return (
-    <section id="sesiones" className="w-full py-16 md:py-24 custom-section-bg">
+    <section id="sesiones" className="w-full py-16 md:py-24 theme-bg-section">
       <div className="container px-4 md:px-6">
         <SessionManager 
           sessions={config.sessions}
@@ -492,20 +492,20 @@ function Sessions() {
           <EditableText
             value={config.site.sessionsTitle || "Sesiones 1:1"}
             onSave={(newValue) => updateConfig({ site: { ...config.site, sessionsTitle: newValue } })}
-            className="text-3xl sm:text-4xl font-bold tracking-tight"
+            className="text-3xl sm:text-4xl font-bold tracking-tight theme-text-heading"
             tag="h2"
           />
           <EditableText
             value={config.site.sessionsSubtitle || "Elige la sesión que mejor se adapta a tu momento. Enfocadas, prácticas y orientadas a resultados."}
             onSave={(newValue) => updateConfig({ site: { ...config.site, sessionsSubtitle: newValue } })}
-            className="text-muted-foreground mt-3"
+            className="theme-text-subtitle mt-3"
             tag="p"
             multiline
           />
         </div>
         <div className="grid gap-6 md:grid-cols-3">
           {config.sessions.map((session, index) => (
-            <article key={session.id} className="rounded-xl border custom-bg p-6 flex flex-col">
+            <article key={session.id} className="rounded-xl theme-border theme-bg-card p-6 flex flex-col theme-shadow">
               <div className="space-y-1">
                 <EditableText
                   value={session.name}
@@ -872,7 +872,7 @@ function CTABanner() {
   if (!config) return null
 
   return (
-    <section className="w-full py-12 md:py-16 custom-accent-bg">
+    <section className="w-full py-12 md:py-16 theme-bg-accent">
       <div className="container px-4 md:px-6 text-center text-white space-y-4">
         <EditableText
           value={config.site.ctaTitle || "¿Listo para dar el siguiente paso?"}
@@ -883,7 +883,7 @@ function CTABanner() {
         <EditableText
           value={config.site.ctaSubtitle || "Agenda tu sesión o adquiere el curso y comienza hoy mismo."}
           onSave={(newValue) => updateConfig({ site: { ...config.site, ctaSubtitle: newValue } })}
-          className="opacity-90"
+          className="theme-opacity-90"
           tag="p"
           multiline
         />
@@ -892,13 +892,13 @@ function CTABanner() {
             url={config.integrations.calendlyUrl}
             label={config.buttons?.ctaButton || "Agendar ahora"}
             onLabelChange={(newValue) => updateConfig({ buttons: { ...config.buttons, ctaButton: newValue } })}
-            className="bg-white custom-primary-button-text hover:bg-white/90"
+            className="theme-btn-primary theme-opacity-90"
           />
           <a
             href={config.course.hotmartUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex h-10 items-center justify-center rounded-md custom-secondary-button-bg hover:opacity-90 px-6 text-sm font-medium shadow"
+            className="inline-flex h-10 items-center justify-center rounded-md theme-btn-secondary theme-opacity-90 px-6 text-sm font-medium theme-shadow"
           >
             Comprar el curso
           </a>
@@ -927,24 +927,24 @@ function Footer() {
   if (!config) return null
 
   return (
-    <footer className="border-t">
+    <footer className="theme-border-t theme-bg-footer">
       <div className="container px-4 md:px-6 py-8 flex flex-col sm:flex-row items-center gap-4">
-        <div className="text-sm text-muted-foreground">
+        <div className="text-sm theme-text-subtitle">
           {"© "} {new Date().getFullYear()} {config.site.title}. Todos los derechos reservados.
         </div>
         <nav className="sm:ml-auto flex items-center gap-4 text-sm">
           {config.contact.email && (
-            <a href={`mailto:${config.contact.email}`} className="hover:underline">
+            <a href={`mailto:${config.contact.email}`} className="theme-text-link theme-hover-text theme-transition">
               Contacto
             </a>
           )}
           {config.legal.termsUrl && (
-            <Link href={config.legal.termsUrl} className="hover:underline">
+            <Link href={config.legal.termsUrl} className="theme-text-link theme-hover-text theme-transition">
               Términos
             </Link>
           )}
           {config.legal.privacyUrl && (
-            <Link href={config.legal.privacyUrl} className="hover:underline">
+            <Link href={config.legal.privacyUrl} className="theme-text-link theme-hover-text theme-transition">
               Privacidad
             </Link>
           )}

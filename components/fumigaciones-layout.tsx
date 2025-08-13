@@ -37,10 +37,10 @@ export function FumigacionesLayout() {
   // Si no hay config, mostrar loading
   if (!config) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center theme-bg-primary">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600 mx-auto"></div>
-          <p className="mt-2 text-muted-foreground">Cargando configuración...</p>
+          <p className="mt-2 theme-text-subtitle">Cargando configuración...</p>
         </div>
       </div>
     )
@@ -102,9 +102,9 @@ export function FumigacionesLayout() {
   ]
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen theme-bg-primary">
       {/* Header con información de emergencia */}
-      <div className="bg-primary text-primary-foreground py-2">
+      <div className="theme-bg-accent theme-text-primary py-2">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center text-sm">
             <div className="flex items-center space-x-6">
@@ -161,7 +161,7 @@ export function FumigacionesLayout() {
                     })
                   }
                 }}
-                className="text-orange-400 font-semibold"
+                className="theme-text-accent font-semibold"
                 tag="span"
               />
             </div>
@@ -171,7 +171,7 @@ export function FumigacionesLayout() {
 
       {/* Navegación principal */}
       <nav className={cn(
-        "bg-card shadow-lg border-b transition-all duration-300 z-50",
+        "theme-bg-navbar theme-shadow-lg theme-border-b theme-transition z-50",
         isScrolled ? "fixed top-0 left-0 right-0 py-0" : "py-2"
       )}>
         <div className="container mx-auto px-4">
@@ -182,7 +182,7 @@ export function FumigacionesLayout() {
                    value={config.site?.logo || "/placeholder-logo.png"}
                    alt={config.site?.title || "Logo"}
                    className={cn(
-                     "object-contain rounded-lg transition-all duration-300",
+                     "object-contain rounded-lg theme-transition",
                      isScrolled ? "h-8 w-8" : "h-16 w-16"
                    )}
                    onSave={(value) => {
@@ -213,7 +213,7 @@ export function FumigacionesLayout() {
                      }
                    }}
                    className={cn(
-                     "font-bold text-foreground leading-tight transition-all duration-300",
+                     "font-bold theme-text-heading leading-tight theme-transition",
                      isScrolled ? "text-lg" : "text-xl"
                    )}
                    tag="h1"
@@ -232,7 +232,7 @@ export function FumigacionesLayout() {
                      }
                    }}
                    className={cn(
-                     "text-muted-foreground leading-tight transition-all duration-300",
+                     "theme-text-subtitle leading-tight theme-transition",
                      isScrolled ? "text-xs" : "text-sm"
                    )}
                    tag="span"
@@ -251,7 +251,7 @@ export function FumigacionesLayout() {
               {/* Botón de menú móvil */}
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="md:hidden p-2 text-muted-foreground hover:text-foreground transition-colors"
+                className="md:hidden p-2 theme-text-subtitle theme-hover-text theme-transition"
               >
                 {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
               </button>
@@ -260,7 +260,7 @@ export function FumigacionesLayout() {
           
           {/* Menú móvil */}
           {isMobileMenuOpen && (
-            <div className="md:hidden py-4 border-t">
+            <div className="md:hidden py-4 theme-border-t">
               <div className="flex flex-col space-y-4">
                 <DynamicNavigation config={config} isMobile={true} />
               </div>
@@ -273,7 +273,7 @@ export function FumigacionesLayout() {
       {isScrolled && <div className="h-16"></div>}
 
       {/* Hero Section - Layout específico para fumigaciones */}
-      <section className="relative bg-gradient-to-r from-primary to-primary/80 text-primary-foreground py-20">
+      <section className="relative theme-bg-accent theme-text-primary py-20">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
@@ -306,7 +306,7 @@ export function FumigacionesLayout() {
                     })
                   }
                 }}
-                className="text-2xl text-accent font-semibold" 
+                className="text-2xl theme-text-accent font-semibold" 
                 tag="h2" 
               />
               <EditableText 
@@ -322,7 +322,7 @@ export function FumigacionesLayout() {
                     })
                   }
                 }}
-                className="text-primary-foreground/80 text-lg" 
+                className="theme-opacity-80 text-lg" 
                 tag="p" 
               />
               <EditableText 
@@ -338,7 +338,7 @@ export function FumigacionesLayout() {
                     })
                   }
                 }}
-                className="bg-accent text-accent-foreground px-8 py-4 rounded-lg text-lg font-semibold hover:bg-accent/80 transition-colors cursor-pointer inline-block"
+                className="theme-bg-primary theme-text-primary px-8 py-4 rounded-lg text-lg font-semibold theme-hover-bg theme-transition cursor-pointer inline-block"
                 tag="span"
               />
             </div>
@@ -346,7 +346,7 @@ export function FumigacionesLayout() {
               <EditableImage
                 value={config.fumigaciones?.heroImage || "/placeholder.jpg"}
                 alt="Servicios de fumigación"
-                className="rounded-lg shadow-2xl"
+                className="rounded-lg theme-shadow-lg"
                 onSave={(value) => {
                   if (updateConfig) {
                     updateConfig({
@@ -365,7 +365,7 @@ export function FumigacionesLayout() {
       </section>
 
       {/* Sección de servicios de emergencia */}
-      <section className="py-16 bg-muted/50">
+      <section className="py-16 theme-bg-section">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <EditableText 
@@ -381,7 +381,7 @@ export function FumigacionesLayout() {
                   })
                 }
               }}
-              className="text-4xl font-bold text-foreground mb-4" 
+              className="text-4xl font-bold theme-text-primary mb-4" 
               tag="h2" 
             />
             <EditableText 
@@ -397,15 +397,15 @@ export function FumigacionesLayout() {
                   })
                 }
               }}
-              className="text-xl text-muted-foreground" 
+              className="text-xl theme-text-subtitle" 
               tag="p" 
             />
           </div>
           
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {emergencyServices.map((service, index) => (
-              <div key={index} className="bg-card p-6 rounded-lg shadow-lg text-center border">
-                <div className="text-primary mb-4 flex justify-center">
+              <div key={index} className="theme-bg-card p-6 rounded-lg theme-shadow-lg text-center theme-border">
+                <div className="theme-text-accent mb-4 flex justify-center">
                   {service.icon}
                 </div>
                 <EditableText 
@@ -423,7 +423,7 @@ export function FumigacionesLayout() {
                       })
                     }
                   }}
-                  className="text-xl font-semibold text-foreground mb-2" 
+                  className="text-xl font-semibold theme-text-primary mb-2" 
                   tag="h3" 
                 />
                 <EditableText 
@@ -441,7 +441,7 @@ export function FumigacionesLayout() {
                       })
                     }
                   }}
-                  className="text-muted-foreground" 
+                  className="theme-text-subtitle" 
                   tag="p" 
                 />
               </div>
@@ -451,7 +451,7 @@ export function FumigacionesLayout() {
       </section>
 
       {/* Sección de protección */}
-      <section className="py-16 bg-background">
+      <section className="py-16 theme-bg-primary">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
@@ -468,7 +468,7 @@ export function FumigacionesLayout() {
                     })
                   }
                 }}
-                className="text-4xl font-bold text-foreground mb-6" 
+                className="text-4xl font-bold theme-text-primary mb-6" 
                 tag="h2" 
               />
               <EditableText 
@@ -484,12 +484,12 @@ export function FumigacionesLayout() {
                     })
                   }
                 }}
-                className="text-lg text-muted-foreground mb-6" 
+                className="text-lg theme-text-primary mb-6" 
                 tag="p" 
               />
               <div className="space-y-4">
                 <div className="flex items-center space-x-3">
-                  <Check className="h-6 w-6 text-primary" />
+                  <Check className="h-6 w-6 theme-text-accent" />
                   <EditableText 
                     value={config.fumigaciones?.aboutPoint2 || "Métodos seguros para mascotas y niños"} 
                     onSave={(value) => {
@@ -503,12 +503,12 @@ export function FumigacionesLayout() {
                         })
                       }
                     }}
-                    className="text-foreground" 
+                    className="theme-text-primary" 
                     tag="span" 
                   />
                 </div>
                 <div className="flex items-center space-x-3">
-                  <Check className="h-6 w-6 text-primary" />
+                  <Check className="h-6 w-6 theme-text-accent" />
                   <EditableText 
                     value={config.fumigaciones?.aboutPoint3 || "Garantía de resultados"} 
                     onSave={(value) => {
@@ -522,7 +522,7 @@ export function FumigacionesLayout() {
                         })
                       }
                     }}
-                    className="text-foreground" 
+                    className="theme-text-primary" 
                     tag="span" 
                   />
                 </div>
@@ -532,7 +532,7 @@ export function FumigacionesLayout() {
               <EditableImage
                 value={config.fumigaciones?.emergencyImage || "/placeholder.jpg"}
                 alt="Protección integral"
-                className="rounded-lg shadow-xl"
+                className="rounded-lg theme-shadow-xl"
                 onSave={(value) => {
                   if (updateConfig) {
                     updateConfig({
@@ -551,7 +551,7 @@ export function FumigacionesLayout() {
       </section>
 
       {/* Sección de principios de trabajo */}
-      <section className="py-16 bg-muted/50">
+      <section className="py-16 theme-bg-section">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <EditableText 
@@ -567,16 +567,16 @@ export function FumigacionesLayout() {
                   })
                 }
               }}
-              className="text-4xl font-bold text-foreground mb-4" 
+              className="text-4xl font-bold theme-text-primary mb-4" 
               tag="h2" 
             />
-            <p className="text-xl text-muted-foreground">3 pasos simples para eliminar plagas</p>
+            <p className="text-xl theme-text-subtitle">3 pasos simples para eliminar plagas</p>
           </div>
           
           <div className="grid md:grid-cols-3 gap-8">
             {workSteps.map((step, index) => (
-              <div key={index} className="bg-card p-8 rounded-lg shadow-lg text-center border">
-                <div className="bg-primary text-primary-foreground w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-6">
+              <div key={index} className="theme-bg-card p-8 rounded-lg theme-shadow-lg text-center theme-border">
+                <div className="theme-bg-accent theme-text-primary w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-6">
                   {step.step}
                 </div>
                 <EditableText 
@@ -594,7 +594,7 @@ export function FumigacionesLayout() {
                       })
                     }
                   }}
-                  className="text-2xl font-semibold text-foreground mb-4" 
+                  className="text-2xl font-semibold theme-text-primary mb-4" 
                   tag="h3" 
                 />
                 <EditableText 
@@ -612,7 +612,7 @@ export function FumigacionesLayout() {
                       })
                     }
                   }}
-                  className="text-muted-foreground" 
+                  className="theme-text-subtitle" 
                   tag="p" 
                 />
               </div>
@@ -622,7 +622,7 @@ export function FumigacionesLayout() {
       </section>
 
       {/* Call to Action */}
-      <section className="py-16 bg-accent">
+      <section className="py-16 theme-bg-accent">
         <div className="container mx-auto px-4 text-center">
           <EditableText 
             value={config.fumigaciones?.ctaTitle || "¿Necesitas servicios de fumigación?"} 
@@ -637,15 +637,15 @@ export function FumigacionesLayout() {
                 })
               }
             }}
-            className="text-4xl font-bold text-accent-foreground mb-4" 
+            className="text-4xl font-bold theme-text-primary mb-4" 
             tag="h2" 
           />
-          <p className="text-xl text-accent-foreground/80 mb-8">Servicio 24/7 - Respuesta inmediata</p>
+          <p className="text-xl theme-opacity-80 mb-8">Servicio 24/7 - Respuesta inmediata</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <span className="bg-background text-foreground px-8 py-4 rounded-lg text-lg font-semibold hover:bg-muted transition-colors cursor-pointer inline-block">
+            <span className="theme-bg-primary theme-text-primary px-8 py-4 rounded-lg text-lg font-semibold theme-hover-bg theme-transition cursor-pointer inline-block">
               Solicitar Cita
             </span>
-            <span className="border-2 border-accent-foreground text-accent-foreground px-8 py-4 rounded-lg text-lg font-semibold hover:bg-accent-foreground hover:text-accent transition-colors cursor-pointer inline-block">
+            <span className="theme-border-2 theme-border-accent theme-text-primary px-8 py-4 rounded-lg text-lg font-semibold theme-hover-bg theme-transition cursor-pointer inline-block">
               Emergencia 24/7
             </span>
           </div>
@@ -653,7 +653,7 @@ export function FumigacionesLayout() {
       </section>
 
       {/* Sección About Us */}
-      <section className="py-16 bg-background">
+      <section className="py-16 theme-bg-primary">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
@@ -670,13 +670,13 @@ export function FumigacionesLayout() {
                     })
                   }
                 }}
-                className="text-4xl font-bold text-foreground mb-6" 
+                className="text-4xl font-bold theme-text-primary mb-6" 
                 tag="h2" 
               />
-              <p className="text-lg text-muted-foreground mb-6">
+              <p className="text-lg theme-text-subtitle mb-6">
                 Más de 10 años protegiendo hogares y empresas de plagas con métodos seguros y efectivos.
               </p>
-              <p className="text-lg text-muted-foreground">
+              <p className="text-lg theme-text-subtitle">
                 Nuestro compromiso es proporcionar soluciones efectivas y seguras para el control de plagas.
               </p>
             </div>
@@ -684,7 +684,7 @@ export function FumigacionesLayout() {
               <EditableImage
                 value={config.fumigaciones?.aboutImage || "/placeholder.jpg"}
                 alt="Sobre nosotros"
-                className="rounded-lg shadow-xl"
+                className="rounded-lg theme-shadow-xl"
                 onSave={(value) => {
                   if (updateConfig) {
                     updateConfig({
@@ -703,7 +703,7 @@ export function FumigacionesLayout() {
       </section>
 
       {/* Testimonios */}
-      <section className="py-16 bg-muted/50">
+      <section className="py-16 theme-bg-section">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <EditableText 
@@ -719,17 +719,17 @@ export function FumigacionesLayout() {
                   })
                 }
               }}
-              className="text-4xl font-bold text-foreground mb-4" 
+              className="text-4xl font-bold theme-text-primary mb-4" 
               tag="h2" 
             />
-            <p className="text-xl text-muted-foreground">Más de 10 años protegiendo hogares y empresas</p>
+            <p className="text-xl theme-text-subtitle">Más de 10 años protegiendo hogares y empresas</p>
           </div>
           
           <div className="grid md:grid-cols-3 gap-8">
             {config.testimonials?.slice(0, 3).map((testimonial, index) => (
-              <div key={index} className="bg-card p-6 rounded-lg shadow-lg border">
+              <div key={index} className="theme-bg-card p-6 rounded-lg theme-shadow-lg theme-border">
                 <div className="flex items-center mb-4">
-                  <Quote className="h-8 w-8 text-primary" />
+                  <Quote className="h-8 w-8 theme-text-accent" />
                 </div>
                 <EditableText 
                   value={testimonial.quote || "Excelente servicio profesional"} 
@@ -743,11 +743,11 @@ export function FumigacionesLayout() {
                       })
                     }
                   }}
-                  className="text-muted-foreground mb-4" 
+                  className="theme-text-subtitle mb-4" 
                   tag="p" 
                 />
                 <div className="flex items-center">
-                  <div className="w-12 h-12 bg-muted rounded-full mr-4"></div>
+                  <div className="w-12 h-12 theme-bg-section rounded-full mr-4"></div>
                   <div>
                     <EditableText 
                       value={testimonial.author || "Cliente Satisfecho"} 
@@ -761,7 +761,7 @@ export function FumigacionesLayout() {
                           })
                         }
                       }}
-                      className="font-semibold text-foreground" 
+                      className="font-semibold theme-text-primary" 
                       tag="span" 
                     />
                     <EditableText 
@@ -776,7 +776,7 @@ export function FumigacionesLayout() {
                           })
                         }
                       }}
-                      className="text-muted-foreground text-sm block" 
+                      className="theme-text-subtitle text-sm block" 
                       tag="span" 
                     />
                   </div>
@@ -788,7 +788,7 @@ export function FumigacionesLayout() {
       </section>
 
       {/* Call to Action final */}
-      <section className="py-16 bg-primary text-primary-foreground">
+      <section className="py-16 theme-bg-accent theme-text-primary">
         <div className="container mx-auto px-4 text-center">
           <EditableText 
             value={config.fumigaciones?.finalCtaTitle || "¿Listo para eliminar las plagas?"} 
@@ -806,15 +806,15 @@ export function FumigacionesLayout() {
             className="text-4xl font-bold mb-4" 
             tag="h2" 
           />
-          <p className="text-xl text-primary-foreground/80 mb-8">Contáctanos hoy mismo para una evaluación gratuita</p>
-          <span className="bg-accent text-accent-foreground px-8 py-4 rounded-lg text-lg font-semibold hover:bg-accent/80 transition-colors cursor-pointer inline-block">
+          <p className="text-xl theme-opacity-80 mb-8">Contáctanos hoy mismo para una evaluación gratuita</p>
+          <span className="theme-bg-primary theme-text-primary px-8 py-4 rounded-lg text-lg font-semibold theme-hover-bg theme-transition cursor-pointer inline-block">
             Solicitar Evaluación Gratuita
           </span>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-primary text-primary-foreground py-12">
+      <footer className="theme-bg-footer theme-text-footer py-12">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
@@ -847,14 +847,14 @@ export function FumigacionesLayout() {
                     })
                   }
                 }}
-                className="text-primary-foreground/70" 
+                className="theme-opacity-70" 
                 tag="p" 
               />
             </div>
             
             <div>
               <h4 className="text-lg font-semibold mb-4">Servicios</h4>
-              <ul className="space-y-2 text-primary-foreground/70">
+              <ul className="space-y-2 theme-opacity-70">
                 <li>Fumigación Residencial</li>
                 <li>Fumigación Comercial</li>
                 <li>Control de Termitas</li>
@@ -864,7 +864,7 @@ export function FumigacionesLayout() {
             
             <div>
               <h4 className="text-lg font-semibold mb-4">Contacto</h4>
-              <div className="space-y-2 text-primary-foreground/70">
+              <div className="space-y-2 theme-opacity-70">
                 <div className="flex items-center space-x-2">
                   <Phone className="h-4 w-4" />
                   <span>{config.fumigaciones?.emergencyPhone || "555-0123"}</span>
@@ -899,7 +899,7 @@ export function FumigacionesLayout() {
                         })
                       }
                     }}
-                    className="text-primary-foreground/70 hover:text-primary-foreground transition-colors"
+                    className="theme-opacity-70 theme-hover-text theme-transition"
                   />
                   <EditableUrl 
                     value={config.fumigaciones?.socialLinks?.instagram || "#"} 
@@ -917,7 +917,7 @@ export function FumigacionesLayout() {
                         })
                       }
                     }}
-                    className="text-primary-foreground/70 hover:text-primary-foreground transition-colors"
+                    className="theme-opacity-70 theme-hover-text theme-transition"
                   />
                   <EditableUrl 
                     value={config.fumigaciones?.socialLinks?.twitter || "#"} 
@@ -935,13 +935,13 @@ export function FumigacionesLayout() {
                         })
                       }
                     }}
-                    className="text-primary-foreground/70 hover:text-primary-foreground transition-colors"
+                    className="theme-opacity-70 theme-hover-text theme-transition"
                   />
                 </div>
             </div>
           </div>
           
-          <div className="border-t border-primary-foreground/20 mt-8 pt-8 text-center text-primary-foreground/70">
+          <div className="theme-border-t theme-opacity-20 mt-8 pt-8 text-center theme-opacity-70">
             <EditableText 
               value={config.fumigaciones?.footerCopyright || "© 2024 Pest Busters. Todos los derechos reservados."} 
               onSave={(value) => {
