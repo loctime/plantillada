@@ -42,6 +42,7 @@ scripts/
 - **Ingenieros**: Verdes y azules, tipografía técnica + contenido técnico
 - **Blog Personal**: Colores vibrantes, tipografía moderna + contenido personal
 - **Coach Personal**: Colores cálidos, tipografía amigable + contenido coaching
+- **Fumigaciones**: Verdes y naranjas, layout específico + contenido de control de plagas (NUEVO)
 
 ### Tienda Online
 - **Tech Shop**: Azules tecnológicos, tipografía futurista
@@ -272,6 +273,26 @@ Este script prueba:
 7. ✅ Eliminación de backup
 8. ✅ Verificación de eliminación
 
+### Script de Prueba de Fumigaciones (NUEVO)
+```bash
+node scripts/test-fumigaciones-design.js
+```
+
+Este script prueba:
+1. ✅ Creación de configuración específica de fumigaciones
+2. ✅ Aplicación del diseño de fumigaciones
+3. ✅ Verificación del layout específico
+4. ✅ Contenido específico del sector
+5. ✅ Configuración de colores y tipografías
+1. ✅ Creación de configuración inicial
+2. ✅ Creación de backup automático
+3. ✅ Listado de backups
+4. ✅ Modificación de configuración
+5. ✅ Restauración desde backup
+6. ✅ Verificación de restauración
+7. ✅ Eliminación de backup
+8. ✅ Verificación de eliminación
+
 ### Prueba Manual
 1. Ve a `/admin`
 2. Inicia sesión: `admin` / `admin123`
@@ -291,9 +312,42 @@ Este script prueba:
 7. **Aplicación**: `useDesign` hook aplica el diseño
 8. **Renderizado**: Variables CSS se aplican al documento
 
-## 🎨 Personalización Avanzada
+## 🐛 Fumigaciones - Layout Específico
 
-### Agregar Nuevas Variables CSS
+### Características del Diseño
+El diseño de fumigaciones incluye un **layout completamente específico** que cambia la posición y estructura de los elementos:
+
+- **Header de emergencia**: Barra superior con información de contacto 24/7
+- **Navegación profesional**: Logo, menú y botón de cita
+- **Hero section**: Gradiente oscuro con llamadas de emergencia
+- **Sección de servicios**: Grid de tipos de plagas con iconos
+- **Principios de trabajo**: 3 pasos numerados con iconos
+- **Call to action**: Secciones naranjas para emergencias
+- **Footer**: Información de contacto y redes sociales
+
+### Componente Específico
+```typescript
+// components/fumigaciones-layout.tsx
+export function FumigacionesLayout({ config }: FumigacionesLayoutProps) {
+  // Layout completamente personalizado para fumigaciones
+  // Incluye secciones específicas del sector
+}
+```
+
+### Activación Automática
+El layout se activa automáticamente cuando:
+```typescript
+config.selectedDesigns?.landing === 'fumigaciones'
+```
+
+### Contenido Específico del Sector
+- **Servicios**: Fumigación residencial, comercial, control de termitas, emergencias 24/7
+- **Tipos de plagas**: Cucarachas, termitas, hormigas, moscas, mosquitos, arañas, roedores, fauna silvestre
+- **Proceso de trabajo**: 3 pasos claros (preparación, desinfección, limpieza)
+- **Testimonios**: Casos específicos del sector de fumigación
+- **Contacto**: Información de emergencia y horarios
+
+## 🎨 Personalización Avanzada
 ```typescript
 cssVariables: {
   '--primary': '#color',

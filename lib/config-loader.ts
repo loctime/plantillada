@@ -80,6 +80,7 @@ export interface Config {
     heroTitle?: string
     heroSubtitle?: string
     heroImageUrl?: string
+    logo?: string
     sessionsTitle?: string
     sessionsSubtitle?: string
     aboutTitle?: string
@@ -88,6 +89,63 @@ export interface Config {
     ctaTitle?: string
     ctaSubtitle?: string
     showPrices?: boolean
+  }
+  fumigaciones?: {
+    // Información de contacto
+    emergencyServices?: Array<{
+      title: string
+      description: string
+      icon?: any
+    }>
+    // Enlaces sociales
+    socialLinks?: {
+      facebook?: string
+      twitter?: string
+      google?: string
+      instagram?: string
+    }
+    // Contenido específico
+    tagline?: string
+    heroDescription?: string
+    heroImage?: string
+    emergencyTitle?: string
+    emergencyPhone?: string
+    emergencyDescription?: string
+    emergencyImage?: string
+    emergencyUrl?: string
+    emergencyButtonText?: string
+    protectionTitle?: string
+    servicesUrl?: string
+    servicesButtonText?: string
+    workPrincipleTitle?: string
+    ctaTitle?: string
+    contactUrl?: string
+    contactButtonText?: string
+    aboutTitle?: string
+    aboutPoint1?: string
+    aboutPoint2?: string
+    aboutPoint3?: string
+    aboutImage?: string
+    testimonialsTitle?: string
+    finalCtaTitle?: string
+    finalAppointmentUrl?: string
+    finalAppointmentText?: string
+    footerEmergencyText?: string
+    footerPhone?: string
+    footerCopyright?: string
+    appointmentUrl?: string
+    appointmentText?: string
+    // Listas editables
+    pestTypes?: Array<{
+      name: string
+      icon?: any
+    }>
+    workSteps?: Array<{
+      number: string
+      title: string
+      description: string
+      icon?: any
+    }>
   }
   sections?: Array<{
     id: string

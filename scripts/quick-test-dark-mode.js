@@ -62,3 +62,4 @@ console.log('\n🧪 Ejecutando prueba automática...')
 quickPalette()
 
 
+

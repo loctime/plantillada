@@ -35,6 +35,19 @@ landing-hotmart-calendly/
 
 ## 🎯 Funcionalidades Principales
 
+### 🎨 **Sistema de Edición Reactiva (NUEVO)**
+
+**Regla Fundamental**: Si no es editable, no está terminado.
+
+El proyecto incluye un **sistema de edición inline** que permite modificar todo el contenido en tiempo real:
+
+- ✅ **Edición reactiva** - Cambios inmediatos sin refrescar
+- ✅ **Componentes editables** - `EditableText`, `EditableImage`, `EditableUrl`
+- ✅ **Contexto admin** - Gestión centralizada del estado
+- ✅ **Persistencia automática** - Guardado en Firebase
+
+**Documentación completa**: Ver `REACTIVE_EDITING_README.md` para la fórmula mágica de implementación.
+
 ### 1. Integración Calendly
 - **Componente**: `components/schedule-dialog.tsx`
 - **Funcionalidad**: Modal con iframe de Calendly
@@ -546,6 +559,32 @@ ADMIN_PASSWORD=admin123
 - **Railway**: Full-stack hosting
 
 ## 🔄 Mantenimiento
+
+## 🎯 Reglas de Desarrollo
+
+### **Regla Fundamental**: Si no es editable, no está terminado
+
+Al implementar nuevas funcionalidades, **SIEMPRE** seguir estas reglas:
+
+1. **Usar el contexto admin directamente**
+   ```tsx
+   const { config, updateConfig } = useAdmin()
+   ```
+
+2. **Hacer todo editable por defecto**
+   - Textos → `EditableText`
+   - Imágenes → `EditableImage` 
+   - URLs → `EditableUrl`
+
+3. **Actualizar la interfaz Config**
+   - Agregar nuevos campos en `lib/config-loader.ts`
+   - Usar tipos TypeScript apropiados
+
+4. **Probar la reactividad**
+   - Verificar que los cambios se reflejan inmediatamente
+   - No debe requerir refrescar la página
+
+**Documentación completa**: `REACTIVE_EDITING_README.md`
 
 ### Actualizaciones Regulares
 - **Dependencias**: `pnpm update`

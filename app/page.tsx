@@ -25,6 +25,7 @@ import { AdminDebug } from "@/components/admin-debug"
 import { ThemeSwitch } from "@/components/theme-switch"
 import { DynamicNavigation } from "@/components/dynamic-navigation"
 import { SectionButtonManager } from "@/components/section-button-manager"
+import { FumigacionesLayout } from "@/components/fumigaciones-layout"
 
 
 export default function Page() {
@@ -276,6 +277,22 @@ function PageContent() {
     }
   }
 
+  // Verificar si se debe usar el layout específico de fumigaciones
+  const shouldUseFumigacionesLayout = config.selectedDesigns?.landing === 'fumigaciones'
+
+  // Si es el diseño de fumigaciones, usar el layout específico
+  if (shouldUseFumigacionesLayout) {
+    return (
+      <div className="min-h-[100dvh] flex flex-col">
+        <FumigacionesLayout />
+        <AdminToggle />
+        <AdminNotifications />
+        <AdminDebug />
+      </div>
+    )
+  }
+
+  // Layout estándar para otros diseños
   return (
     <div className="min-h-[100dvh] flex flex-col custom-bg">
       <Header />

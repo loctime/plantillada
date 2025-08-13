@@ -1,0 +1,228 @@
+{
+  "site": {
+    "title": "Pest Busters - Control de Plagas Profesional",
+    "tagline": "Soluciones integrales de fumigación y control de plagas para hogares y empresas",
+    "heroTitle": "Complex Approach to Pest Control",
+    "heroSubtitle": "Servicios profesionales de fumigación y control de plagas con tecnología avanzada y garantía de resultados",
+    "sessionsTitle": "Nuestros Servicios",
+    "sessionsSubtitle": "Soluciones especializadas para cada tipo de plaga",
+    "aboutTitle": "Sobre Nosotros",
+    "testimonialsTitle": "Lo que dicen nuestros clientes",
+    "testimonialsSubtitle": "Más de 10 años protegiendo hogares y empresas",
+    "ctaTitle": "¿Necesitas servicios de fumigación?",
+    "ctaSubtitle": "Servicio 24/7 - Respuesta inmediata",
+    "showPrices": true,
+    "logo": "/placeholder-logo.svg"
+  },
+  "fumigaciones": {
+    "emergencyServices": {
+      "phone": "24/7 Emergency Service",
+      "hours": "Mon-Fri 10AM-7PM",
+      "callText": "Call Us (719) 445-2808"
+    },
+    "socialLinks": {
+      "facebook": "https://facebook.com/pestbusters",
+      "twitter": "https://twitter.com/pestbusters",
+      "google": "https://google.com/pestbusters",
+      "instagram": "https://instagram.com/pestbusters"
+    },
+    "tagline": "Pest Control Services",
+    "heroDescription": "LOREM IPSUM DOLOR SIT AMET CONSE CTETUR ADIPISICIN",
+    "heroImage": "/placeholder.jpg",
+    "emergencyTitle": "24/7 Emergency Services",
+    "emergencyPhone": "Tel: (719) 445-2808",
+    "emergencyDescription": "Servicio de emergencia disponible las 24 horas para infestaciones críticas. Respuesta inmediata y tratamiento efectivo.",
+    "emergencyImage": "/placeholder.jpg",
+    "emergencyUrl": "#",
+    "emergencyButtonText": "NEED EMERGENCY SERVICES?",
+    "protectionTitle": "HOW CAN WE PROTECT YOUR HOME?",
+    "servicesUrl": "#",
+    "servicesButtonText": "SEE ALL SERVICES",
+    "workPrincipleTitle": "WORK PRINCIPLE",
+    "ctaTitle": "You Have Questions. He Has Answers.",
+    "contactUrl": "#",
+    "contactButtonText": "CONTACT US",
+    "aboutTitle": "ABOUT US",
+    "aboutPoint1": "Lorem ipsum dolor sit amet consectetur",
+    "aboutPoint2": "Adipisicing elit, sed do eiusmod tempor incididunt",
+    "aboutPoint3": "Ut labore et dolore magna aliqua",
+    "aboutImage": "/placeholder.jpg",
+    "testimonialsTitle": "WHAT PEOPLE THINK ABOUT US",
+    "finalCtaTitle": "SOLVE THEM IN NO TIME.",
+    "finalAppointmentUrl": "#",
+    "finalAppointmentText": "MAKE AN APPOINTMENT",
+    "footerEmergencyText": "24/7 EMERGENCY SERVICES",
+    "footerPhone": "TEL: (719) 445-2808",
+    "footerCopyright": "© 2024 Pest Busters. All rights reserved. | Privacy Policy",
+    "appointmentUrl": "#",
+    "appointmentText": "MAKE AN APPOINTMENT",
+    "pestTypes": [
+      { "name": "Cockroaches" },
+      { "name": "Termites" },
+      { "name": "Ants" },
+      { "name": "Flies" },
+      { "name": "Mosquitoes" },
+      { "name": "Spiders" },
+      { "name": "Rodents" },
+      { "name": "Wildlife" }
+    ],
+    "workSteps": [
+      {
+        "number": "1",
+        "title": "Preparatory Arrangements",
+        "description": "Inspección completa y preparación del área"
+      },
+      {
+        "number": "2",
+        "title": "Disinfection",
+        "description": "Aplicación de tratamientos especializados"
+      },
+      {
+        "number": "3",
+        "title": "Removal After Disinfection",
+        "description": "Limpieza y certificación del servicio"
+      }
+    ]
+  },
+  "theme": {
+    "light": {
+      "backgroundColor": "#f8fafc",
+      "sectionBackground": "#ffffff",
+      "navbarBackground": "#ffffff",
+      "textColor": "#1e293b",
+      "accentColor": "#f59e0b",
+      "primaryButtonColor": "#059669",
+      "secondaryButtonColor": "#475569",
+      "outlineButtonColor": "#f59e0b"
+    },
+    "dark": {
+      "backgroundColor": "#0f172a",
+      "sectionBackground": "#1e293b",
+      "navbarBackground": "#0f172a",
+      "textColor": "#f1f5f9",
+      "accentColor": "#f59e0b",
+      "primaryButtonColor": "#059669",
+      "secondaryButtonColor": "#475569",
+      "outlineButtonColor": "#fbbf24"
+    }
+  },
+  "sessions": [
+    {
+      "id": "fumigacion-residencial",
+      "name": "Fumigación Residencial",
+      "summary": "Control completo de plagas para hogares y viviendas",
+      "duration": "2-4 horas",
+      "price": "Desde €120",
+      "features": [
+        "Inspección completa de la propiedad",
+        "Tratamiento integral de plagas",
+        "Productos seguros para mascotas",
+        "Garantía de 6 meses",
+        "Certificado de fumigación",
+        "Seguimiento post-tratamiento"
+      ],
+      "hotmartUrl": "https://pay.hotmart.com/FUMIGACION_RESIDENCIAL",
+      "showPrice": true
+    },
+    {
+      "id": "fumigacion-comercial",
+      "name": "Fumigación Comercial",
+      "summary": "Servicios especializados para empresas y comercios",
+      "duration": "4-8 horas",
+      "price": "Desde €250",
+      "features": [
+        "Análisis de riesgo específico",
+        "Plan de control personalizado",
+        "Tratamiento sin interrumpir operaciones",
+        "Cumplimiento de normativas sanitarias",
+        "Garantía de 12 meses",
+        "Reporte técnico detallado"
+      ],
+      "hotmartUrl": "https://pay.hotmart.com/FUMIGACION_COMERCIAL",
+      "showPrice": true
+    },
+    {
+      "id": "control-termitas",
+      "name": "Control de Termitas",
+      "summary": "Eliminación y prevención de termitas",
+      "duration": "1-2 días",
+      "price": "Desde €350",
+      "features": [
+        "Detección con tecnología avanzada",
+        "Tratamiento curativo y preventivo",
+        "Barreras químicas protectoras",
+        "Monitoreo continuo",
+        "Garantía de 5 años",
+        "Certificado de garantía"
+      ],
+      "hotmartUrl": "https://pay.hotmart.com/CONTROL_TERMITAS",
+      "showPrice": true
+    },
+    {
+      "id": "emergencia-24h",
+      "name": "Servicio de Emergencia 24/7",
+      "summary": "Respuesta inmediata para infestaciones críticas",
+      "duration": "2-6 horas",
+      "price": "Desde €180",
+      "features": [
+        "Respuesta en menos de 2 horas",
+        "Equipo especializado disponible",
+        "Tratamiento de emergencia",
+        "Evaluación de riesgo inmediata",
+        "Plan de acción urgente",
+        "Seguimiento prioritario"
+      ],
+      "hotmartUrl": "https://pay.hotmart.com/EMERGENCIA_24H",
+      "showPrice": true
+    }
+  ],
+  "course": {
+    "title": "Curso: Prevención de Plagas en el Hogar",
+    "blurb": "Aprende técnicas efectivas para prevenir y detectar plagas en tu hogar antes de que se conviertan en un problema",
+    "price": "€89",
+    "hotmartUrl": "https://pay.hotmart.com/CURSO_PREVENCION_PLAGAS",
+    "videoUrl": "",
+    "bullets": [
+      "Identificación de signos de plagas",
+      "Métodos de prevención efectivos",
+      "Productos naturales y seguros",
+      "Mantenimiento preventivo del hogar",
+      "Cuándo llamar a profesionales",
+      "Certificado de finalización"
+    ]
+  },
+  "about": {
+    "photoUrl": "/placeholder.svg?height=520&width=420",
+    "videoUrl": "",
+    "story": "Somos una empresa especializada en control de plagas con más de 10 años de experiencia en el sector. Nuestro equipo de técnicos certificados utiliza tecnología avanzada y productos seguros para proteger tu hogar y negocio.",
+    "whyMe": "Contamos con certificaciones internacionales y utilizamos métodos respetuosos con el medio ambiente. Nuestra garantía de satisfacción y seguimiento post-tratamiento nos diferencia de la competencia."
+  },
+  "testimonials": [
+    {
+      "quote": "Excelente servicio. Llegaron puntuales y resolvieron nuestro problema de termitas de manera profesional. Muy recomendables.",
+      "author": "María G.",
+      "role": "Propietaria"
+    },
+    {
+      "quote": "El equipo fue muy profesional y cuidadoso. Explicaron todo el proceso y nos dieron garantía. Ya no tenemos problemas de plagas.",
+      "author": "Carlos R.",
+      "role": "Empresario"
+    },
+    {
+      "quote": "Servicio de emergencia rápido y efectivo. Resolvieron nuestra infestación de cucarachas en menos de 2 horas.",
+      "author": "Ana L.",
+      "role": "Restaurante"
+    }
+  ],
+  "contact": {
+    "email": "info@pestbusters.com",
+    "phone": "(719) 445-2808"
+  },
+  "legal": {
+    "termsUrl": "/terminos",
+    "privacyUrl": "/privacidad"
+  },
+  "selectedDesigns": {
+    "landing": "fumigaciones"
+  }
+}
