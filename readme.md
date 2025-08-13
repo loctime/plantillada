@@ -1,615 +1,467 @@
-# Landing Page - Hotmart + Calendly
+# 🚀 Plantillada - Sistema Multi-Plantilla
 
-Landing page profesional para servicios de coaching/consultoría con integración de Hotmart (ventas) y Calendly (agendamiento).
+Una plataforma completa para crear y gestionar diferentes tipos de sitios web desde un solo panel de administración, con sistema de edición reactiva y múltiples plantillas especializadas.
 
-## 🏗️ Arquitectura del Proyecto
+## ✨ Características Principales
+
+### 🎯 Sistema Multi-Plantilla
+- **Landing Page**: Página de aterrizaje profesional con formularios y conversión
+- **Tienda Online**: E-commerce completo con sistema de clonación de productos
+- **Centro de Psicología**: Sitio web especializado para psicólogos y terapeutas
+- **Sitio Multi-Página**: Combinación de múltiples secciones en un solo sitio
+- **LinkHub**: Página de enlaces personales y redes sociales
+- **Foro Comunitario**: Plataforma de discusión (próximamente)
+
+### 🎨 Sistema de Edición Reactiva
+- **Edición inline**: Modifica contenido directamente en la página
+- **Cambios en tiempo real**: Sin necesidad de refrescar
+- **Componentes editables**: Texto, imágenes, URLs, listas
+- **Upload de archivos**: Sube imágenes directamente con drag & drop
+- **Optimización automática**: Cloudinary optimiza las imágenes automáticamente
+- **Modo admin protegido**: Solo usuarios autenticados pueden editar
+- **Guardado automático**: Cambios se guardan en Firebase automáticamente
+
+### 🛒 Sistema de Clonación Avanzado
+- **Extracción automática**: Clona productos desde cualquier sitio web
+- **Procesamiento de imágenes**: Optimización automática con Cloudinary
+- **Rate limiting inteligente**: Respeto a los límites de velocidad
+- **Estadísticas en tiempo real**: Métricas detalladas de clonación
+
+### 🎨 Sistema de Diseños
+- **Múltiples paletas de colores**: Especializadas por sector
+- **Temas claro/oscuro**: Con paletas específicas para cada modo
+- **Diseños predefinidos**: Contenido específico por sector
+- **Sistema de backup**: Restauración de configuraciones anteriores
+
+## 🏗️ Arquitectura del Sistema
 
 ### Stack Tecnológico
 - **Framework**: Next.js 15 (App Router)
 - **Lenguaje**: TypeScript
 - **Styling**: Tailwind CSS v4
 - **UI Components**: shadcn/ui (Radix UI)
-- **Gestión de Estado**: React Hooks
-- **Formularios**: React Hook Form + Zod
-- **Iconos**: Lucide React
-- **Fuentes**: Geist (Sans + Mono)
+- **Base de datos**: Firebase Firestore
+- **Autenticación**: Firebase Auth
+- **Procesamiento de imágenes**: Cloudinary
+- **Gestión de Estado**: React Context + Zustand
 
 ### Estructura de Carpetas
 ```
-landing-hotmart-calendly/
+palntillada/
 ├── app/                    # App Router de Next.js
-│   ├── globals.css        # Estilos globales
-│   ├── layout.tsx         # Layout principal
-│   └── page.tsx           # Página principal
+│   ├── admin/             # Panel de administración
+│   ├── api/               # APIs del servidor
+│   ├── linkhub/           # Página de enlaces
+│   ├── multi/             # Sitio multi-página
+│   ├── psicologos/        # Centro de psicología
+│   └── shop/              # Tienda online
 ├── components/            # Componentes reutilizables
-│   ├── schedule-dialog.tsx # Integración Calendly
-│   ├── theme-provider.tsx  # Provider de tema
+│   ├── editable-*.tsx     # Componentes editables
+│   ├── admin-*.tsx        # Componentes de administración
 │   └── ui/               # Componentes shadcn/ui
 ├── lib/                  # Utilidades y configuración
-│   ├── site.ts          # Configuración del sitio
-│   └── utils.ts         # Utilidades generales
 ├── hooks/               # Custom hooks
-├── public/              # Assets estáticos
-└── styles/              # Estilos adicionales
+├── scripts/             # Scripts de utilidad
+└── public/              # Assets estáticos
 ```
 
-## 🎯 Funcionalidades Principales
+## 🚀 Funcionalidades por Plantilla
 
-### 🎨 **Sistema de Edición Reactiva (NUEVO)**
+### 1. Landing Page
+- **Formularios de Contacto**: Integración con Calendly
+- **Secciones Editables**: Contenido dinámico
+- **Testimonios**: Gestión de testimonios de clientes
+- **SEO Optimizado**: Meta tags y estructura semántica
+- **Sistema de precios**: Opcional para bufetes de abogados
 
-**Regla Fundamental**: Si no es editable, no está terminado.
+### 2. Tienda Online
+- **Catálogo de Productos**: Gestión completa de inventario
+- **Sistema de Clonación**: Extracción automática desde sitios externos
+- **Carrito de Compras**: Gestión de compras
+- **Estadísticas Avanzadas**: Métricas de rendimiento
+- **Procesamiento de Imágenes**: Optimización automática
 
-El proyecto incluye un **sistema de edición inline** que permite modificar todo el contenido en tiempo real:
+### 3. Centro de Psicología
+- **Colores terapéuticos**: Púrpuras y azules
+- **Servicios especializados**: Terapia individual, de pareja, familiar
+- **Enfoque en confidencialidad**: Diseño que prioriza la privacidad
+- **Integración Calendly**: Agendamiento profesional
 
-- ✅ **Edición reactiva** - Cambios inmediatos sin refrescar
-- ✅ **Componentes editables** - `EditableText`, `EditableImage`, `EditableUrl`
-- ✅ **Contexto admin** - Gestión centralizada del estado
-- ✅ **Persistencia automática** - Guardado en Firebase
+### 4. LinkHub
+- **Perfil personalizable**: Nombre, bio, avatar, contacto
+- **Gestión de enlaces**: Agregar, editar, eliminar enlaces
+- **Redes sociales**: Instagram, Twitter, LinkedIn, etc.
+- **Temas personalizables**: Colores y estilos
+- **Panel de gestión avanzada**: Vista completa de todos los enlaces
 
-**Documentación completa**: Ver `REACTIVE_EDITING_README.md` para la fórmula mágica de implementación.
+### 5. Sitio Multi-Página
+- **Gestión de Páginas**: Crear, editar y organizar páginas
+- **Navegación Unificada**: Configuración de menús
+- **Configuración Global**: SEO, analytics y más
+- **Ordenamiento**: Control del orden de las páginas
 
-### 1. Integración Calendly
-- **Componente**: `components/schedule-dialog.tsx`
-- **Funcionalidad**: Modal con iframe de Calendly
-- **Configuración**: URL en `lib/site.ts` → `calendlyUrl`
-- **Fallback**: Enlace directo si iframe falla
+## 🎨 Sistema de Diseños Especializados
 
-### 2. Integración Hotmart
-- **Productos**: Sesiones 1:1 y curso online
-- **Configuración**: URLs en `lib/site.ts` → `sessions[].hotmartUrl` y `course.hotmartUrl`
-- **Flujo**: Botón → Nueva pestaña → Checkout Hotmart
+### Diseños Disponibles
 
-### 3. Secciones de la Landing
-- **Hero**: Título, subtítulo, CTAs principales
-- **Sesiones**: 3 tipos de sesiones 1:1 con precios
-- **Curso**: Producto digital con video de presentación
-- **Sobre mí**: Historia personal + foto/video
-- **Testimonios**: Social proof de clientes
-- **CTA Banner**: Call-to-action final
-- **Footer**: Enlaces legales y contacto
+#### Landing Page
+- **Estudio Contable**: Azules profesionales, tipografía serif
+- **Estudio de Abogados**: Oscuros elegantes, precios opcionales
+- **Ingenieros**: Verdes y azules, tipografía técnica
+- **Blog Personal**: Colores vibrantes, tipografía moderna
+- **Coach Personal**: Colores cálidos, tipografía amigable
+- **Fumigaciones**: Verdes y naranjas, layout específico
 
-## ⚙️ Configuración del Sitio
+#### Tienda Online
+- **Tech Shop**: Azules tecnológicos, tipografía futurista
+- **Moda Shop**: Rosas y dorados, tipografía elegante
+- **Gym Shop**: Rojos energéticos, tipografía deportiva
+- **Lifestyle Shop**: Verdes naturales, tipografía minimalista
 
-### Sistema de Configuración Dinámica con Firebase
+### Características de los Diseños
+- **Paletas de colores personalizadas** por sector
+- **Contenido predefinido** específico del nicho
+- **Tipografías especializadas** para cada sector
+- **Sistema de backup automático** al aplicar diseños
+- **Configuración por defecto** optimizada
 
-El proyecto incluye un **sistema de configuración avanzado** con:
+## 🔧 Configuración y Instalación
 
-1. **Firestore Database** para almacenamiento persistente y escalable
-2. **Panel de administración** (`/admin`) protegido con contraseña
-3. **API REST** (`/api/config`) para cargar/guardar configuración
-4. **Configuración en tiempo real** sin necesidad de código
-5. **Funciona en producción** (Vercel, Netlify, etc.) sin errores 500
-
-### 🚀 **Migración a Firebase (NUEVO)**
-
-Para resolver el error 500 en producción, hemos migrado a **Firestore**:
-
-#### **Beneficios de Firebase:**
-- ✅ **Funciona en producción** - No más errores 500
-- ✅ **Datos persistentes** - Configuración segura en la nube
-- ✅ **Escalable** - Maneja múltiples clientes
-- ✅ **Tiempo real** - Actualizaciones instantáneas
-- ✅ **Sin dependencias del servidor** - No requiere escritura de archivos
-
-#### **Configuración Rápida:**
-1. **Crear proyecto Firebase** en [Firebase Console](https://console.firebase.google.com/)
-2. **Habilitar Firestore** Database
-3. **Configurar variables de entorno** (ver sección Variables de Entorno)
-4. **Migrar configuración existente** usando el script incluido
-
-#### **Script de Migración:**
+### Prerrequisitos
 ```bash
-node scripts/migrate-config.js
+Node.js 18+
+npm o pnpm
+Cuenta de Firebase
+Cuenta de Cloudinary (opcional)
 ```
 
-Este script te mostrará el JSON actual para copiar a Firestore.
+### Instalación
+```bash
+# Clonar repositorio
+git clone https://github.com/loctime/plantillada.git
+cd palntillada
 
-#### **Documentación Completa:**
-Ver `FIREBASE_SETUP.md` para instrucciones detalladas.
+# Instalar dependencias
+npm install
 
-### 💡 **Ventajas del Sistema de Configuración**
-
-#### **Para el Cliente Final** 🎯
-- **Independencia total**: No necesita conocimientos técnicos
-- **Actualizaciones instantáneas**: Cambios en tiempo real
-- **Flexibilidad completa**: Personalización sin límites
-- **Interfaz intuitiva**: Panel fácil de usar y entender
-
-#### **Para el Desarrollador** ⚡
-- **Menos soporte**: El cliente se autogestiona
-- **Escalabilidad**: Fácil agregar nuevas funcionalidades
-- **Mantenimiento reducido**: Configuración centralizada
-- **Reutilización**: Sistema aplicable a múltiples proyectos
-
-#### **Para el Negocio** 📈
-- **Reducción de costos**: Menos horas de desarrollo
-- **Satisfacción del cliente**: Control total sobre su sitio
-- **Escalabilidad**: Múltiples clientes con el mismo sistema
-- **Competitividad**: Diferenciación en el mercado
-
-### Sistema JSON de Configuración
-
-#### **Archivo Principal**: `public/config.json`
-```json
-{
-  "site": {
-    "title": "Tu Marca Personal",
-    "tagline": "Acompañamiento 1:1 y formación práctica para cambios reales."
-  },
-  "integrations": {
-    "calendlyUrl": "https://calendly.com/tu-usuario/sesion",
-    "hotmartBaseUrl": "https://pay.hotmart.com"
-  },
-  "sessions": [
-    {
-      "id": "sesion-claridad",
-      "name": "Sesión de Claridad",
-      "summary": "Define tu objetivo y el plan inmediato de 30 días.",
-      "duration": "60 min",
-      "price": "€99",
-      "features": ["Diagnóstico inicial", "Plan de acción", "Seguimiento"],
-      "hotmartUrl": "https://pay.hotmart.com/TU_CHECKOUT_1"
-    }
-  ],
-  "course": {
-    "title": "Curso Online: Sistema de Productividad Sencilla",
-    "blurb": "Aprende a construir un sistema ligero...",
-    "price": "€179",
-    "hotmartUrl": "https://pay.hotmart.com/TU_CHECKOUT_CURSO",
-    "videoUrl": "",
-    "bullets": ["Estructura semanal", "Métricas simples", "Plantillas"]
-  },
-  "about": {
-    "photoUrl": "/placeholder.svg",
-    "videoUrl": "",
-    "story": "Soy [Tu Nombre], consultor y coach...",
-    "whyMe": "He acompañado a +300 clientes..."
-  },
-  "testimonials": [
-    {
-      "quote": "En dos sesiones definimos un plan claro...",
-      "author": "María G.",
-      "role": "Marketing Specialist"
-    }
-  ],
-  "contact": {
-    "email": "hola@tumarca.com"
-  },
-  "legal": {
-    "termsUrl": "",
-    "privacyUrl": ""
-  }
-}
+# Configurar variables de entorno
+cp .env.example .env.local
 ```
-
-#### **API Endpoints**
-- **GET** `/api/config` - Cargar configuración
-- **POST** `/api/config` - Guardar configuración
-
-#### **Componentes del Sistema**
-- **`lib/config-loader.ts`** - Funciones para cargar/guardar JSON
-- **`app/api/config/route.ts`** - API REST para configuración
-- **`app/page.tsx`** - Carga dinámica desde JSON (Client Component)
-
-### Panel de Administración
-
-**URL**: `/admin`
-**Credenciales por defecto**:
-- Usuario: `admin`
-- Contraseña: `admin123`
-
-**Funcionalidades Configurables** (7 Pestañas):
-
-#### 🔧 **1. General**
-- **Título del sitio**: Nombre de la marca/empresa
-- **Tagline**: Descripción principal del servicio
-- **Email de contacto**: Para formularios y comunicación
-
-#### 📅 **2. Integraciones**
-- **URL de Calendly**: Enlace directo al calendario de agendamiento
-- **URL base de Hotmart**: Configuración de la plataforma de pagos
-
-#### 🎯 **3. Sesiones 1:1**
-- **Agregar/Eliminar sesiones**: Gestión completa de servicios
-- **Nombre y precio**: Personalización de cada sesión
-- **Duración**: Tiempo estimado de cada sesión
-- **Resumen**: Descripción de cada servicio
-- **Características**: Lista de beneficios (una por línea)
-- **URL de Hotmart**: Enlace al checkout específico
-
-#### 🛒 **4. Curso Online**
-- **Título del curso**: Nombre del producto digital
-- **Descripción**: Detalles y beneficios del curso
-- **Precio**: Costo del curso (formato flexible)
-- **URL de Hotmart**: Enlace al checkout de ventas
-- **Video de presentación**: URL de YouTube/Vimeo para preview
-- **Características**: Lista de beneficios del curso
-
-#### 👤 **5. Sobre Mí**
-- **Foto profesional**: URL de la imagen de perfil
-- **Video de presentación**: Video personal de introducción
-- **Mi historia**: Biografía y experiencia profesional
-- **¿Por qué elegirme?**: Propuesta de valor única
-
-#### 💬 **6. Testimonios**
-- **Agregar/Eliminar testimonios**: Gestión completa de testimonios
-- **Texto del testimonio**: Opinión del cliente
-- **Nombre del cliente**: Autor del testimonio
-- **Cargo/Profesión**: Rol profesional del cliente
-
-#### 🔗 **7. Legal**
-- **URL de Términos y Condiciones**: Enlace a página legal
-- **URL de Política de Privacidad**: Enlace a política de datos
 
 ### Variables de Entorno
-
-Crear archivo `.env.local` con:
-
-```bash
+```env
 # Firebase Configuration (REQUERIDO)
 NEXT_PUBLIC_FIREBASE_API_KEY=tu_api_key_aqui
 NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=tu_proyecto.firebaseapp.com
 NEXT_PUBLIC_FIREBASE_PROJECT_ID=tu_proyecto_id
 NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=tu_proyecto.appspot.com
 NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=123456789
-NEXT_PUBLIC_FIREBASE_APP_ID=1:123456789:web:abcdef123456
+NEXT_PUBLIC_FIREBASE_APP_ID=tu_app_id
 
-# Configuración de administración
-ADMIN_PASSWORD=admin123
-ADMIN_USERNAME=admin
-
-# Variables legacy (opcionales - ahora se manejan desde Firebase)
-NEXT_PUBLIC_SITE_TITLE=Tu Marca Personal
-NEXT_PUBLIC_SITE_TAGLINE=Acompañamiento 1:1 y formación práctica...
-NEXT_PUBLIC_CALENDLY_URL=https://calendly.com/tu-usuario/sesion
-NEXT_PUBLIC_HOTMART_BASE_URL=https://pay.hotmart.com
-COURSE_TITLE=Curso Online: Sistema de Productividad...
-COURSE_PRICE=€179
-COURSE_HOTMART_URL=https://pay.hotmart.com/TU_CHECKOUT_CURSO
-ABOUT_PHOTO_URL=/placeholder.svg
-ABOUT_STORY=Soy [Tu Nombre], consultor y coach...
-CONTACT_EMAIL=hola@tumarca.com
-```
-
-### Archivo Principal: `lib/config.ts`
-```typescript
-export const site = {
-  title: "Tu Marca Personal",
-  tagline: "Acompañamiento 1:1 y formación práctica...",
-  calendlyUrl: "https://calendly.com/tu-usuario/sesion",
-  
-  // Configuración de sesiones
-  sessions: [
-    {
-      id: "sesion-claridad",
-      name: "Sesión de Claridad",
-      price: "€99",
-      hotmartUrl: "https://pay.hotmart.com/TU_CHECKOUT_1",
-      // ...
-    }
-  ],
-  
-  // Configuración del curso
-  course: {
-    title: "Curso Online: Sistema de Productividad...",
-    price: "€179",
-    hotmartUrl: "https://pay.hotmart.com/TU_CHECKOUT_CURSO",
-    videoUrl: "", // YouTube/Vimeo embed
-  },
-  
-  // Información personal
-  about: {
-    photoUrl: "/placeholder.svg",
-    videoUrl: "", // Video de presentación
-    story: "Soy [Tu Nombre], consultor y coach...",
-    whyMe: "He acompañado a +300 clientes...",
-  },
-  
-  // Testimonios
-  testimonials: [
-    {
-      quote: "En dos sesiones definimos un plan claro...",
-      author: "María G.",
-      role: "Marketing Specialist",
-    }
-  ],
-  
-  // Contacto y legal
-  contact: { email: "hola@tumarca.com" },
-  legal: { terms: "", privacy: "" },
-}
-```
-
-## 🎨 Sistema de Diseño
-
-### Colores Principales
-- **Primario**: Emerald (verde) - `bg-emerald-600`
-- **Secundario**: Grises de Tailwind
-- **Acentos**: Variaciones de emerald
-
-### Tipografía
-- **Sans**: Geist Sans (variable CSS)
-- **Mono**: Geist Mono (variable CSS)
-- **Tamaños**: Responsive con Tailwind
-
-### Componentes UI
-- **Botones**: Variantes default/outline con emerald
-- **Cards**: Bordes redondeados, sombras sutiles
-- **Layout**: Container responsive, grid system
-
-## 🚀 Comandos de Desarrollo
-
-```bash
-# Instalar dependencias
-pnpm install
-
-# Desarrollo local
-pnpm dev
-
-# Build de producción
-pnpm build
-
-# Lint (deshabilitado en build)
-pnpm lint
-
-# Iniciar servidor de producción
-pnpm start
-```
-
-## 📝 Personalización Requerida
-
-### 🚀 **Método Recomendado: Panel de Administración**
-
-1. **Acceder al panel**: Ir a `/admin`
-2. **Iniciar sesión**: Usuario `admin`, Contraseña `admin123`
-3. **Configurar todo** desde la interfaz gráfica
-4. **Guardar cambios** automáticamente
-
-### 🔄 **Flujo de Trabajo del Sistema JSON**
-
-```
-Cliente edita en /admin → API /api/config → Guarda en public/config.json → Página principal carga desde JSON
-```
-
-**Ventajas**:
-- ✅ **Sin reinicio de servidor** necesario
-- ✅ **Cambios en tiempo real** en la landing
-- ✅ **Backup automático** en Git
-- ✅ **Sin base de datos** requerida
-- ✅ **Fácil mantenimiento** y portabilidad
-
-### 🔧 **Método Avanzado: Variables de Entorno**
-
-#### 1. URLs de Integración
-- **Calendly**: `NEXT_PUBLIC_CALENDLY_URL` en `.env.local`
-- **Hotmart**: `COURSE_HOTMART_URL` y `SESSIONS_CONFIG` en `.env.local`
-
-#### 2. Contenido
-- **Título y tagline**: `NEXT_PUBLIC_SITE_TITLE` y `NEXT_PUBLIC_SITE_TAGLINE`
-- **Historia personal**: `ABOUT_STORY` y `ABOUT_WHY_ME`
-- **Testimonios**: Por ahora estáticos (se pueden hacer dinámicos después)
-- **Precios**: `COURSE_PRICE` y en `SESSIONS_CONFIG`
-
-#### 3. Imágenes y Media
-- **Foto personal**: `ABOUT_PHOTO_URL`
-- **Video curso**: `COURSE_VIDEO_URL`
-- **Video presentación**: `ABOUT_VIDEO_URL`
-- **Logo**: Crear y agregar favicon
-
-#### 4. Legal y Contacto
-- **Email**: `CONTACT_EMAIL`
-- **Términos**: `LEGAL_TERMS_URL`
-- **Privacidad**: `LEGAL_PRIVACY_URL`
-
-### 🔐 **Seguridad**
-
-**Cambiar credenciales por defecto**:
-```bash
-ADMIN_USERNAME=tu-usuario
-ADMIN_PASSWORD=tu-contraseña-segura
-```
-
-### 🚀 **Roadmap de Funcionalidades**
-
-#### **Fase 1 - Configuración Básica** ✅
-- Panel de administración con autenticación
-- Configuración de Calendly y Hotmart
-- Información personal y del curso
-- Enlaces legales
-
-#### **Fase 2 - Contenido Dinámico** 🔄
-- Gestión de testimonios desde el panel
-- Sistema de FAQ configurables
-- Casos de éxito editables
-- Blog/artículos integrados
-
-#### **Fase 3 - Personalización Avanzada** 📋
-- Selector de temas de colores
-- Subida de imágenes y logos
-- Configuración de SEO
-- Analytics y tracking
-
-#### **Fase 4 - Integraciones Extendidas** 📋
-- Múltiples tipos de sesiones
-- Integración con más plataformas de pago
-- Sistema de cupones y descuentos
-- Email marketing integrado
-
-#### **Fase 5 - Funcionalidades Premium** 📋
-- Dashboard de analytics
-- Sistema de leads y CRM
-- A/B testing de contenido
-- Backup automático de configuración
-
-## 🔧 Configuración Técnica
-
-### Next.js Config (`next.config.mjs`)
-```javascript
-const nextConfig = {
-  eslint: { ignoreDuringBuilds: true },
-  typescript: { ignoreBuildErrors: true },
-  images: { unoptimized: true },
-}
-```
-
-### Tailwind CSS
-- **Versión**: v4.1.9
-- **Config**: PostCSS integrado
-- **Animaciones**: `tailwindcss-animate`
-
-### TypeScript
-- **Config**: `tsconfig.json` estándar
-- **Errores**: Ignorados en build para desarrollo rápido
-
-## 📱 Responsive Design
-
-### Breakpoints
-- **Mobile**: < 768px
-- **Tablet**: 768px - 1024px
-- **Desktop**: > 1024px
-
-### Adaptaciones
-- **Header**: Navegación colapsa en móvil
-- **Grid**: 1 columna → 3 columnas
-- **Botones**: Stack vertical en móvil
-- **Imágenes**: Aspect ratio mantenido
-
-## 🔍 SEO y Performance
-
-
-
-### Optimizaciones
-- **Images**: Next.js Image component
-- **Fonts**: Geist optimizado
-- **Loading**: Lazy loading en iframes
-- **Bundle**: Tree shaking automático
-
-## 🚨 Consideraciones de Seguridad
-
-### Iframes
-- **Calendly**: `rel="noopener noreferrer"`
-- **Hotmart**: Enlaces externos seguros
-- **Videos**: YouTube/Vimeo embeds seguros
-
-### Formularios
-- **Validación**: React Hook Form + Zod
-- **Sanitización**: Inputs controlados
-
-## 📊 Analytics y Tracking
-
-### Implementación Sugerida
-```typescript
-// Google Analytics
-// Hotjar
-// Facebook Pixel
-// Calendly tracking
-```
-
-## 🚀 Deployment
-
-### Sistema de Configuración con Firebase
-
-El proyecto usa **Firestore** para almacenamiento persistente en desarrollo y producción:
-
-#### **🛠️ Desarrollo (Local)**
-- Usa Firestore para almacenar la configuración
-- El panel `/admin` guarda cambios directamente en la base de datos
-- Requiere configuración de Firebase (variables de entorno)
-
-#### **🌐 Producción (Vercel/Netlify)**
-- Usa el mismo Firestore que en desarrollo
-- El panel `/admin` funciona igual que en local
-- **No más errores 500** - Sistema de archivos no requerido
-
-### Variables de Entorno para Producción
-
-```bash
-# Firebase Configuration (REQUERIDO)
-NEXT_PUBLIC_FIREBASE_API_KEY=tu_api_key_aqui
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=tu_proyecto.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=tu_proyecto_id
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=tu_proyecto.appspot.com
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=123456789
-NEXT_PUBLIC_FIREBASE_APP_ID=1:123456789:web:abcdef123456
+# Cloudinary (opcional)
+CLOUDINARY_CLOUD_NAME=tu_cloud_name
+CLOUDINARY_API_KEY=tu_api_key
+CLOUDINARY_API_SECRET=tu_api_secret
 
 # Credenciales del panel de administración
 ADMIN_USERNAME=admin
 ADMIN_PASSWORD=admin123
 ```
 
-### Pasos para el Despliegue en Vercel
+### Configuración de Firebase
 
-1. **Configura Firebase** siguiendo las instrucciones en `FIREBASE_SETUP.md`
-2. **Conecta tu repositorio** a Vercel
-3. **Configura las variables de entorno** de Firebase en Vercel
-4. **Despliega** - Vercel detectará automáticamente que es un proyecto Next.js
-5. **Migra la configuración** usando el panel `/admin` o el script de migración
+1. **Crear proyecto** en [Firebase Console](https://console.firebase.google.com/)
+2. **Habilitar Firestore** Database
+3. **Configurar reglas de Firestore**:
+```javascript
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /config/{document} {
+      allow read, write: if true;
+    }
+    match /backups/{document} {
+      allow read, write: if true;
+    }
+    match /tenants/{document} {
+      allow read, write: if true;
+    }
+  }
+}
+```
 
-### 🔄 Flujo de Actualización en Producción
+### Ejecutar en Desarrollo
+```bash
+npm run dev
+```
 
-1. **Edita** en `/admin` de tu sitio en producción
-2. **Guarda** - los cambios se guardan automáticamente en Firestore
-3. **¡Listo!** - Los cambios se reflejan inmediatamente
+## 🎯 Uso del Sistema
 
-> **Nota**: Con Firebase, los cambios se guardan automáticamente y no requieren re-despliegue.
+### 1. Acceder al Panel de Administración
+```
+http://localhost:3000/admin
+Usuario: admin
+Contraseña: admin123
+```
 
-### Plataformas Recomendadas
-- **Vercel**: Integración nativa con Next.js ✅
-- **Netlify**: Build automático
-- **Railway**: Full-stack hosting
+### 2. Modo Admin Inline
+- **Atajo de teclado**: `Ctrl + Shift + A` (requiere autenticación)
+- **Botón flotante**: En la esquina inferior derecha
+- **Edición directa**: Hover sobre elementos para editar
+- **Guardado automático**: Cambios se guardan en tiempo real
 
-## 🔄 Mantenimiento
+### 3. Seleccionar Plantilla y Diseño
+1. Ir a "General" → "Cambiar Plantilla"
+2. Elegir plantillas deseadas
+3. Ir a "Seleccionar Diseño"
+4. Elegir diseño específico por sector
+5. Aplicar colores y/o contenido predefinido
 
-## 🎯 Reglas de Desarrollo
+### 4. Personalizar Contenido
+- **Edición inline**: Hacer clic en cualquier texto para editarlo
+- **Upload de imágenes**: Arrastra y suelta imágenes directamente
+- **Gestión de secciones**: Mostrar/ocultar secciones
+- **Gestión de sesiones**: Agregar/eliminar servicios
+- **Gestión de testimonios**: Agregar/eliminar testimonios
+- **Gestión de colores**: Personalizar paleta de colores
+- **Gestión del LinkHub**: Configurar enlaces y redes sociales
 
-### **Regla Fundamental**: Si no es editable, no está terminado
+### 5. Clonar Productos (Tienda)
+1. Ir a la pestaña "Clonación"
+2. Ingresar URL del producto a clonar
+3. El sistema extraerá automáticamente:
+   - Nombre y descripción
+   - Precio y categoría
+   - Imágenes del producto
+   - Metadatos
 
-Al implementar nuevas funcionalidades, **SIEMPRE** seguir estas reglas:
+## 🔧 Características Técnicas Avanzadas
 
-1. **Usar el contexto admin directamente**
-   ```tsx
-   const { config, updateConfig } = useAdmin()
-   ```
+### Sistema de Edición Reactiva
+```tsx
+// Regla fundamental: Si no es editable, no está terminado
+const { config, updateConfig } = useAdmin()
 
-2. **Hacer todo editable por defecto**
-   - Textos → `EditableText`
-   - Imágenes → `EditableImage` 
-   - URLs → `EditableUrl`
+<EditableText 
+  value={config.site.title}
+  onSave={(value) => updateConfig({ site: { ...config.site, title: value } })}
+/>
+```
 
-3. **Actualizar la interfaz Config**
-   - Agregar nuevos campos en `lib/config-loader.ts`
-   - Usar tipos TypeScript apropiados
+### Sistema Multi-Tenant
+- **Detección automática** de subdominios
+- **Configuración independiente** por tenant
+- **Soporte para Vercel** con subdominios temporales
+- **Consolidación automática** de documentos
 
-4. **Probar la reactividad**
-   - Verificar que los cambios se reflejan inmediatamente
-   - No debe requerir refrescar la página
+### Sistema de Backup
+- **Backup automático** al aplicar diseños
+- **Gestión de backups** desde el panel admin
+- **Restauración** de configuraciones anteriores
+- **Eliminación** de backups antiguos
 
-**Documentación completa**: `REACTIVE_EDITING_README.md`
+### Sistema de Colores
+- **Paletas predefinidas** por sector
+- **Modo claro/oscuro** con paletas específicas
+- **Aplicación en tiempo real** de cambios
+- **Reset** a configuración original
 
-### Actualizaciones Regulares
-- **Dependencias**: `pnpm update`
-- **Next.js**: Seguir releases
-- **shadcn/ui**: Actualizar componentes
+## 📊 APIs Disponibles
 
-### Monitoreo
-- **Performance**: Core Web Vitals
-- **Conversiones**: Calendly + Hotmart analytics
-- **Errores**: Sentry o similar
+### Configuración
+```typescript
+// Cargar configuración
+GET /api/config
 
-## 📚 Recursos Adicionales
+// Guardar configuración
+POST /api/config
+```
 
-### Documentación
-- [Next.js App Router](https://nextjs.org/docs/app)
-- [shadcn/ui](https://ui.shadcn.com/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [Calendly API](https://developer.calendly.com/)
+### Clonación de Productos
+```typescript
+// Clonar producto individual
+POST /api/clone-product
+{
+  "url": "https://ejemplo.com/producto/123"
+}
 
-### Herramientas Útiles
-- **Figma**: Diseño de componentes
-- **Hotmart**: Dashboard de ventas
-- **Calendly**: Dashboard de agendamiento
-- **Google Analytics**: Tracking de conversiones
+// Obtener estadísticas
+GET /api/cloning-stats
+```
+
+### Super Admin
+```typescript
+// Gestión de tenants
+GET /api/super-admin/tenants
+POST /api/super-admin/tenants/[tenantId]
+```
+
+## 🚀 Despliegue
+
+### Vercel (Recomendado)
+```bash
+# Instalar Vercel CLI
+npm i -g vercel
+
+# Desplegar
+vercel
+
+# Configurar variables de entorno
+vercel env add NEXT_PUBLIC_FIREBASE_API_KEY
+```
+
+### Configuración de Dominio
+1. Agregar dominio personalizado en Vercel
+2. Configurar registros DNS
+3. Configurar SSL automático
+
+## 🛠️ Scripts de Utilidad
+
+### Configuración
+```bash
+# Aplicar diseño específico
+node scripts/apply-psicologos-design.js
+node scripts/apply-fumigaciones-design.js
+node scripts/apply-abogados-design.js
+
+# Configurar ControlDoc
+node scripts/setup-controldoc.js
+
+# Consolidar configuración
+node scripts/consolidate-config.js
+```
+
+### Pruebas
+```bash
+# Probar sistema de diseños
+node scripts/test-design-system-enhanced.js
+
+# Probar autenticación
+node scripts/test-admin-auth.js
+
+# Probar paletas de colores
+node scripts/test-palette-dark-mode.js
+```
+
+### Diagnóstico
+```bash
+# Verificar configuración
+node scripts/verify-config.js
+
+# Debuggear configuración actual
+node scripts/debug-config.js
+
+# Reparar permisos de Firebase
+node scripts/fix-firebase-permissions.js
+```
+
+## 🔒 Seguridad y Compliance
+
+### Medidas Implementadas
+- **Rate Limiting**: Protección contra abuso
+- **Validación de URLs**: Verificación de enlaces
+- **User-Agent Realista**: Simulación de navegadores
+- **Respeto a robots.txt**: Cumplimiento de directrices
+- **Manejo de Errores**: Logging y monitoreo
+
+### Autenticación
+- **Sesión persistente**: 24 horas automáticas
+- **Modo admin protegido**: Solo usuarios autenticados
+- **Logout automático**: Expiración de sesión
+- **Credenciales configurables**: Variables de entorno
+
+### Disclaimer Legal
+```
+Este sistema es para uso educativo y de desarrollo.
+El usuario es responsable de:
+- Obtener autorización previa de los sitios web origen
+- Respetar derechos de autor y marcas registradas
+- Cumplir con las leyes locales de comercio electrónico
+- No infringir términos de servicio de terceros
+```
+
+## 🚨 Solución de Problemas
+
+### Problemas Comunes
+
+#### Los cambios no se ven después de guardar
+- **Solución**: Refrescar manualmente o usar `Ctrl + Shift + A`
+- **Causa**: Problema de sincronización del contexto
+
+#### Error de permisos de Firebase
+- **Solución**: Actualizar reglas de Firestore
+- **Causa**: Reglas muy restrictivas
+
+#### Múltiples documentos en Firestore
+- **Solución**: Ejecutar `node scripts/consolidate-config.js`
+- **Causa**: Subdominios temporales de Vercel
+
+#### Modo admin no se activa
+- **Solución**: Verificar autenticación y usar botón flotante
+- **Causa**: Usuario no autenticado
+
+### Herramientas de Diagnóstico
+- **Scripts de prueba**: Verificar funcionalidades específicas
+- **Logs de Firebase**: Revisar consola del navegador
+- **Verificación de configuración**: Scripts de diagnóstico
+
+## 📈 Roadmap
+
+### Fase 1 - Funcionalidades Básicas ✅
+- Panel de administración con autenticación
+- Sistema de edición reactiva
+- Múltiples plantillas y diseños
+- Integración con Firebase
+
+### Fase 2 - Funcionalidades Avanzadas ✅
+- Sistema de clonación de productos
+- Sistema de backup y restauración
+- Paletas de colores personalizables
+- Modo claro/oscuro
+
+### Fase 3 - Mejoras de UX 🔄
+- Drag & drop para reordenar secciones
+- Upload directo de imágenes
+- Editor visual de colores
+- Previsualización en tiempo real
+
+### Fase 4 - Funcionalidades Premium 📋
+- Dashboard de analytics
+- Sistema de leads y CRM
+- A/B testing de contenido
+- Backup programado automático
+
+## 🤝 Contribuir
+
+1. Fork el proyecto
+2. Crear rama para feature (`git checkout -b feature/NuevaFuncionalidad`)
+3. Commit cambios (`git commit -m 'Agregar nueva funcionalidad'`)
+4. Push a la rama (`git push origin feature/NuevaFuncionalidad`)
+5. Abrir Pull Request
+
+## 📄 Licencia
+
+Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
+
+## 🆘 Soporte
+
+### Documentación Adicional
+- **Configuración de Firebase**: Ver `FIREBASE_SETUP.md`
+- **Solución de Problemas**: Ver `TROUBLESHOOTING.md`
+- **Modo Admin**: Ver `ADMIN_MODE_README.md`
+- **Sistema de Diseños**: Ver `DESIGN_SYSTEM_README.md`
+- **Edición Reactiva**: Ver `REACTIVE_EDITING_README.md`
+- **Autenticación**: Ver `ADMIN_AUTH_README.md`
+- **Diseño de Fumigaciones**: Ver `FUMIGACIONES_EDITABLE_README.md`
+- **Sistema de Upload**: Ver `UPLOAD_SYSTEM_README.md`
+
+### Contacto
+- **Issues**: [GitHub Issues](https://github.com/loctime/plantillada/issues)
+- **Documentación**: [README.md](readme.md)
+- **Soporte**: Crear issue en GitHub
 
 ---
 
-**Nota**: Este README está diseñado para ser una referencia completa del proyecto. Actualizar según evolucione el desarrollo.
+**Plantillada** - Sistema Multi-Plantilla para sitios web profesionales 🚀
+
+*Regla Fundamental: Si no es editable, no está terminado.*

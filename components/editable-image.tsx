@@ -2,9 +2,10 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useAdmin } from '@/lib/admin-context'
-import { Edit2, Check, X, Image as ImageIcon, ExternalLink } from 'lucide-react'
+import { Edit2, Check, X, Image as ImageIcon, ExternalLink, Upload } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { ImageUpload } from './image-upload'
 
 interface EditableImageProps {
   value: string
@@ -34,6 +35,7 @@ export function EditableImage({
   const [editValue, setEditValue] = useState(value)
   const [isPending, setIsPending] = useState(false)
   const [imageError, setImageError] = useState(false)
+  const [showUpload, setShowUpload] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -129,6 +131,20 @@ export function EditableImage({
     setImageError(false)
   }
 
+  const handleUpload = async (url: string) => {
+    setIsPending(true)
+    try {
+      await onSave(url)
+      setIsEditing(false)
+      setShowUpload(false)
+      setImageError(false)
+    } catch (error) {
+      console.error('Error saving uploaded image:', error)
+    } finally {
+      setIsPending(false)
+    }
+  }
+
   if (!isAdminMode) {
     return (
       <div className={className}>
@@ -169,98 +185,135 @@ export function EditableImage({
       <div className="space-y-4">
         {label && <div className="text-sm font-medium">{label}</div>}
         
-        {/* Vista previa de la imagen */}
-        <div className="relative">
-          {editValue ? (
-            <img
-              src={editValue}
-              alt={alt}
-              width={width}
-              height={height}
-              className="w-full rounded-xl border object-cover"
-              onError={handleImageError}
-              onLoad={handleImageLoad}
-            />
-          ) : (
-            <div className="w-full h-64 bg-gray-100 rounded-xl border flex items-center justify-center">
-              <div className="text-center text-gray-500">
-                <ImageIcon className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                <p className="text-sm">Vista previa</p>
-              </div>
-            </div>
-          )}
-          
-          {imageError && editValue && (
-            <div className="absolute inset-0 flex items-center justify-center bg-red-50 rounded-xl border-2 border-red-200">
-              <div className="text-center text-red-600">
-                <ImageIcon className="h-12 w-12 mx-auto mb-2" />
-                <p className="text-sm font-medium">Error al cargar la imagen</p>
-                <p className="text-xs">Verifica que la URL sea válida</p>
-              </div>
-            </div>
-          )}
+        {/* Opciones de edición */}
+        <div className="flex gap-2 mb-4">
+          <Button
+            size="sm"
+            variant={!showUpload ? "default" : "outline"}
+            onClick={() => setShowUpload(false)}
+            className={!showUpload ? "bg-emerald-600 hover:bg-emerald-700" : ""}
+          >
+            <Edit2 className="h-4 w-4 mr-2" />
+            URL
+          </Button>
+          <Button
+            size="sm"
+            variant={showUpload ? "default" : "outline"}
+            onClick={() => setShowUpload(true)}
+            className={showUpload ? "bg-emerald-600 hover:bg-emerald-700" : ""}
+          >
+            <Upload className="h-4 w-4 mr-2" />
+            Subir
+          </Button>
         </div>
 
-        {/* Campo de edición */}
-        <div className="space-y-2">
-          <div className="flex gap-2">
-            <input
-              ref={inputRef}
-              type="url"
-              value={editValue}
-              onChange={(e) => setEditValue(e.target.value)}
-              onKeyDown={handleKeyDown}
-              disabled={isPending || isSaving}
-              className={cn(
-                "flex-1 p-2 border rounded focus:outline-none focus:ring-2",
-                (isPending || isSaving) && "opacity-50 cursor-not-allowed",
-                isValidUrl(editValue) && isValidImageUrl(editValue) || !editValue 
-                  ? "border-emerald-500 focus:ring-emerald-500/20" 
-                  : "border-red-500 focus:ring-red-500/20"
-              )}
-              placeholder={placeholder}
+        {/* Modal de upload */}
+        {showUpload && (
+          <div className="space-y-4">
+            <ImageUpload
+              onUpload={handleUpload}
+              onCancel={() => setShowUpload(false)}
             />
-            <Button
-              size="sm"
-              onClick={handleSave}
-              disabled={(editValue && (!isValidUrl(editValue) || !isValidImageUrl(editValue))) || isPending || isSaving}
-              className="bg-emerald-600 hover:bg-emerald-700"
-            >
-              {isPending || isSaving ? (
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+          </div>
+        )}
+
+        {/* Campo de edición de URL */}
+        {!showUpload && (
+          <>
+            {/* Vista previa de la imagen */}
+            <div className="relative">
+              {editValue ? (
+                <img
+                  src={editValue}
+                  alt={alt}
+                  width={width}
+                  height={height}
+                  className="w-full rounded-xl border object-cover"
+                  onError={handleImageError}
+                  onLoad={handleImageLoad}
+                />
               ) : (
-                <Check className="h-4 w-4" />
+                <div className="w-full h-64 bg-gray-100 rounded-xl border flex items-center justify-center">
+                  <div className="text-center text-gray-500">
+                    <ImageIcon className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                    <p className="text-sm">Vista previa</p>
+                  </div>
+                </div>
               )}
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={handleCancel}
-              disabled={isPending || isSaving}
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-          
-          {/* Mensajes de validación */}
-          {editValue && !isValidUrl(editValue) && (
-            <p className="text-sm text-red-600">Por favor ingresa una URL válida</p>
-          )}
-          {editValue && isValidUrl(editValue) && !isValidImageUrl(editValue) && (
-            <p className="text-sm text-red-600">La URL debe ser de una imagen válida</p>
-          )}
-          
-          {/* Sugerencias */}
-          <div className="text-xs text-muted-foreground">
-            <p>💡 Sugerencias:</p>
-            <ul className="list-disc list-inside space-y-1 mt-1">
-              <li>Usa cualquier URL de imagen válida</li>
-              <li>Servicios recomendados: Imgur, Cloudinary, Unsplash, tu propio servidor</li>
-              <li>La imagen se validará automáticamente al cargar</li>
-              <li>Deja vacío para usar imagen por defecto</li>
-            </ul>
-          </div>
-        </div>
+              
+              {imageError && editValue && (
+                <div className="absolute inset-0 flex items-center justify-center bg-red-50 rounded-xl border-2 border-red-200">
+                  <div className="text-center text-red-600">
+                    <ImageIcon className="h-12 w-12 mx-auto mb-2" />
+                    <p className="text-sm font-medium">Error al cargar la imagen</p>
+                    <p className="text-xs">Verifica que la URL sea válida</p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Campo de edición */}
+            <div className="space-y-2">
+              <div className="flex gap-2">
+                <input
+                  ref={inputRef}
+                  type="url"
+                  value={editValue}
+                  onChange={(e) => setEditValue(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  disabled={isPending || isSaving}
+                  className={cn(
+                    "flex-1 p-2 border rounded focus:outline-none focus:ring-2",
+                    (isPending || isSaving) && "opacity-50 cursor-not-allowed",
+                    isValidUrl(editValue) && isValidImageUrl(editValue) || !editValue 
+                      ? "border-emerald-500 focus:ring-emerald-500/20" 
+                      : "border-red-500 focus:ring-red-500/20"
+                  )}
+                  placeholder={placeholder}
+                />
+                <Button
+                  size="sm"
+                  onClick={handleSave}
+                  disabled={(editValue && (!isValidUrl(editValue) || !isValidImageUrl(editValue))) || isPending || isSaving}
+                  className="bg-emerald-600 hover:bg-emerald-700"
+                >
+                  {isPending || isSaving ? (
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  ) : (
+                    <Check className="h-4 w-4" />
+                  )}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={handleCancel}
+                  disabled={isPending || isSaving}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+              
+              {/* Mensajes de validación */}
+              {editValue && !isValidUrl(editValue) && (
+                <p className="text-sm text-red-600">Por favor ingresa una URL válida</p>
+              )}
+              {editValue && isValidUrl(editValue) && !isValidImageUrl(editValue) && (
+                <p className="text-sm text-red-600">La URL debe ser de una imagen válida</p>
+              )}
+              
+              {/* Sugerencias */}
+              <div className="text-xs text-muted-foreground">
+                <p>💡 Sugerencias:</p>
+                <ul className="list-disc list-inside space-y-1 mt-1">
+                  <li>Usa cualquier URL de imagen válida</li>
+                  <li>Servicios recomendados: Imgur, Cloudinary, Unsplash, tu propio servidor</li>
+                  <li>La imagen se validará automáticamente al cargar</li>
+                  <li>Deja vacío para usar imagen por defecto</li>
+                </ul>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     )
   }
