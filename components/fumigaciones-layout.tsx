@@ -21,6 +21,18 @@ import { DynamicNavigation } from "@/components/dynamic-navigation"
 export function FumigacionesLayout() {
   const { isAdminMode, updateConfig, config } = useAdmin()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false)
+
+  // Detectar scroll para cambiar el estado de la navbar
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.scrollY
+      setIsScrolled(scrollTop > 100)
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   // Si no hay config, mostrar loading
   if (!config) {
@@ -158,63 +170,75 @@ export function FumigacionesLayout() {
       </div>
 
       {/* Navegación principal */}
-      <nav className="bg-card shadow-lg border-b">
+      <nav className={cn(
+        "bg-card shadow-lg border-b transition-all duration-300 z-50",
+        isScrolled ? "fixed top-0 left-0 right-0 py-0" : "py-2"
+      )}>
         <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center py-4">
-            <div className="flex items-center space-x-3">
-              <div className="flex items-center justify-center">
-                <EditableImage
-                  value={config.site?.logo || "/placeholder-logo.png"}
-                  alt={config.site?.title || "Logo"}
-                  className="h26 w-26 object-contain rounded-lg"
-                  onSave={(value) => {
-                    if (updateConfig) {
-                      updateConfig({
-                        ...config,
-                        site: {
-                          ...config.site,
-                          logo: value
-                        }
-                      })
-                    }
-                  }}
-                />
-              </div>
-              <div className="flex flex-col">
-                <EditableText 
-                  value={config.site?.title || "Pest Busters"} 
-                  onSave={(value) => {
-                    if (updateConfig) {
-                      updateConfig({
-                        ...config,
-                        site: {
-                          ...config.site,
-                          title: value
-                        }
-                      })
-                    }
-                  }}
-                  className="text-xl font-bold text-foreground leading-tight"
-                  tag="h1"
-                />
-                <EditableText 
-                  value={config.fumigaciones?.tagline || "Control de Plagas Profesional"} 
-                  onSave={(value) => {
-                    if (updateConfig) {
-                      updateConfig({
-                        ...config,
-                        fumigaciones: {
-                          ...config.fumigaciones,
-                          tagline: value
-                        }
-                      })
-                    }
-                  }}
-                  className="text-sm text-muted-foreground leading-tight"
-                  tag="span"
-                />
-              </div>
-            </div>
+          <div className="flex justify-between items-center">
+                         <div className="flex items-center space-x-3">
+               <div className="flex items-center justify-center">
+                 <EditableImage
+                   value={config.site?.logo || "/placeholder-logo.png"}
+                   alt={config.site?.title || "Logo"}
+                   className={cn(
+                     "object-contain rounded-lg transition-all duration-300",
+                     isScrolled ? "h-8 w-8" : "h-16 w-16"
+                   )}
+                   onSave={(value) => {
+                     if (updateConfig) {
+                       updateConfig({
+                         ...config,
+                         site: {
+                           ...config.site,
+                           logo: value
+                         }
+                       })
+                     }
+                   }}
+                 />
+               </div>
+               <div className="flex flex-col">
+                 <EditableText 
+                   value={config.site?.title || "Pest Busters"} 
+                   onSave={(value) => {
+                     if (updateConfig) {
+                       updateConfig({
+                         ...config,
+                         site: {
+                           ...config.site,
+                           title: value
+                         }
+                       })
+                     }
+                   }}
+                   className={cn(
+                     "font-bold text-foreground leading-tight transition-all duration-300",
+                     isScrolled ? "text-lg" : "text-xl"
+                   )}
+                   tag="h1"
+                 />
+                 <EditableText 
+                   value={config.fumigaciones?.tagline || "Control de Plagas Profesional"} 
+                   onSave={(value) => {
+                     if (updateConfig) {
+                       updateConfig({
+                         ...config,
+                         fumigaciones: {
+                           ...config.fumigaciones,
+                           tagline: value
+                         }
+                       })
+                     }
+                   }}
+                   className={cn(
+                     "text-muted-foreground leading-tight transition-all duration-300",
+                     isScrolled ? "text-xs" : "text-sm"
+                   )}
+                   tag="span"
+                 />
+               </div>
+             </div>
             
             <div className="hidden md:flex items-center space-x-8">
               <DynamicNavigation config={config} />
@@ -244,6 +268,9 @@ export function FumigacionesLayout() {
           )}
         </div>
       </nav>
+
+      {/* Espaciador para compensar la navbar fija */}
+      {isScrolled && <div className="h-16"></div>}
 
       {/* Hero Section - Layout específico para fumigaciones */}
       <section className="relative bg-gradient-to-r from-primary to-primary/80 text-primary-foreground py-20">
