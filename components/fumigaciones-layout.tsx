@@ -1,6 +1,6 @@
 "use client"
 
-import { Calendar, Check, Quote, Shield, AlertTriangle, Bug, Phone, Clock, MapPin, Building2 } from "lucide-react"
+import { Calendar, Check, Quote, Shield, AlertTriangle, Bug, Phone, Clock, MapPin, Building2, Menu, X } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { ScheduleButton } from "@/components/schedule-dialog"
@@ -90,9 +90,9 @@ export function FumigacionesLayout() {
   ]
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
       {/* Header con información de emergencia */}
-      <div className="bg-gray-800 text-white py-2">
+      <div className="bg-primary text-primary-foreground py-2">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center text-sm">
             <div className="flex items-center space-x-6">
@@ -158,69 +158,95 @@ export function FumigacionesLayout() {
       </div>
 
       {/* Navegación principal */}
-      <nav className="bg-white shadow-lg">
+      <nav className="bg-card shadow-lg border-b">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center py-4">
-            <div className="flex items-center space-x-4">
-              <EditableImage
-                value={config.site?.logo || "/placeholder-logo.png"}
-                alt={config.site?.title || "Logo"}
-                className="h-12 w-auto"
-                onSave={(value) => {
-                  if (updateConfig) {
-                    updateConfig({
-                      ...config,
-                      site: {
-                        ...config.site,
-                        logo: value
-                      }
-                    })
-                  }
-                }}
-              />
-              <EditableText 
-                value={config.site?.title || "Pest Busters"} 
-                onSave={(value) => {
-                  if (updateConfig) {
-                    updateConfig({
-                      ...config,
-                      site: {
-                        ...config.site,
-                        title: value
-                      }
-                    })
-                  }
-                }}
-                className="text-2xl font-bold text-gray-800"
-                tag="h1"
-              />
+            <div className="flex items-center space-x-3">
+              <div className="flex items-center justify-center">
+                <EditableImage
+                  value={config.site?.logo || "/placeholder-logo.png"}
+                  alt={config.site?.title || "Logo"}
+                  className="h26 w-26 object-contain rounded-lg"
+                  onSave={(value) => {
+                    if (updateConfig) {
+                      updateConfig({
+                        ...config,
+                        site: {
+                          ...config.site,
+                          logo: value
+                        }
+                      })
+                    }
+                  }}
+                />
+              </div>
+              <div className="flex flex-col">
+                <EditableText 
+                  value={config.site?.title || "Pest Busters"} 
+                  onSave={(value) => {
+                    if (updateConfig) {
+                      updateConfig({
+                        ...config,
+                        site: {
+                          ...config.site,
+                          title: value
+                        }
+                      })
+                    }
+                  }}
+                  className="text-xl font-bold text-foreground leading-tight"
+                  tag="h1"
+                />
+                <EditableText 
+                  value={config.fumigaciones?.tagline || "Control de Plagas Profesional"} 
+                  onSave={(value) => {
+                    if (updateConfig) {
+                      updateConfig({
+                        ...config,
+                        fumigaciones: {
+                          ...config.fumigaciones,
+                          tagline: value
+                        }
+                      })
+                    }
+                  }}
+                  className="text-sm text-muted-foreground leading-tight"
+                  tag="span"
+                />
+              </div>
             </div>
             
             <div className="hidden md:flex items-center space-x-8">
-              <span className="text-gray-600 hover:text-green-600 transition-colors cursor-pointer">
-                Inicio
-              </span>
-              <span className="text-gray-600 hover:text-green-600 transition-colors cursor-pointer">
-                Servicios
-              </span>
-              <span className="text-gray-600 hover:text-green-600 transition-colors cursor-pointer">
-                Nosotros
-              </span>
-              <span className="text-gray-600 hover:text-green-600 transition-colors cursor-pointer">
-                Contacto
-              </span>
+              <DynamicNavigation config={config} />
             </div>
 
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-6">
               <ScheduleButton />
               <ThemeSwitch />
+              
+              {/* Botón de menú móvil */}
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="md:hidden p-2 text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              </button>
             </div>
           </div>
+          
+          {/* Menú móvil */}
+          {isMobileMenuOpen && (
+            <div className="md:hidden py-4 border-t">
+              <div className="flex flex-col space-y-4">
+                <DynamicNavigation config={config} isMobile={true} />
+              </div>
+            </div>
+          )}
         </div>
       </nav>
 
       {/* Hero Section - Layout específico para fumigaciones */}
-      <section className="relative bg-gradient-to-r from-gray-900 to-gray-700 text-white py-20">
+      <section className="relative bg-gradient-to-r from-primary to-primary/80 text-primary-foreground py-20">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
@@ -253,7 +279,7 @@ export function FumigacionesLayout() {
                     })
                   }
                 }}
-                className="text-2xl text-orange-400 font-semibold" 
+                className="text-2xl text-accent font-semibold" 
                 tag="h2" 
               />
               <EditableText 
@@ -269,7 +295,7 @@ export function FumigacionesLayout() {
                     })
                   }
                 }}
-                className="text-gray-300 text-lg" 
+                className="text-primary-foreground/80 text-lg" 
                 tag="p" 
               />
               <EditableText 
@@ -285,7 +311,7 @@ export function FumigacionesLayout() {
                     })
                   }
                 }}
-                className="bg-orange-500 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-orange-600 transition-colors cursor-pointer inline-block"
+                className="bg-accent text-accent-foreground px-8 py-4 rounded-lg text-lg font-semibold hover:bg-accent/80 transition-colors cursor-pointer inline-block"
                 tag="span"
               />
             </div>
@@ -312,7 +338,7 @@ export function FumigacionesLayout() {
       </section>
 
       {/* Sección de servicios de emergencia */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-16 bg-muted/50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <EditableText 
@@ -328,7 +354,7 @@ export function FumigacionesLayout() {
                   })
                 }
               }}
-              className="text-4xl font-bold text-gray-800 mb-4" 
+              className="text-4xl font-bold text-foreground mb-4" 
               tag="h2" 
             />
             <EditableText 
@@ -344,15 +370,15 @@ export function FumigacionesLayout() {
                   })
                 }
               }}
-              className="text-xl text-gray-600" 
+              className="text-xl text-muted-foreground" 
               tag="p" 
             />
           </div>
           
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {emergencyServices.map((service, index) => (
-              <div key={index} className="bg-white p-6 rounded-lg shadow-lg text-center">
-                <div className="text-green-600 mb-4 flex justify-center">
+              <div key={index} className="bg-card p-6 rounded-lg shadow-lg text-center border">
+                <div className="text-primary mb-4 flex justify-center">
                   {service.icon}
                 </div>
                 <EditableText 
@@ -370,7 +396,7 @@ export function FumigacionesLayout() {
                       })
                     }
                   }}
-                  className="text-xl font-semibold text-gray-800 mb-2" 
+                  className="text-xl font-semibold text-foreground mb-2" 
                   tag="h3" 
                 />
                 <EditableText 
@@ -388,7 +414,7 @@ export function FumigacionesLayout() {
                       })
                     }
                   }}
-                  className="text-gray-600" 
+                  className="text-muted-foreground" 
                   tag="p" 
                 />
               </div>
@@ -398,7 +424,7 @@ export function FumigacionesLayout() {
       </section>
 
       {/* Sección de protección */}
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
@@ -415,7 +441,7 @@ export function FumigacionesLayout() {
                     })
                   }
                 }}
-                className="text-4xl font-bold text-gray-800 mb-6" 
+                className="text-4xl font-bold text-foreground mb-6" 
                 tag="h2" 
               />
               <EditableText 
@@ -431,12 +457,12 @@ export function FumigacionesLayout() {
                     })
                   }
                 }}
-                className="text-lg text-gray-600 mb-6" 
+                className="text-lg text-muted-foreground mb-6" 
                 tag="p" 
               />
               <div className="space-y-4">
                 <div className="flex items-center space-x-3">
-                  <Check className="h-6 w-6 text-green-600" />
+                  <Check className="h-6 w-6 text-primary" />
                   <EditableText 
                     value={config.fumigaciones?.aboutPoint2 || "Métodos seguros para mascotas y niños"} 
                     onSave={(value) => {
@@ -450,12 +476,12 @@ export function FumigacionesLayout() {
                         })
                       }
                     }}
-                    className="text-gray-700" 
+                    className="text-foreground" 
                     tag="span" 
                   />
                 </div>
                 <div className="flex items-center space-x-3">
-                  <Check className="h-6 w-6 text-green-600" />
+                  <Check className="h-6 w-6 text-primary" />
                   <EditableText 
                     value={config.fumigaciones?.aboutPoint3 || "Garantía de resultados"} 
                     onSave={(value) => {
@@ -469,7 +495,7 @@ export function FumigacionesLayout() {
                         })
                       }
                     }}
-                    className="text-gray-700" 
+                    className="text-foreground" 
                     tag="span" 
                   />
                 </div>
@@ -498,7 +524,7 @@ export function FumigacionesLayout() {
       </section>
 
       {/* Sección de principios de trabajo */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-16 bg-muted/50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <EditableText 
@@ -514,16 +540,16 @@ export function FumigacionesLayout() {
                   })
                 }
               }}
-              className="text-4xl font-bold text-gray-800 mb-4" 
+              className="text-4xl font-bold text-foreground mb-4" 
               tag="h2" 
             />
-            <p className="text-xl text-gray-600">3 pasos simples para eliminar plagas</p>
+            <p className="text-xl text-muted-foreground">3 pasos simples para eliminar plagas</p>
           </div>
           
           <div className="grid md:grid-cols-3 gap-8">
             {workSteps.map((step, index) => (
-              <div key={index} className="bg-white p-8 rounded-lg shadow-lg text-center">
-                <div className="bg-green-600 text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-6">
+              <div key={index} className="bg-card p-8 rounded-lg shadow-lg text-center border">
+                <div className="bg-primary text-primary-foreground w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-6">
                   {step.step}
                 </div>
                 <EditableText 
@@ -541,7 +567,7 @@ export function FumigacionesLayout() {
                       })
                     }
                   }}
-                  className="text-2xl font-semibold text-gray-800 mb-4" 
+                  className="text-2xl font-semibold text-foreground mb-4" 
                   tag="h3" 
                 />
                 <EditableText 
@@ -559,7 +585,7 @@ export function FumigacionesLayout() {
                       })
                     }
                   }}
-                  className="text-gray-600" 
+                  className="text-muted-foreground" 
                   tag="p" 
                 />
               </div>
@@ -569,7 +595,7 @@ export function FumigacionesLayout() {
       </section>
 
       {/* Call to Action */}
-      <section className="py-16 bg-orange-500">
+      <section className="py-16 bg-accent">
         <div className="container mx-auto px-4 text-center">
           <EditableText 
             value={config.fumigaciones?.ctaTitle || "¿Necesitas servicios de fumigación?"} 
@@ -584,15 +610,15 @@ export function FumigacionesLayout() {
                 })
               }
             }}
-            className="text-4xl font-bold text-white mb-4" 
+            className="text-4xl font-bold text-accent-foreground mb-4" 
             tag="h2" 
           />
-          <p className="text-xl text-orange-100 mb-8">Servicio 24/7 - Respuesta inmediata</p>
+          <p className="text-xl text-accent-foreground/80 mb-8">Servicio 24/7 - Respuesta inmediata</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <span className="bg-white text-orange-500 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition-colors cursor-pointer inline-block">
+            <span className="bg-background text-foreground px-8 py-4 rounded-lg text-lg font-semibold hover:bg-muted transition-colors cursor-pointer inline-block">
               Solicitar Cita
             </span>
-            <span className="border-2 border-white text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white hover:text-orange-500 transition-colors cursor-pointer inline-block">
+            <span className="border-2 border-accent-foreground text-accent-foreground px-8 py-4 rounded-lg text-lg font-semibold hover:bg-accent-foreground hover:text-accent transition-colors cursor-pointer inline-block">
               Emergencia 24/7
             </span>
           </div>
@@ -600,7 +626,7 @@ export function FumigacionesLayout() {
       </section>
 
       {/* Sección About Us */}
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
@@ -617,13 +643,13 @@ export function FumigacionesLayout() {
                     })
                   }
                 }}
-                className="text-4xl font-bold text-gray-800 mb-6" 
+                className="text-4xl font-bold text-foreground mb-6" 
                 tag="h2" 
               />
-              <p className="text-lg text-gray-600 mb-6">
+              <p className="text-lg text-muted-foreground mb-6">
                 Más de 10 años protegiendo hogares y empresas de plagas con métodos seguros y efectivos.
               </p>
-              <p className="text-lg text-gray-600">
+              <p className="text-lg text-muted-foreground">
                 Nuestro compromiso es proporcionar soluciones efectivas y seguras para el control de plagas.
               </p>
             </div>
@@ -650,7 +676,7 @@ export function FumigacionesLayout() {
       </section>
 
       {/* Testimonios */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-16 bg-muted/50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <EditableText 
@@ -666,17 +692,17 @@ export function FumigacionesLayout() {
                   })
                 }
               }}
-              className="text-4xl font-bold text-gray-800 mb-4" 
+              className="text-4xl font-bold text-foreground mb-4" 
               tag="h2" 
             />
-            <p className="text-xl text-gray-600">Más de 10 años protegiendo hogares y empresas</p>
+            <p className="text-xl text-muted-foreground">Más de 10 años protegiendo hogares y empresas</p>
           </div>
           
           <div className="grid md:grid-cols-3 gap-8">
             {config.testimonials?.slice(0, 3).map((testimonial, index) => (
-              <div key={index} className="bg-white p-6 rounded-lg shadow-lg">
+              <div key={index} className="bg-card p-6 rounded-lg shadow-lg border">
                 <div className="flex items-center mb-4">
-                  <Quote className="h-8 w-8 text-green-600" />
+                  <Quote className="h-8 w-8 text-primary" />
                 </div>
                 <EditableText 
                   value={testimonial.quote || "Excelente servicio profesional"} 
@@ -690,11 +716,11 @@ export function FumigacionesLayout() {
                       })
                     }
                   }}
-                  className="text-gray-600 mb-4" 
+                  className="text-muted-foreground mb-4" 
                   tag="p" 
                 />
                 <div className="flex items-center">
-                  <div className="w-12 h-12 bg-gray-300 rounded-full mr-4"></div>
+                  <div className="w-12 h-12 bg-muted rounded-full mr-4"></div>
                   <div>
                     <EditableText 
                       value={testimonial.author || "Cliente Satisfecho"} 
@@ -708,7 +734,7 @@ export function FumigacionesLayout() {
                           })
                         }
                       }}
-                      className="font-semibold text-gray-800" 
+                      className="font-semibold text-foreground" 
                       tag="span" 
                     />
                     <EditableText 
@@ -723,7 +749,7 @@ export function FumigacionesLayout() {
                           })
                         }
                       }}
-                      className="text-gray-600 text-sm block" 
+                      className="text-muted-foreground text-sm block" 
                       tag="span" 
                     />
                   </div>
@@ -735,7 +761,7 @@ export function FumigacionesLayout() {
       </section>
 
       {/* Call to Action final */}
-      <section className="py-16 bg-gray-800 text-white">
+      <section className="py-16 bg-primary text-primary-foreground">
         <div className="container mx-auto px-4 text-center">
           <EditableText 
             value={config.fumigaciones?.finalCtaTitle || "¿Listo para eliminar las plagas?"} 
@@ -753,15 +779,15 @@ export function FumigacionesLayout() {
             className="text-4xl font-bold mb-4" 
             tag="h2" 
           />
-          <p className="text-xl text-gray-300 mb-8">Contáctanos hoy mismo para una evaluación gratuita</p>
-          <span className="bg-orange-500 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-orange-600 transition-colors cursor-pointer inline-block">
+          <p className="text-xl text-primary-foreground/80 mb-8">Contáctanos hoy mismo para una evaluación gratuita</p>
+          <span className="bg-accent text-accent-foreground px-8 py-4 rounded-lg text-lg font-semibold hover:bg-accent/80 transition-colors cursor-pointer inline-block">
             Solicitar Evaluación Gratuita
           </span>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
+      <footer className="bg-primary text-primary-foreground py-12">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
@@ -794,14 +820,14 @@ export function FumigacionesLayout() {
                     })
                   }
                 }}
-                className="text-gray-400" 
+                className="text-primary-foreground/70" 
                 tag="p" 
               />
             </div>
             
             <div>
               <h4 className="text-lg font-semibold mb-4">Servicios</h4>
-              <ul className="space-y-2 text-gray-400">
+              <ul className="space-y-2 text-primary-foreground/70">
                 <li>Fumigación Residencial</li>
                 <li>Fumigación Comercial</li>
                 <li>Control de Termitas</li>
@@ -811,7 +837,7 @@ export function FumigacionesLayout() {
             
             <div>
               <h4 className="text-lg font-semibold mb-4">Contacto</h4>
-              <div className="space-y-2 text-gray-400">
+              <div className="space-y-2 text-primary-foreground/70">
                 <div className="flex items-center space-x-2">
                   <Phone className="h-4 w-4" />
                   <span>{config.fumigaciones?.emergencyPhone || "555-0123"}</span>
@@ -846,7 +872,7 @@ export function FumigacionesLayout() {
                         })
                       }
                     }}
-                    className="text-gray-400 hover:text-white transition-colors"
+                    className="text-primary-foreground/70 hover:text-primary-foreground transition-colors"
                   />
                   <EditableUrl 
                     value={config.fumigaciones?.socialLinks?.instagram || "#"} 
@@ -864,7 +890,7 @@ export function FumigacionesLayout() {
                         })
                       }
                     }}
-                    className="text-gray-400 hover:text-white transition-colors"
+                    className="text-primary-foreground/70 hover:text-primary-foreground transition-colors"
                   />
                   <EditableUrl 
                     value={config.fumigaciones?.socialLinks?.twitter || "#"} 
@@ -882,13 +908,13 @@ export function FumigacionesLayout() {
                         })
                       }
                     }}
-                    className="text-gray-400 hover:text-white transition-colors"
+                    className="text-primary-foreground/70 hover:text-primary-foreground transition-colors"
                   />
                 </div>
             </div>
           </div>
           
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+          <div className="border-t border-primary-foreground/20 mt-8 pt-8 text-center text-primary-foreground/70">
             <EditableText 
               value={config.fumigaciones?.footerCopyright || "© 2024 Pest Busters. Todos los derechos reservados."} 
               onSave={(value) => {
