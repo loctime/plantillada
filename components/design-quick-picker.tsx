@@ -45,7 +45,7 @@ export function DesignQuickPicker({ templateType = "landing", fullWidth = false 
       })
       setOpen(false)
       if (success) {
-        // Refrescar config de forma reactiva sin recargar la página
+        // Al cambiar de diseño, limpiar overrides de otro diseño (opcional) y refrescar
         await refreshConfig()
       }
     } finally {

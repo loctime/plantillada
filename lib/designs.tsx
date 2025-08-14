@@ -46,9 +46,12 @@ export const landingDesigns: Design[] = [
     icon: <Building2 className="h-6 w-6" />,
     category: 'landing',
     colorScheme: {
-      primary: '#1e40af',
-      secondary: '#64748b',
-      accent: '#f59e0b'
+      // Primario: blanco pastel amarillo
+      primary: '#fff8e1',
+      // Secundario: negro mate
+      secondary: '#0f0f0f',
+      // Acento: dorado
+      accent: '#d4af37'
     },
     features: [
       'Colores azules profesionales',
@@ -58,10 +61,21 @@ export const landingDesigns: Design[] = [
     ],
     status: 'active',
     cssVariables: {
-      '--primary': '#1e40af',
-      '--secondary': '#64748b',
-      '--accent': '#f59e0b',
-      '--font-family': 'Georgia, serif'
+      '--primary': '#fff8e1',
+      '--secondary': '#0f0f0f',
+      '--accent': '#d4af37',
+      '--font-family': 'Georgia, serif',
+      // Fondos
+      '--background-color': '#ffffff',
+      '--section-background': '#ffffff',
+      '--navbar-background': '#dbeafe', /* celeste dorado */
+      // Texto
+      '--text-color': '#0f0f0f', /* negro mate */
+      '--heading-color': '#1a1a1a', /* negro dorado */
+      // Botones
+      '--primary-button-color': '#93c5fd', /* celeste dorado */
+      '--secondary-button-color': '#fff8e1', /* blanco dorado */
+      '--outline-button-color': '#d4af37' /* dorado */
     },
     predefinedConfig: {
       site: {
@@ -168,7 +182,12 @@ export const landingDesigns: Design[] = [
       '--accent': '#d4af37',
       '--font-family': 'Georgia, "Times New Roman", serif',
       '--heading-font': 'Georgia, "Times New Roman", serif',
-      '--body-font': 'Georgia, "Times New Roman", serif'
+      '--body-font': 'Georgia, "Times New Roman", serif',
+      '--background-color': '#141414',
+      '--section-background': '#0f0f0f',
+      '--navbar-background': '#000000',
+      '--text-color': '#f5f5f5',
+      '--heading-color': '#ffffff'
     },
     predefinedConfig: {
       site: {
@@ -343,7 +362,12 @@ export const landingDesigns: Design[] = [
       '--primary': '#059669',
       '--secondary': '#374151',
       '--accent': '#3b82f6',
-      '--font-family': 'Courier New, monospace'
+      '--font-family': 'Courier New, monospace',
+      '--background-color': '#0f172a',
+      '--section-background': '#0b1220',
+      '--navbar-background': '#0b1220',
+      '--text-color': '#e2e8f0',
+      '--heading-color': '#38bdf8'
     },
     predefinedConfig: {
       site: {
@@ -447,7 +471,12 @@ export const landingDesigns: Design[] = [
       '--primary': '#7c3aed',
       '--secondary': '#6b7280',
       '--accent': '#ec4899',
-      '--font-family': 'Inter, sans-serif'
+      '--font-family': 'Inter, sans-serif',
+      '--background-color': '#faf5ff',
+      '--section-background': '#fff7fb',
+      '--navbar-background': '#ffffff',
+      '--text-color': '#1f2937',
+      '--heading-color': '#7c3aed'
     },
     predefinedConfig: {
       site: {
@@ -551,7 +580,12 @@ export const landingDesigns: Design[] = [
       '--primary': '#dc2626',
       '--secondary': '#6b7280',
       '--accent': '#f59e0b',
-      '--font-family': 'Poppins, sans-serif'
+      '--font-family': 'Poppins, sans-serif',
+      '--background-color': '#fff7f7',
+      '--section-background': '#fff1f1',
+      '--navbar-background': '#ffffff',
+      '--text-color': '#111827',
+      '--heading-color': '#dc2626'
     },
     predefinedConfig: {
       site: {
@@ -663,7 +697,12 @@ export const landingDesigns: Design[] = [
       '--body-font': 'Inter, sans-serif',
       '--section-spacing': '4rem',
       '--border-radius': '12px',
-      '--shadow': '0 10px 25px rgba(0, 0, 0, 0.1)'
+      '--shadow': '0 10px 25px rgba(0, 0, 0, 0.1)',
+      '--background-color': '#f6fffb',
+      '--section-background': '#ffffff',
+      '--navbar-background': '#ecfdf5',
+      '--text-color': '#0f172a',
+      '--heading-color': '#064e3b'
     },
     predefinedConfig: {
       site: {
@@ -841,7 +880,12 @@ export const landingDesigns: Design[] = [
       '--accent': '#8b5cf6',
       '--font-family': 'Inter, sans-serif',
       '--heading-font': 'Inter, sans-serif',
-      '--body-font': 'Inter, sans-serif'
+      '--body-font': 'Inter, sans-serif',
+      '--background-color': '#eef2ff',
+      '--section-background': '#f5f3ff',
+      '--navbar-background': '#ffffff',
+      '--text-color': '#1e293b',
+      '--heading-color': '#3730a3'
     },
     predefinedConfig: {
       site: {

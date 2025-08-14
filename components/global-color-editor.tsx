@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useAdmin } from '@/lib/admin-context'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -12,6 +12,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
+import { getDesignById } from '@/lib/designs'
 
 const COLORS = [
   { key: "backgroundColor", label: "fondo" },
@@ -23,12 +24,55 @@ const COLORS = [
   { key: "titleColor", label: "navegacion" },
   { key: "navbarBackgroundColor", label: "nav-fondo" },
   { key: "buttonTextColor", label: "boton-texto" },
-  { key: "sectionBackgroundColor", label: "seccion-fondo" }
+  { key: "sectionBackgroundColor", label: "seccion-fondo" },
+  { key: "heroBackgroundColor", label: "hero-bg" }
 ]
 
 export function GlobalColorEditor() {
   const { config, updateConfig, isAdminMode } = useAdmin()
   const [isOpen, setIsOpen] = useState(false)
+  const activeDesignId = config?.selectedDesigns?.landing
+  const activeOverrides = (config as any)?.designOverrides?.[activeDesignId || '']
+  const activeDesign = useMemo(() => activeDesignId ? getDesignById(activeDesignId) : undefined, [activeDesignId])
+
+  const getEffectiveColor = (key: string): string | undefined => {
+    // 1) Override específico del diseño activo
+    const overrideVal = activeOverrides?.site?.[key]
+    if (overrideVal) return overrideVal
+
+    // 2) Mapeo desde theme del tenant (modo claro)
+    const theme = (config as any)?.theme?.light || {}
+    const themeMap: Record<string, string | undefined> = {
+      backgroundColor: theme.backgroundColor,
+      sectionBackgroundColor: theme.sectionBackground,
+      navbarBackgroundColor: theme.navbarBackground,
+      buttonBackgroundColor: theme.primaryButtonColor,
+      titleColor: (config as any)?.theme?.light?.headingColor,
+      // acentos y secundarios
+      linkColor: theme.accentColor,
+    }
+    if (key in themeMap && themeMap[key as keyof typeof themeMap]) return themeMap[key as keyof typeof themeMap]
+
+    // 3) Variables CSS por defecto del diseño
+    const cssVarMap: Record<string, string> = {
+      backgroundColor: '--background-color',
+      sectionBackgroundColor: '--section-background',
+      navbarBackgroundColor: '--navbar-background',
+      buttonBackgroundColor: '--primary-button-color',
+      buttonTextColor: '--button-text-color',
+      titleColor: '--heading-color',
+      linkColor: '--link-color',
+      linkHoverColor: '--link-hover-color',
+      heroBackgroundColor: '--section-background'
+    }
+    const cssVar = cssVarMap[key]
+    if (cssVar && activeDesign?.cssVariables?.[cssVar]) return activeDesign.cssVariables[cssVar]
+
+    // 4) Fallback: valores sueltos en site
+    const siteVal = (config?.site as any)?.[key]
+    if (siteVal) return siteVal
+    return undefined
+  }
 
   if (!isAdminMode || !config) return null
 
@@ -38,13 +82,30 @@ export function GlobalColorEditor() {
       document.documentElement.style.setProperty(`--${key}`, value)
       
       // Guardar en la configuración
-      await updateConfig({
-        ...config,
-        site: {
-          ...config.site,
-          [key]: value
-        }
-      })
+      const designId = config.selectedDesigns?.landing
+      if (designId) {
+        // Guardar override específico del diseño activo
+        await updateConfig({
+          designOverrides: {
+            ...(config as any).designOverrides,
+            [designId]: {
+              ...(config as any).designOverrides?.[designId],
+              site: {
+                ...(config as any).designOverrides?.[designId]?.site,
+                [key]: value
+              }
+            }
+          }
+        } as any)
+      } else {
+        await updateConfig({
+          ...config,
+          site: {
+            ...config.site,
+            [key]: value
+          }
+        })
+      }
     } catch (error) {
       console.error('Error updating color:', error)
     }
@@ -87,7 +148,7 @@ export function GlobalColorEditor() {
                 <div className="flex-1 overflow-y-auto">
                   <div className="grid grid-cols-10 gap-1">
                     {COLORS.map((color) => {
-                      const currentValue = (config.site as any)?.[color.key] || "#000000"
+                      const currentValue = getEffectiveColor(color.key) || "#000000"
                       
                       return (
                         <div key={color.key} className="flex items-center gap-1 p-1 border rounded">

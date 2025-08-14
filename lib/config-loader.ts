@@ -95,6 +95,21 @@ export interface Config {
     heroSubtitleColor?: string
     sessionsTitleColor?: string
     sessionsSubtitleColor?: string
+    // Fondos específicos
+    backgroundColor?: string
+    sectionBackgroundColor?: string
+    navbarBackgroundColor?: string
+    buttonBackgroundColor?: string
+    buttonTextColor?: string
+    titleColor?: string
+    heroBackgroundColor?: string
+  }
+  // Overrides por diseño (por tenant y por estilo)
+  designOverrides?: {
+    [designId: string]: {
+      site?: { [key: string]: string }
+      theme?: ThemeConfig
+    }
   }
   fumigaciones?: {
     // Información de contacto

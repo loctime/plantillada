@@ -369,7 +369,7 @@ function Hero() {
   if (!config) return null
 
   return (
-    <section className="w-full py-16 md:py-24 lg:py-28 theme-bg-primary">
+    <section className="w-full py-16 md:py-24 lg:py-28 theme-bg-section hero-section">
       <div className="container px-4 md:px-6 grid gap-10 lg:grid-cols-2 items-center">
         <div className="space-y-6">
           <div className="inline-flex items-center gap-2 rounded-full theme-border px-3 py-1 text-xs theme-text-subtitle">
