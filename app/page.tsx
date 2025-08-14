@@ -1,6 +1,6 @@
 "use client"
 
-import { Calendar, Check, Quote, ShoppingCart, Menu, X, Settings } from "lucide-react"
+import { Calendar, Check, Quote, ShoppingCart, Menu, X, Settings, Palette } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { ScheduleButton } from "@/components/schedule-dialog"
@@ -27,6 +27,8 @@ import { DynamicNavigation } from "@/components/dynamic-navigation"
 import { SectionButtonManager } from "@/components/section-button-manager"
 import { FumigacionesLayout } from "@/components/layouts/fumigaciones-layout"
 import { useGlobalColors } from "@/hooks/use-global-colors"
+import { Button } from "@/components/ui/button"
+import { DesignQuickPicker } from "@/components/design-quick-picker"
 
 
 export default function Page() {
@@ -334,8 +336,10 @@ function Header() {
         </div>
         
         {/* Centro: Navegación (solo desktop) */}
-        <div className="hidden md:flex items-center">
+        <div className="hidden md:flex items-center gap-2">
           <DynamicNavigation config={config} isMobile={false} />
+          {/* Selector rápido de diseños (admin) */}
+          <DesignQuickPicker />
         </div>
         
         {/* Lado derecho: Botones y controles */}
@@ -376,6 +380,9 @@ function Header() {
         <div className="md:hidden theme-border-t theme-bg-primary">
           <div className="container px-4 py-4">
             <DynamicNavigation config={config} isMobile={true} />
+            <div className="mt-3">
+              <DesignQuickPicker fullWidth />
+            </div>
             <div className="mt-4 pt-4 theme-border-t">
               <Link
                 href="/admin"
@@ -391,6 +398,8 @@ function Header() {
     </header>
   )
 }
+
+// Eliminado: reemplazado por DesignQuickPicker
 
 function Hero() {
   const { config, updateConfig } = useAdmin()

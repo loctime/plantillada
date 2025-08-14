@@ -1,6 +1,6 @@
 "use client"
 
-import { Calendar, Check, Quote, Shield, AlertTriangle, Bug, Phone, Clock, MapPin, Building2, Menu, X } from "lucide-react"
+import { Calendar, Check, Quote, Shield, AlertTriangle, Bug, Phone, Clock, MapPin, Building2, Menu, X, Palette } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { ScheduleButton } from "@/components/schedule-dialog"
@@ -17,6 +17,8 @@ import { SessionManager } from "@/components/session-manager"
 import { TestimonialManager } from "@/components/testimonial-manager"
 import { ThemeSwitch } from "@/components/theme-switch"
 import { DynamicNavigation } from "@/components/dynamic-navigation"
+import { Button } from "@/components/ui/button"
+import { DesignQuickPicker } from "@/components/design-quick-picker"
 
 export function FumigacionesLayout() {
   const { isAdminMode, updateConfig, config } = useAdmin()
@@ -199,7 +201,7 @@ export function FumigacionesLayout() {
                  />
                </div>
                <div className="flex flex-col">
-                 <EditableText 
+                  <EditableText 
                    value={config.site?.title || "Pest Busters"} 
                    onSave={(value) => {
                      if (updateConfig) {
@@ -217,19 +219,6 @@ export function FumigacionesLayout() {
                      isScrolled ? "text-lg" : "text-xl"
                    )}
                    tag="h1"
-                   textColor={config.site?.titleColor}
-                   onColorChange={(color) => {
-                     if (updateConfig) {
-                       updateConfig({
-                         ...config,
-                         site: {
-                           ...config.site,
-                           titleColor: color
-                         }
-                       })
-                     }
-                   }}
-                   showColorPicker={true}
                  />
                  <EditableText 
                    value={config.fumigaciones?.tagline || "Control de Plagas Profesional"} 
@@ -253,8 +242,9 @@ export function FumigacionesLayout() {
                </div>
              </div>
             
-            <div className="hidden md:flex items-center space-x-8">
+            <div className="hidden md:flex items-center space-x-2">
               <DynamicNavigation config={config} />
+              {isAdminMode && <DesignQuickPicker />}
             </div>
 
             <div className="flex items-center space-x-6">
@@ -276,6 +266,7 @@ export function FumigacionesLayout() {
             <div className="md:hidden py-4 theme-border-t">
               <div className="flex flex-col space-y-4">
                 <DynamicNavigation config={config} isMobile={true} />
+                {isAdminMode && <DesignQuickPicker fullWidth />}
               </div>
             </div>
           )}
