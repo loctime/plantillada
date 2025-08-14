@@ -56,3 +56,28 @@ export function ScheduleButton({
     </Dialog>
   )
 }
+
+// Compatibilidad: wrapper con la API usada en `app/psicologos/page.tsx`
+// Permite importar `{ ScheduleDialog }` mapeando a ScheduleButton
+type DialogCompatProps = {
+  calendlyUrl?: string
+  buttonText?: string
+  buttonVariant?: "default" | "outline"
+  className?: string
+}
+
+export function ScheduleDialog({
+  calendlyUrl = "https://calendly.com/tu-usuario/sesion",
+  buttonText = "Agendar",
+  buttonVariant = "default",
+  className,
+}: DialogCompatProps) {
+  return (
+    <ScheduleButton
+      url={calendlyUrl}
+      label={buttonText}
+      variant={buttonVariant}
+      className={className}
+    />
+  )
+}

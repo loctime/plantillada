@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/firebase'
-import { collection, getDocs, doc, setDoc, getDefaultConfig } from '@/lib/config-loader'
+import { collection, getDocs, doc, setDoc } from 'firebase/firestore'
+import { getDefaultConfig } from '@/lib/config-loader'
 import { getFirestore, collection as firestoreCollection, getDocs as firestoreGetDocs, doc as firestoreDoc, setDoc as firestoreSetDoc } from 'firebase/firestore'
 
 interface TenantInfo {

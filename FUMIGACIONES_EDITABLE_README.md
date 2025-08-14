@@ -90,7 +90,7 @@ node scripts/test-fumigaciones-editable.js [tenant-id]
 
 ## 📁 Archivos Modificados
 
-### `components/fumigaciones-layout.tsx`
+### `components/layouts/fumigaciones-layout.tsx`
 - ✅ Reemplazado todos los textos hardcodeados con `EditableText`
 - ✅ Reemplazado todos los enlaces hardcodeados con `EditableUrl`
 - ✅ Reemplazado todas las imágenes hardcodeadas con `EditableImage`

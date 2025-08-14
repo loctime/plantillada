@@ -107,6 +107,23 @@ Esta regla se aplicará automáticamente al inicio de cada nuevo chat para:
 4. **Estructura Mejorada**: La documentación ahora es más fácil de navegar y mantener
 5. **Nueva Regla de Memoria**: Lectura automática del README consolidado al inicio de cada chat
 
+## ♻️ Limpieza Adicional (Enero 2025)
+
+### Cambios de Código
+- Unificado `FumigacionesLayout` en `components/layouts/fumigaciones-layout.tsx` y actualizado import en `app/page.tsx`.
+- Eliminado duplicado `components/fumigaciones-layout.tsx`.
+- Eliminado `components/ui/use-toast.ts` (se usa `hooks/use-toast.ts`).
+- Eliminado `styles/globals.css`; la app usa `app/globals.css`.
+- Ajustado `scripts/test-color-application.js` para leer solo `app/globals.css`.
+
+### Documentación/Archivos
+- Eliminado `README_CONSOLIDADO.md` (se mantiene `readme.md`).
+- Movidos archivos sueltos a `docs/archive/`: `nuevodiseño.html`, `archivo htm ejemploplantillas.md`, `pedidorapido-config.json`, `ter`.
+
+### Infraestructura
+- Eliminado `pnpm-lock.yaml` para unificar en npm (`package-lock.json`).
+- Ignorados en `.gitignore`: `.next/`, backups `*.old|*.bak|* - copia.*|* - Copy.*`, caches `/.cache/`, `/.turbo/`.
+
 ---
 
 **Estado**: ✅ **LIMPIEZA COMPLETADA**

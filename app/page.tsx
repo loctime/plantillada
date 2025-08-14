@@ -25,7 +25,7 @@ import { AdminDebug } from "@/components/admin-debug"
 import { ThemeSwitch } from "@/components/theme-switch"
 import { DynamicNavigation } from "@/components/dynamic-navigation"
 import { SectionButtonManager } from "@/components/section-button-manager"
-import { FumigacionesLayout } from "@/components/fumigaciones-layout"
+import { FumigacionesLayout } from "@/components/layouts/fumigaciones-layout"
 import { useGlobalColors } from "@/hooks/use-global-colors"
 
 

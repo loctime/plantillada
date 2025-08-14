@@ -19,6 +19,16 @@ yarn-error.log*
 # env files
 .env*
 
+# local backups/copias
+*.old
+*.bak
+* - copia.*
+* - Copy.*
+
+# caches temporales
+/.cache/
+/.turbo/
+
 # vercel
 .vercel
 

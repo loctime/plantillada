@@ -63,8 +63,7 @@ console.log('3. Los colores se aplican inmediatamente')
 
 // Verificar que el CSS está configurado correctamente
 const cssFiles = [
-  'app/globals.css',
-  'styles/globals.css'
+  'app/globals.css'
 ]
 
 console.log('\n📁 Verificando archivos CSS:')

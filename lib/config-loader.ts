@@ -424,20 +424,15 @@ export async function loadDesignFromJson(designId: string): Promise<Config | nul
       return null
     }
     
-    // Cargar el archivo JSON usando fs en lugar de fetch para el servidor
-    const fs = require('fs')
-    const path = require('path')
-    
-    const filePath = path.join(process.cwd(), 'public', fileName)
-    console.log(`📄 Intentando cargar archivo: ${filePath}`)
-    
-    if (!fs.existsSync(filePath)) {
-      console.error(`❌ Archivo no encontrado: ${filePath}`)
+    // Intentar cargar vía fetch desde /public (sin usar fs para compatibilidad cliente/SSR)
+    const url = `/${fileName}`
+    console.log(`📄 Intentando cargar archivo (fetch): ${url}`)
+    const res = await fetch(url)
+    if (!res.ok) {
+      console.error(`❌ No se pudo cargar el archivo: ${url} (status ${res.status})`)
       return null
     }
-    
-    const fileContent = fs.readFileSync(filePath, 'utf8')
-    const designData = JSON.parse(fileContent)
+    const designData = await res.json()
     
     console.log(`✅ Diseño cargado exitosamente: ${designData.name}`)
     
@@ -531,7 +526,7 @@ export async function saveTemplate(templateId: string, tenantId?: string): Promi
 }
 
 // Función para obtener configuración por defecto (personalizada por tenant)
-function getDefaultConfig(tenantId: string): Config {
+export function getDefaultConfig(tenantId: string): Config {
   const baseConfig = {
     site: {
       title: `Tu Marca Personal - ${tenantId}`,
