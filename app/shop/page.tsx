@@ -203,6 +203,7 @@ export default function ShopPage() {
     headerStyle: 'dark',
     sidebarStyle: 'white-shadow'
   })
+  const [showMobileSidebar, setShowMobileSidebar] = useState(false)
   
   // Estados para gestión de productos
   const [showProductModal, setShowProductModal] = useState(false)
@@ -726,7 +727,7 @@ export default function ShopPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="shop-container">
           {/* Sidebar */}
-          <div className="sidebar">
+          <div className={`sidebar ${layoutConfig.type === 'mobile-first' && showMobileSidebar ? 'active' : ''}`}>
             <div className="bg-white rounded-lg shadow-md p-6 space-y-6">
               {/* Búsqueda */}
               <div className="space-y-2">
@@ -879,11 +880,16 @@ export default function ShopPage() {
                               <Eye className="h-4 w-4" />
                             </Button>
                           </div>
-                          {product.originalPrice && (
-                            <Badge className="absolute top-2 left-2 bg-blue-600">
-                              -{Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
-                            </Badge>
-                          )}
+                                                     {product.originalPrice && (
+                             <Badge className="absolute top-2 left-2 bg-blue-600">
+                               -{Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
+                             </Badge>
+                           )}
+                           {layoutConfig.productStyle === 'food-cards' && (
+                             <div className="category-badge">
+                               {product.category}
+                             </div>
+                           )}
                           {/* Botón para editar imagen (solo en modo admin) */}
                           {isAdminMode && (
                             <Button
@@ -908,12 +914,16 @@ export default function ShopPage() {
 
                        <h3 className="font-medium text-gray-900 line-clamp-2">{product.name}</h3>
 
-                       <div className="flex items-center space-x-2">
-                         <span className="text-lg font-bold text-blue-600">${product.price.toFixed(2)}</span>
-                         {product.originalPrice && (
-                           <span className="text-sm text-gray-500 line-through">${product.originalPrice.toFixed(2)}</span>
-                         )}
-                       </div>
+                                               <div className="flex items-center space-x-2">
+                          <span className={`text-lg font-bold ${layoutConfig.productStyle === 'food-cards' ? 'price text-red-600' : 'text-blue-600'}`}>
+                            ${product.price.toFixed(2)}
+                          </span>
+                          {product.originalPrice && (
+                            <span className={`text-sm line-through ${layoutConfig.productStyle === 'food-cards' ? 'original-price' : 'text-gray-500'}`}>
+                              ${product.originalPrice.toFixed(2)}
+                            </span>
+                          )}
+                        </div>
 
                                                <Button
                           onClick={() => addToCart(product)}
@@ -1299,8 +1309,34 @@ export default function ShopPage() {
          </div>
        )}
 
-       {/* Botón de modo admin */}
-       <AdminToggle />
-     </div>
-   )
- }
+               {/* Botón de modo admin */}
+        <AdminToggle />
+
+        {/* Mobile Navigation Bar for Food Shop */}
+        {layoutConfig.type === 'mobile-first' && (
+          <div className="mobile-nav">
+            <button
+              onClick={() => setShowMobileSidebar(!showMobileSidebar)}
+              className={showMobileSidebar ? 'active' : ''}
+            >
+              <Filter className="h-6 w-6" />
+            </button>
+            <button>
+              <Search className="h-6 w-6" />
+            </button>
+            <button
+              onClick={() => setShowCart(!showCart)}
+              className="relative"
+            >
+              <ShoppingCart className="h-6 w-6" />
+              {cartItemCount > 0 && (
+                <Badge className="absolute -top-2 -right-2 h-4 w-4 rounded-full bg-red-600 text-xs">
+                  {cartItemCount}
+                </Badge>
+              )}
+            </button>
+          </div>
+        )}
+      </div>
+    )
+  }

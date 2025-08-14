@@ -279,6 +279,187 @@
   background-color: #f0fdf4;
 }
 
+/* Food Shop Design Styles */
+[data-background-color="#fbbf24"] .shop-page {
+  background-color: #fbbf24;
+  color: #374151;
+}
+
+/* Layout: Mobile First (Food Shop) */
+[data-layout="mobile-first"] .shop-container {
+  display: block;
+  max-width: 100%;
+  padding: 0;
+}
+
+[data-layout="mobile-first"] .sidebar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fbbf24;
+  border-top: 2px solid #374151;
+  padding: 0.5rem;
+  z-index: 100;
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+}
+
+[data-layout="mobile-first"] .sidebar.active {
+  transform: translateY(0);
+}
+
+[data-layout="mobile-first"] .main-content {
+  width: 100%;
+  padding: 1rem;
+  padding-bottom: 5rem;
+}
+
+/* Food Cards Style */
+[data-product-style="food-cards"] .product-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+[data-product-style="food-cards"] .product-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(55, 65, 81, 0.15);
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: 2px solid transparent;
+}
+
+[data-product-style="food-cards"] .product-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(55, 65, 81, 0.2);
+  border-color: #dc2626;
+}
+
+[data-product-style="food-cards"] .product-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+[data-product-style="food-cards"] .product-info {
+  padding: 1rem;
+  background: white;
+}
+
+/* Food Header Style */
+[data-header-style="food-header"] .shop-header {
+  background: #374151;
+  color: white;
+  border-bottom: 3px solid #fbbf24;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+[data-header-style="food-header"] .shop-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #fbbf24 0%, #dc2626 50%, #fbbf24 100%);
+}
+
+/* Food Sidebar Style */
+[data-sidebar-style="food-sidebar"] .sidebar {
+  background: #fbbf24;
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 -4px 20px rgba(55, 65, 81, 0.2);
+}
+
+[data-sidebar-style="food-sidebar"] .sidebar .bg-white {
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  margin: 0.5rem;
+}
+
+/* Mobile Navigation Bar */
+[data-layout="mobile-first"] .mobile-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fbbf24;
+  border-top: 2px solid #374151;
+  padding: 0.75rem;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 100;
+}
+
+[data-layout="mobile-first"] .mobile-nav button {
+  background: none;
+  border: none;
+  color: #374151;
+  font-size: 1.5rem;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+[data-layout="mobile-first"] .mobile-nav button:hover {
+  background: rgba(55, 65, 81, 0.1);
+  transform: scale(1.1);
+}
+
+[data-layout="mobile-first"] .mobile-nav button.active {
+  background: #dc2626;
+  color: white;
+}
+
+/* Food-specific button styles */
+[data-product-style="food-cards"] .product-card button {
+  background: #dc2626 !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 25px !important;
+  padding: 0.75rem 1.5rem !important;
+  font-weight: 600 !important;
+  transition: all 0.2s !important;
+}
+
+[data-product-style="food-cards"] .product-card button:hover {
+  background: #b91c1c !important;
+  transform: scale(1.05) !important;
+}
+
+/* Food category badges */
+[data-product-style="food-cards"] .product-card .category-badge {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background: #dc2626;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* Price styling for food */
+[data-product-style="food-cards"] .product-card .price {
+  color: #dc2626;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+[data-product-style="food-cards"] .product-card .original-price {
+  color: #6b7280;
+  text-decoration: line-through;
+  font-size: 0.875rem;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   [data-layout="sidebar-left"] .shop-container,

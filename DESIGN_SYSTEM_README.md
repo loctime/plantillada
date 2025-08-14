@@ -1,412 +1,483 @@
-# Sistema de Diseños - Documentación
+# 🎨 Sistema de Diseños de Tienda - Plantillada
 
-## 🎨 Descripción
+## 📋 Índice
+- [Descripción General](#descripción-general)
+- [Arquitectura del Sistema](#arquitectura-del-sistema)
+- [Diseños Disponibles](#diseños-disponibles)
+- [Cómo Usar el Sistema](#cómo-usar-el-sistema)
+- [Personalización Avanzada](#personalización-avanzada)
+- [Extensión del Sistema](#extensión-del-sistema)
+- [Troubleshooting](#troubleshooting)
 
-El sistema de diseños permite seleccionar estilos visuales específicos para cada tipo de plantilla (landing, shop, etc.) desde el panel de administración. Cada diseño incluye:
+## 🎯 Descripción General
 
-- **Paleta de colores personalizada**
-- **Tipografías específicas**
-- **Iconografía temática**
-- **Variables CSS dinámicas**
-- **JSON predefinido completo** (NUEVO)
-- **Sistema de backup automático** (NUEVO)
+El Sistema de Diseños de Tienda es una solución completa que permite cambiar dinámicamente la apariencia y funcionalidad de la página de tienda sin necesidad de modificar código. Cada diseño incluye:
 
-## 📁 Estructura del Sistema
+- **Layouts específicos**: Sidebar izquierda/derecha, sin sidebar, minimal, mobile-first
+- **Estilos de productos**: Tarjetas cuadradas, listas horizontales, tarjetas redondeadas, grid compacto
+- **Paletas de colores**: Especializadas por sector comercial
+- **Configuraciones predefinidas**: Productos y categorías específicas del nicho
+- **Responsive design**: Adaptación automática a diferentes dispositivos
 
-### Archivos Principales
+## 🏗️ Arquitectura del Sistema
 
+### Estructura de Archivos
 ```
+app/shop/
+├── page.tsx                 # Página principal con lógica de diseños
+├── layout-styles.css        # Estilos CSS dinámicos
+└── components/
+    └── shop-design-selector.tsx  # Selector visual de diseños
+
 lib/
-├── designs.tsx              # Configuración centralizada de diseños + JSONs predefinidos
-├── config-loader.ts         # Carga y guarda configuraciones
-└── config.ts               # Configuración base
+└── designs.tsx              # Definición de diseños disponibles
 
-components/
-├── design-selector.tsx      # Selector de diseños en el admin (mejorado)
-├── design-applier.tsx       # Aplicador automático de diseños
-└── backup-manager.tsx       # Gestión de backups (NUEVO)
-
-hooks/
-└── use-design.ts           # Hook para aplicar diseños
-
-scripts/
-├── test-design-system.js   # Script de prueba original
-└── test-design-system-enhanced.js  # Script de prueba mejorado (NUEVO)
+public/
+├── tech-shop-design.json    # Configuración del diseño Tech
+├── moda-shop-design.json    # Configuración del diseño Moda
+├── gym-shop-design.json     # Configuración del diseño Gym
+├── lifestyle-shop-design.json # Configuración del diseño Lifestyle
+└── food-shop-design.json    # Configuración del diseño Food
 ```
 
-## 🎯 Diseños Disponibles
+### Flujo de Datos
+1. **Selección de Diseño**: Usuario selecciona un diseño desde el selector
+2. **Carga de Configuración**: Se carga el JSON correspondiente del diseño
+3. **Aplicación de Variables CSS**: Se aplican colores y propiedades de layout
+4. **Actualización de Estado**: Se actualiza el estado de la aplicación
+5. **Renderizado Dinámico**: Los componentes se renderizan con las nuevas propiedades
 
-### Landing Page
-- **Estudio Contable**: Azules profesionales, tipografía serif + contenido contable
-- **Estudio de Abogados**: Oscuros elegantes, tipografía formal + contenido legal
-- **Ingenieros**: Verdes y azules, tipografía técnica + contenido técnico
-- **Blog Personal**: Colores vibrantes, tipografía moderna + contenido personal
-- **Coach Personal**: Colores cálidos, tipografía amigable + contenido coaching
-- **Fumigaciones**: Verdes y naranjas, layout específico + contenido de control de plagas (NUEVO)
+### Sistema de Atributos Data-*
+El sistema utiliza atributos HTML `data-*` para aplicar estilos CSS dinámicamente:
 
-### Tienda Online
-- **Tech Shop**: Azules tecnológicos, tipografía futurista
-- **Moda Shop**: Rosas y dorados, tipografía elegante
-- **Gym Shop**: Rojos energéticos, tipografía deportiva
-- **Lifestyle Shop**: Verdes naturales, tipografía minimalista
-
-## 🚀 Cómo Usar
-
-### 1. Acceder al Panel de Administración
-```
-/admin
+```html
+<div 
+  data-layout="sidebar-left"
+  data-product-style="cards-square"
+  data-header-style="dark"
+  data-sidebar-style="white-shadow"
+  data-background-color="white"
+>
 ```
 
-### 2. Seleccionar Plantillas
-- Ve a la pestaña "General"
-- Haz clic en "Cambiar Plantilla"
-- Selecciona las plantillas deseadas (landing, shop, etc.)
+## 🎨 Diseños Disponibles
 
-### 3. Seleccionar Diseños
-- Haz clic en "Seleccionar Diseño"
-- Para cada plantilla seleccionada, elige un diseño
-- **NUEVO**: Selecciona qué aplicar:
-  - ✅ Aplicar colores y tipografías
-  - ✅ Aplicar contenido predefinido (si está disponible)
+### 1. 🖥️ Tech Shop
+**Archivo**: `public/tech-shop-design.json`
 
-### 4. Aplicar Diseño
-- **NUEVO**: El sistema crea automáticamente un backup
-- **NUEVO**: Puedes elegir aplicar solo colores o contenido completo
-- Los cambios se aplican inmediatamente
+**Características**:
+- **Layout**: Sidebar izquierda
+- **Productos**: Tarjetas cuadradas con sombras
+- **Colores**: Azules tecnológicos (#1e40af, #3b82f6)
+- **Header**: Fondo oscuro con gradiente
+- **Sidebar**: Sombra blanca con efecto glass-morphism
 
-### 5. Gestionar Backups (NUEVO)
-- Ve a la pestaña "Backups"
-- Visualiza todos los backups automáticos
-- Restaura configuraciones anteriores
-- Elimina backups antiguos
+**Ideal para**: Tiendas de tecnología, gadgets, software
 
-## 🔧 Configuración Técnica
+### 2. 👗 Moda Shop
+**Archivo**: `public/moda-shop-design.json`
 
-### Estructura de un Diseño Mejorado
+**Características**:
+- **Layout**: Sidebar derecha
+- **Productos**: Lista horizontal elegante
+- **Colores**: Rosas y dorados (#ec4899, #fbbf24)
+- **Header**: Gradiente rosa con efectos sutiles
+- **Sidebar**: Efecto glass-morphism con transparencia
 
-```typescript
-interface Design {
-  id: string                    // Identificador único
-  name: string                  // Nombre del diseño
-  description: string           // Descripción
-  icon: React.ReactNode         // Icono representativo
-  category: string              // Tipo de plantilla (landing/shop)
-  colorScheme: {
-    primary: string             // Color primario
-    secondary: string           // Color secundario
-    accent: string              // Color de acento
-  }
-  features: string[]            // Características del diseño
-  status: 'active' | 'coming-soon' | 'beta'
-  cssVariables?: {              // Variables CSS personalizadas
-    [key: string]: string
-  }
-  // NUEVO: JSON predefinido completo
-  predefinedConfig?: Partial<Config> {
-    site: {
-      title: string
-      tagline: string
-      heroTitle?: string
-      heroSubtitle?: string
-      // ... más campos
-    }
-    sessions: Session[]
-    course: Course
-    about: About
-    testimonials: Testimonial[]
-    contact: Contact
-    integrations: Integrations
-  }
-}
+**Ideal para**: Ropa, accesorios, moda femenina
+
+### 3. 💪 Gym Shop
+**Archivo**: `public/gym-shop-design.json`
+
+**Características**:
+- **Layout**: Sin sidebar (full-width)
+- **Productos**: Tarjetas redondeadas energéticas
+- **Colores**: Rojos y naranjas (#dc2626, #ea580c)
+- **Header**: Gradiente rojo intenso
+- **Sidebar**: Sin sidebar para máximo espacio
+
+**Ideal para**: Suplementos, equipamiento deportivo, ropa de gym
+
+### 4. 🌿 Lifestyle Shop
+**Archivo**: `public/lifestyle-shop-design.json`
+
+**Características**:
+- **Layout**: Minimal con sidebar flotante
+- **Productos**: Grid compacto y organizado
+- **Colores**: Verdes naturales (#059669, #10b981)
+- **Header**: Minimal con fondo verde claro
+- **Sidebar**: Flotante con efecto de elevación
+
+**Ideal para**: Productos orgánicos, bienestar, decoración
+
+### 5. 🍕 Food Shop
+**Archivo**: `public/food-shop-design.json`
+
+**Características**:
+- **Layout**: Mobile-first con navegación táctil
+- **Productos**: Tarjetas especializadas para comida
+- **Colores**: Amarillo y negro (#fbbf24, #1f2937)
+- **Header**: Estilo "PedidoRapido" con fondo amarillo
+- **Sidebar**: Adaptada para móviles con navegación táctil
+
+**Ideal para**: Restaurantes, delivery, comida rápida
+
+## 🚀 Cómo Usar el Sistema
+
+### 1. Acceder al Selector de Diseños
+```tsx
+// En la barra de navegación de la tienda
+<ShopDesignSelector 
+  selectedDesign={selectedDesign}
+  onDesignSelect={handleDesignSelect}
+/>
 ```
 
-### Sistema de Backup
+### 2. Seleccionar un Diseño
+1. Hacer clic en el selector de diseños
+2. Elegir el diseño deseado de la lista
+3. El sistema aplicará automáticamente:
+   - Colores y tipografías
+   - Layout y posicionamiento
+   - Productos de ejemplo
+   - Configuraciones específicas
 
-```typescript
-// Estructura de un backup
-interface Backup {
-  id: string                    // ID único del backup
-  timestamp: string             // Fecha de creación
-  tenantId: string              // Tenant asociado
-  config: Config                // Configuración completa
-  description: string           // Descripción del backup
-}
+### 3. Personalizar el Diseño
+```tsx
+// Modificar colores en tiempo real
+const handleColorChange = (color: string) => {
+  document.documentElement.style.setProperty('--primary-color', color);
+};
 
-// Funciones disponibles
-createBackup(tenantId: string): Promise<string>
-getBackups(tenantId: string): Promise<Backup[]>
-restoreFromBackup(backupId: string, tenantId: string): Promise<boolean>
-deleteBackup(backupId: string): Promise<boolean>
+// Cambiar layout dinámicamente
+const handleLayoutChange = (layout: string) => {
+  setLayoutConfig(prev => ({ ...prev, layout }));
+};
 ```
 
-### Variables CSS Aplicadas
+## 🎛️ Personalización Avanzada
 
-Cada diseño aplica automáticamente:
+### Variables CSS Dinámicas
+Cada diseño define variables CSS que se aplican automáticamente:
 
 ```css
 :root {
-  --color-primary: #1e40af;     /* Color primario */
-  --color-secondary: #64748b;   /* Color secundario */
-  --color-accent: #f59e0b;      /* Color de acento */
-  --font-family: Georgia, serif; /* Tipografía */
+  --primary-color: #1e40af;
+  --secondary-color: #3b82f6;
+  --background-color: #ffffff;
+  --text-color: #1f2937;
+  --accent-color: #fbbf24;
 }
 ```
 
-## 📝 Agregar Nuevos Diseños
+### Configuración de Layout
+```json
+{
+  "layout": {
+    "type": "sidebar-left",
+    "productStyle": "cards-square",
+    "headerStyle": "dark",
+    "sidebarStyle": "white-shadow",
+    "backgroundColor": "white"
+  }
+}
+```
 
-### 1. Editar `lib/designs.tsx`
+### Configuración de Productos
+```json
+{
+  "shopConfig": {
+    "products": [
+      {
+        "id": "1",
+        "name": "Producto Ejemplo",
+        "price": 99.99,
+        "category": "Electrónicos",
+        "image": "https://ejemplo.com/imagen.jpg"
+      }
+    ]
+  }
+}
+```
 
-```typescript
-export const landingDesigns: Design[] = [
+## 🔧 Extensión del Sistema
+
+### Crear un Nuevo Diseño
+
+#### 1. Definir el Diseño en `lib/designs.tsx`
+```tsx
+export const shopDesigns: Design[] = [
   // ... diseños existentes
   {
-    id: 'nuevo-diseno',
-    name: 'Nuevo Diseño',
+    id: 'mi-nuevo-diseno',
+    name: 'Mi Nuevo Diseño',
     description: 'Descripción del nuevo diseño',
-    icon: <NuevoIcon className="h-6 w-6" />,
-    category: 'landing',
+    icon: ShoppingBag,
     colorScheme: {
-      primary: '#tu-color',
-      secondary: '#tu-color',
-      accent: '#tu-color'
+      primary: '#ff6b6b',
+      secondary: '#4ecdc4',
+      background: '#f8f9fa',
+      text: '#2d3436'
     },
-    features: [
-      'Característica 1',
-      'Característica 2'
-    ],
+    features: ['Responsive', 'Moderno', 'Elegante'],
     status: 'active',
     cssVariables: {
-      '--primary': '#tu-color',
-      '--font-family': 'Tu Fuente, sans-serif'
+      '--primary-color': '#ff6b6b',
+      '--secondary-color': '#4ecdc4'
     },
-    // NUEVO: JSON predefinido completo
     predefinedConfig: {
-      site: {
-        title: "Título específico del sector",
-        tagline: "Descripción adaptada al sector",
-        heroTitle: "Título hero específico",
-        heroSubtitle: "Subtítulo hero específico",
-        sessionsTitle: "Nuestros Servicios",
-        sessionsSubtitle: "Servicios específicos del sector",
-        aboutTitle: "Sobre Nosotros",
-        testimonialsTitle: "Lo que dicen nuestros clientes",
-        testimonialsSubtitle: "Testimonios del sector",
-        ctaTitle: "¿Necesitas nuestros servicios?",
-        ctaSubtitle: "Contacta con nosotros"
-      },
-      sessions: [
-        {
-          id: "servicio-especifico",
-          name: "Servicio Específico",
-          summary: "Descripción del servicio específico del sector",
-          duration: "60 min",
-          price: "€150",
-          features: [
-            "Característica específica 1",
-            "Característica específica 2",
-            "Característica específica 3"
-          ],
-          hotmartUrl: "https://pay.hotmart.com/SERVICIO_ESPECIFICO"
-        }
-      ],
-      course: {
-        title: "Curso: Especialización del Sector",
-        blurb: "Descripción del curso específico del sector",
-        price: "€299",
-        hotmartUrl: "https://pay.hotmart.com/CURSO_ESPECIFICO",
-        videoUrl: "",
-        bullets: [
-          "Beneficio específico 1",
-          "Beneficio específico 2",
-          "Beneficio específico 3"
-        ]
-      },
-      about: {
-        photoUrl: "/placeholder.svg?height=520&width=420",
-        videoUrl: "",
-        story: "Historia específica del sector con experiencia relevante",
-        whyMe: "Experiencia específica en el sector con resultados comprobados"
-      },
-      testimonials: [
-        {
-          quote: "Testimonio específico del sector",
-          author: "Cliente del Sector",
-          role: "Profesión del Sector"
-        }
-      ],
-      contact: {
-        email: "info@sector.com"
-      }
+      // Configuración completa del diseño
     }
   }
-]
+];
 ```
 
-### 2. Agregar Icono (si es necesario)
-```typescript
-import { NuevoIcon } from "lucide-react"
-```
-
-### 3. Probar el Diseño
-```bash
-# Prueba original
-node scripts/test-design-system.js
-
-# Prueba mejorada (NUEVO)
-node scripts/test-design-system-enhanced.js
-```
-
-## 🧪 Pruebas
-
-### Script de Prueba Mejorado (NUEVO)
-```bash
-node scripts/test-design-system-enhanced.js
-```
-
-Este script prueba:
-1. ✅ Creación de configuración inicial
-2. ✅ Creación de backup automático
-3. ✅ Listado de backups
-4. ✅ Modificación de configuración
-5. ✅ Restauración desde backup
-6. ✅ Verificación de restauración
-7. ✅ Eliminación de backup
-8. ✅ Verificación de eliminación
-
-### Script de Prueba de Fumigaciones (NUEVO)
-```bash
-node scripts/test-fumigaciones-design.js
-```
-
-Este script prueba:
-1. ✅ Creación de configuración específica de fumigaciones
-2. ✅ Aplicación del diseño de fumigaciones
-3. ✅ Verificación del layout específico
-4. ✅ Contenido específico del sector
-5. ✅ Configuración de colores y tipografías
-1. ✅ Creación de configuración inicial
-2. ✅ Creación de backup automático
-3. ✅ Listado de backups
-4. ✅ Modificación de configuración
-5. ✅ Restauración desde backup
-6. ✅ Verificación de restauración
-7. ✅ Eliminación de backup
-8. ✅ Verificación de eliminación
-
-### Prueba Manual
-1. Ve a `/admin`
-2. Inicia sesión: `admin` / `admin123`
-3. Selecciona plantillas y diseños
-4. **NUEVO**: Prueba las opciones de aplicación
-5. **NUEVO**: Ve a la pestaña "Backups"
-6. Verifica que los cambios se apliquen
-
-## 🔄 Flujo de Datos Mejorado
-
-1. **Selección**: Usuario selecciona diseño en `/admin`
-2. **Backup**: Sistema crea backup automático (NUEVO)
-3. **Aplicación**: `applyDesignToConfig` aplica el diseño
-4. **Opciones**: Usuario elige aplicar colores y/o contenido (NUEVO)
-5. **Guardado**: Configuración se guarda en Firestore
-6. **Carga**: `DesignApplier` carga la configuración
-7. **Aplicación**: `useDesign` hook aplica el diseño
-8. **Renderizado**: Variables CSS se aplican al documento
-
-## 🐛 Fumigaciones - Layout Específico
-
-### Características del Diseño
-El diseño de fumigaciones incluye un **layout completamente específico** que cambia la posición y estructura de los elementos:
-
-- **Header de emergencia**: Barra superior con información de contacto 24/7
-- **Navegación profesional**: Logo, menú y botón de cita
-- **Hero section**: Gradiente oscuro con llamadas de emergencia
-- **Sección de servicios**: Grid de tipos de plagas con iconos
-- **Principios de trabajo**: 3 pasos numerados con iconos
-- **Call to action**: Secciones naranjas para emergencias
-- **Footer**: Información de contacto y redes sociales
-
-### Componente Específico
-```typescript
-// components/fumigaciones-layout.tsx
-export function FumigacionesLayout({ config }: FumigacionesLayoutProps) {
-  // Layout completamente personalizado para fumigaciones
-  // Incluye secciones específicas del sector
+#### 2. Crear el Archivo JSON
+```json
+// public/mi-nuevo-diseno.json
+{
+  "name": "Mi Nuevo Diseño",
+  "description": "Diseño personalizado para mi tienda",
+  "category": "personalizado",
+  "colorScheme": {
+    "primary": "#ff6b6b",
+    "secondary": "#4ecdc4",
+    "background": "#f8f9fa",
+    "text": "#2d3436"
+  },
+  "config": {
+    "shopConfig": {
+      "title": "Mi Tienda",
+      "description": "Descripción de mi tienda",
+      "products": [
+        // Productos de ejemplo
+      ]
+    },
+    "layout": {
+      "type": "sidebar-left",
+      "productStyle": "cards-square",
+      "headerStyle": "dark",
+      "sidebarStyle": "white-shadow",
+      "backgroundColor": "white"
+    }
+  },
+  "theme": {
+    "light": {
+      "primary": "#ff6b6b",
+      "secondary": "#4ecdc4"
+    },
+    "dark": {
+      "primary": "#ff5252",
+      "secondary": "#26a69a"
+    }
+  }
 }
 ```
 
-### Activación Automática
-El layout se activa automáticamente cuando:
-```typescript
-config.selectedDesigns?.landing === 'fumigaciones'
-```
+#### 3. Agregar Estilos CSS
+```css
+/* En app/shop/layout-styles.css */
 
-### Contenido Específico del Sector
-- **Servicios**: Fumigación residencial, comercial, control de termitas, emergencias 24/7
-- **Tipos de plagas**: Cucarachas, termitas, hormigas, moscas, mosquitos, arañas, roedores, fauna silvestre
-- **Proceso de trabajo**: 3 pasos claros (preparación, desinfección, limpieza)
-- **Testimonios**: Casos específicos del sector de fumigación
-- **Contacto**: Información de emergencia y horarios
+/* Layout específico */
+[data-layout="mi-nuevo-layout"] {
+  /* Estilos específicos del layout */
+}
 
-## 🎨 Personalización Avanzada
-```typescript
-cssVariables: {
-  '--primary': '#color',
-  '--secondary': '#color',
-  '--accent': '#color',
-  '--font-family': 'font-family',
-  '--border-radius': '8px',        // Nueva variable
-  '--shadow': '0 4px 6px rgba(0,0,0,0.1)'  // Nueva variable
+/* Estilo de productos específico */
+[data-product-style="mi-nuevo-estilo"] {
+  /* Estilos específicos de productos */
+}
+
+/* Header específico */
+[data-header-style="mi-nuevo-header"] {
+  /* Estilos específicos del header */
 }
 ```
 
-### Agregar Nuevas Categorías
-1. Crear array de diseños: `nuevaCategoriaDesigns`
-2. Actualizar `getDesignsForTemplate()`
-3. Agregar caso en el switch
+### Modificar un Diseño Existente
 
-### Personalizar JSONs Predefinidos
-Cada diseño puede tener contenido específico del sector:
-- **Títulos y descripciones** adaptados al nicho
-- **Servicios específicos** del sector
-- **Testimonios relevantes** del sector
-- **Información de contacto** profesional
-- **Cursos y productos** del sector
+#### 1. Actualizar el JSON
+```json
+{
+  "colorScheme": {
+    "primary": "#nuevo-color",
+    "secondary": "#nuevo-color-secundario"
+  }
+}
+```
 
-## 🐛 Solución de Problemas
+#### 2. Actualizar los Estilos CSS
+```css
+[data-layout="layout-modificado"] {
+  /* Nuevos estilos */
+}
+```
 
-### Diseño No Se Aplica
-1. Verificar que el diseño esté en `selectedDesigns`
-2. Revisar la consola del navegador
-3. Verificar que `DesignApplier` esté en el layout
-4. **NUEVO**: Verificar que las opciones de aplicación estén seleccionadas
+## 🐛 Troubleshooting
 
-### Error de Carga
-1. Verificar conexión a Firestore
-2. Revisar configuración de Firebase
-3. Verificar estructura de datos
+### Problemas Comunes
 
-### Variables CSS No Funcionan
-1. Verificar que las variables estén definidas
-2. Revisar que `applyDesignToDocument` se ejecute
-3. Verificar que el CSS use las variables
+#### El diseño no se aplica correctamente
+**Síntomas**: Los colores o layout no cambian
+**Solución**:
+1. Verificar que el archivo JSON existe en `public/`
+2. Revisar la consola del navegador para errores
+3. Verificar que las variables CSS se están aplicando
 
-### Problemas con Backups (NUEVO)
-1. **Backup no se crea**: Verificar permisos de Firestore
-2. **No se puede restaurar**: Verificar que el backup existe
-3. **Error al eliminar**: Verificar permisos de eliminación
+```javascript
+// Debug: Verificar variables CSS
+console.log(getComputedStyle(document.documentElement).getPropertyValue('--primary-color'));
+```
 
-## 📈 Próximas Mejoras
+#### Los productos no se cargan
+**Síntomas**: No aparecen productos en la tienda
+**Solución**:
+1. Verificar la estructura del JSON
+2. Revisar que `shopConfig.products` esté definido
+3. Verificar la función `handleDesignSelect`
 
-- [x] JSONs predefinidos por diseño
-- [x] Sistema de backup automático
-- [x] Gestión de backups desde admin
-- [x] Opciones de aplicación (colores vs contenido)
+#### El layout no responde en móviles
+**Síntomas**: El diseño no se adapta a pantallas pequeñas
+**Solución**:
+1. Verificar las media queries en CSS
+2. Asegurar que el layout sea responsive
+3. Probar con diferentes tamaños de pantalla
+
+### Herramientas de Debug
+
+#### Verificar Estado del Diseño
+```javascript
+// En la consola del navegador
+console.log('Diseño actual:', selectedDesign);
+console.log('Configuración de layout:', layoutConfig);
+```
+
+#### Verificar Variables CSS
+```javascript
+// Listar todas las variables CSS aplicadas
+const root = document.documentElement;
+const styles = getComputedStyle(root);
+Array.from(styles).forEach(prop => {
+  if (prop.startsWith('--')) {
+    console.log(`${prop}: ${styles.getPropertyValue(prop)}`);
+  }
+});
+```
+
+#### Verificar Atributos Data-*
+```javascript
+// Verificar atributos en el contenedor principal
+const container = document.querySelector('[data-layout]');
+console.log('Atributos data-*:', container.dataset);
+```
+
+## 📚 Referencias Técnicas
+
+### Tipos TypeScript
+```typescript
+interface Design {
+  id: string;
+  name: string;
+  description: string;
+  icon: LucideIcon;
+  colorScheme: ColorScheme;
+  features: string[];
+  status: 'active' | 'inactive';
+  cssVariables: Record<string, string>;
+  predefinedConfig: ShopDesignConfig;
+}
+
+interface ShopDesignConfig {
+  name: string;
+  description: string;
+  category: string;
+  colorScheme: ColorScheme;
+  config: {
+    shopConfig: ShopConfig;
+    layout: LayoutConfig;
+  };
+  theme: {
+    light: ColorScheme;
+    dark: ColorScheme;
+  };
+}
+```
+
+### Hooks Personalizados
+```typescript
+// Hook para manejar diseños
+const useShopDesign = () => {
+  const [selectedDesign, setSelectedDesign] = useState<Design | null>(null);
+  const [layoutConfig, setLayoutConfig] = useState<LayoutConfig | null>(null);
+
+  const handleDesignSelect = async (design: Design) => {
+    // Lógica de aplicación del diseño
+  };
+
+  return { selectedDesign, layoutConfig, handleDesignSelect };
+};
+```
+
+### Funciones de Utilidad
+```typescript
+// Aplicar variables CSS
+export const applyCSSVariables = (variables: Record<string, string>) => {
+  Object.entries(variables).forEach(([key, value]) => {
+    document.documentElement.style.setProperty(key, value);
+  });
+};
+
+// Cargar configuración de diseño
+export const loadDesignConfig = async (designId: string) => {
+  const response = await fetch(`/${designId}.json`);
+  return response.json();
+};
+```
+
+## 🎯 Mejores Prácticas
+
+### 1. Nomenclatura Consistente
+- Usar kebab-case para IDs de diseños
+- Usar camelCase para propiedades JavaScript
+- Usar snake_case para variables CSS
+
+### 2. Organización de Archivos
+- Mantener un diseño por archivo JSON
+- Agrupar estilos CSS por funcionalidad
+- Documentar cambios en el código
+
+### 3. Performance
+- Cargar diseños bajo demanda
+- Optimizar imágenes de productos
+- Usar lazy loading para componentes pesados
+
+### 4. Accesibilidad
+- Mantener contraste de colores adecuado
+- Usar atributos ARIA cuando sea necesario
+- Probar con lectores de pantalla
+
+## 🚀 Roadmap del Sistema
+
+### Fase 1 - Funcionalidades Básicas ✅
+- [x] Sistema de selección de diseños
+- [x] Configuración JSON por diseño
+- [x] Variables CSS dinámicas
+- [x] Layouts responsivos
+
+### Fase 2 - Funcionalidades Avanzadas 🔄
+- [ ] Editor visual de diseños
 - [ ] Previsualización en tiempo real
-- [ ] Más opciones de tipografía
-- [ ] Diseños para más plantillas
-- [ ] Editor visual de colores
-- [ ] Exportar/importar configuraciones
-- [ ] Temas oscuros personalizados
-- [ ] Historial de cambios detallado
-- [ ] Comparación entre versiones
-- [ ] Backup programado automático
+- [ ] Exportar/importar diseños
+- [ ] Plantillas de diseños
+
+### Fase 3 - Funcionalidades Premium 📋
+- [ ] A/B testing de diseños
+- [ ] Analytics por diseño
+- [ ] Diseños personalizados por usuario
+- [ ] Marketplace de diseños
+
+---
+
+**Sistema de Diseños de Tienda** - Parte integral de Plantillada 🎨
+
+*Cada diseño es una experiencia única para tu tienda online.*

@@ -13,7 +13,8 @@ import {
   Link,
   Bug,
   Shield,
-  AlertTriangle
+  AlertTriangle,
+  Utensils
 } from "lucide-react"
 import { Config } from "./config-loader"
 
@@ -1094,6 +1095,31 @@ export const shopDesigns: Design[] = [
       '--secondary': '#6b7280',
       '--accent': '#8b5cf6',
       '--font-family': 'Montserrat, sans-serif'
+    }
+  },
+  {
+    id: 'food-shop',
+    name: 'Food Shop',
+    description: 'Diseño inspirado en apps de pedidos de comida con estilo moderno y vibrante',
+    icon: <Utensils className="h-6 w-6" />,
+    category: 'shop',
+    colorScheme: {
+      primary: '#fbbf24',
+      secondary: '#374151',
+      accent: '#dc2626'
+    },
+    features: [
+      'Fondo amarillo vibrante',
+      'Layout móvil-first',
+      'Tarjetas de comida',
+      'Navegación inferior'
+    ],
+    status: 'active',
+    cssVariables: {
+      '--primary': '#fbbf24',
+      '--secondary': '#374151',
+      '--accent': '#dc2626',
+      '--font-family': 'Inter, sans-serif'
     }
   }
 ]

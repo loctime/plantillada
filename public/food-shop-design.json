@@ -1,0 +1,109 @@
+{
+  "name": "Food Shop",
+  "description": "Diseño inspirado en apps de pedidos de comida con estilo moderno y vibrante",
+  "category": "shop",
+  "colorScheme": {
+    "primary": "#fbbf24",
+    "secondary": "#374151",
+    "accent": "#dc2626"
+  },
+  "config": {
+    "shopConfig": {
+      "storeName": "FOOD STORE",
+      "storeTagline": "Los mejores sabores a tu alcance",
+      "navigation": ["INICIO", "MENÚ", "PROMOCIONES", "CONTACTO", "UBICACIÓN", "HORARIOS"],
+      "categories": ["Todos", "Pizzas", "Hamburguesas", "Bebidas", "Postres", "Promociones"],
+      "searchPlaceholder": "Buscar productos...",
+      "filterButtonText": "FILTRAR",
+      "bestSellersTitle": "Más Pedidos",
+      "breadcrumbText": "Inicio / Food Store",
+      "resultsText": "Mostrando 1-{count} de {total} resultados",
+      "sortOptions": [
+        { "value": "latest", "label": "Más Recientes" },
+        { "value": "price-low", "label": "Precio: Menor a Mayor" },
+        { "value": "price-high", "label": "Precio: Mayor a Menor" },
+        { "value": "rating", "label": "Mejor Valorados" }
+      ],
+      "addToCartText": "Agregar al Carrito",
+      "outOfStockText": "Agotado",
+      "cartTitle": "Tu Pedido",
+      "emptyCartText": "Tu carrito está vacío",
+      "checkoutText": "Finalizar Pedido",
+      "totalText": "Total:"
+    },
+    "layout": {
+      "type": "mobile-first",
+      "productStyle": "food-cards",
+      "backgroundColor": "#fbbf24",
+      "cardStyle": "food-modern",
+      "headerStyle": "food-header",
+      "sidebarStyle": "food-sidebar"
+    },
+    "products": [
+      {
+        "id": "1",
+        "name": "Pizza Margherita",
+        "brand": "Pizza House",
+        "price": 12.99,
+        "originalPrice": 15.99,
+        "image": "https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=400&h=400&fit=crop",
+        "rating": 4.8,
+        "reviews": 156,
+        "category": "pizzas",
+        "inStock": true,
+        "description": "Pizza clásica con tomate, mozzarella y albahaca fresca.",
+        "features": ["30cm", "Masa artesanal", "Ingredientes frescos", "Horno de piedra"]
+      },
+      {
+        "id": "2",
+        "name": "Hamburguesa Clásica",
+        "brand": "Burger Co",
+        "price": 8.99,
+        "originalPrice": 10.99,
+        "image": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=400&fit=crop",
+        "rating": 4.6,
+        "reviews": 234,
+        "category": "hamburguesas",
+        "inStock": true,
+        "description": "Hamburguesa con carne 100% de res, lechuga, tomate y queso.",
+        "features": ["150g carne", "Pan brioche", "Papas incluidas", "Bebida opcional"]
+      },
+      {
+        "id": "3",
+        "name": "Coca Cola",
+        "brand": "Coca Cola",
+        "price": 2.50,
+        "originalPrice": 3.00,
+        "image": "https://images.unsplash.com/photo-1629203851122-3726ecdf080e?w=400&h=400&fit=crop",
+        "rating": 4.5,
+        "reviews": 89,
+        "category": "bebidas",
+        "inStock": true,
+        "description": "Refresco Coca Cola 500ml, perfecto para acompañar tu comida.",
+        "features": ["500ml", "Sin azúcar disponible", "Hielo incluido", "Straw opcional"]
+      }
+    ]
+  },
+  "theme": {
+    "light": {
+      "backgroundColor": "#fbbf24",
+      "sectionBackground": "#ffffff",
+      "navbarBackground": "#374151",
+      "textColor": "#374151",
+      "accentColor": "#dc2626",
+      "primaryButtonColor": "#dc2626",
+      "secondaryButtonColor": "#fbbf24",
+      "outlineButtonColor": "#6b7280"
+    },
+    "dark": {
+      "backgroundColor": "#92400e",
+      "sectionBackground": "#1f2937",
+      "navbarBackground": "#111827",
+      "textColor": "#f9fafb",
+      "accentColor": "#fca5a5",
+      "primaryButtonColor": "#dc2626",
+      "secondaryButtonColor": "#fbbf24",
+      "outlineButtonColor": "#94a3b8"
+    }
+  }
+}
