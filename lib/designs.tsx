@@ -1474,7 +1474,7 @@ export async function applyDesignToConfig(
 ): Promise<boolean> {
   try {
     const {
-      applyContent = true,
+      applyContent = false,
       applyColors = true,
       createBackup: shouldCreateBackup = true
     } = options
@@ -1501,7 +1501,7 @@ export async function applyDesignToConfig(
     let newConfig = { ...currentConfig }
     
     if (applyContent && design.predefinedConfig) {
-      console.log('📝 Aplicando contenido del diseño...')
+      console.log('📝 Aplicando contenido del diseño (no destructivo)...')
       newConfig = mergeConfigWithDesign(currentConfig, design.predefinedConfig)
     }
     
@@ -1541,37 +1541,90 @@ export async function applyDesignToConfig(
  * Fusiona la configuración actual con el contenido predefinido del diseño
  */
 function mergeConfigWithDesign(currentConfig: any, designConfig: any): any {
+  // Estrategia no destructiva: solo completar campos vacíos, nunca borrar o reemplazar contenido existente del usuario
   const merged = { ...currentConfig }
-  
-  // Fusionar secciones específicas
+
+  const fillIfEmpty = (value: any, fallback: any) => {
+    const isEmptyString = typeof value === 'string' && value.trim() === ''
+    const isNullish = value === undefined || value === null
+    if (isNullish || isEmptyString) return fallback
+    return value
+  }
+
+  // site: completar solo campos vacíos
   if (designConfig.site) {
-    merged.site = { ...merged.site, ...designConfig.site }
+    merged.site = { ...merged.site }
+    for (const key of Object.keys(designConfig.site)) {
+      // @ts-ignore
+      merged.site[key] = fillIfEmpty(merged.site[key], designConfig.site[key])
+    }
   }
-  
+
+  // sessions/course/about/testimonials/contact: mantener usuario si ya tiene algo
   if (designConfig.sessions) {
-    merged.sessions = designConfig.sessions
+    if (!Array.isArray(merged.sessions) || merged.sessions.length === 0) {
+      merged.sessions = designConfig.sessions
+    }
   }
-  
+
   if (designConfig.course) {
-    merged.course = designConfig.course
+    if (!merged.course || Object.keys(merged.course || {}).length === 0) {
+      merged.course = designConfig.course
+    }
   }
-  
+
   if (designConfig.about) {
-    merged.about = designConfig.about
+    if (!merged.about || Object.keys(merged.about || {}).length === 0) {
+      merged.about = designConfig.about
+    } else {
+      // completar campos vacíos dentro de about
+      const about = { ...merged.about }
+      for (const key of Object.keys(designConfig.about)) {
+        // @ts-ignore
+        about[key] = fillIfEmpty(about[key], designConfig.about[key])
+      }
+      merged.about = about
+    }
   }
-  
+
   if (designConfig.testimonials) {
-    merged.testimonials = designConfig.testimonials
+    if (!Array.isArray(merged.testimonials) || merged.testimonials.length === 0) {
+      merged.testimonials = designConfig.testimonials
+    }
   }
-  
+
   if (designConfig.contact) {
-    merged.contact = designConfig.contact
+    if (!merged.contact || Object.keys(merged.contact || {}).length === 0) {
+      merged.contact = designConfig.contact
+    } else {
+      const contact = { ...merged.contact }
+      for (const key of Object.keys(designConfig.contact)) {
+        // No reemplazar arrays existentes con datos del usuario
+        // @ts-ignore
+        const currentVal = contact[key]
+        // @ts-ignore
+        const incoming = designConfig.contact[key]
+        if (Array.isArray(currentVal)) {
+          // mantener los existentes; si está vacío, usar los del diseño
+          contact[key] = currentVal.length ? currentVal : incoming
+        } else {
+          contact[key] = fillIfEmpty(currentVal, incoming)
+        }
+      }
+      merged.contact = contact
+    }
   }
-  
+
+  // integrations: fusión suave campo a campo solo si vacío
   if (designConfig.integrations) {
-    merged.integrations = { ...merged.integrations, ...designConfig.integrations }
+    const integrations = { ...merged.integrations }
+    for (const key of Object.keys(designConfig.integrations)) {
+      // @ts-ignore
+      integrations[key] = fillIfEmpty(integrations[key], designConfig.integrations[key])
+    }
+    merged.integrations = integrations
   }
-  
+
   return merged
 }
 

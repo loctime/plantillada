@@ -6,15 +6,49 @@ import { ThemeProvider } from '@/components/theme-provider'
 import { AdminProvider } from '@/lib/admin-context'
 import { DesignApplier } from '@/components/design-applier'
 import { Toaster } from '@/components/ui/toaster'
+import { loadConfig, getTenantId } from '@/lib/config-loader'
 
-export const metadata: Metadata = {
-  title: 'Landing Page - Hotmart + Calendly',
-  description: 'Landing page profesional para servicios de coaching/consultoría con integración de Hotmart y Calendly',
-  generator: 'Next.js',
-  keywords: 'landing page, coaching, consultoría, hotmart, calendly, panel de administración',
-  authors: [{ name: 'Tu Nombre' }],
-  creator: 'Tu Nombre',
-  publisher: 'Tu Marca',
+export async function generateMetadata(): Promise<Metadata> {
+  try {
+    const tenantId = getTenantId()
+    const config = await loadConfig(tenantId)
+    const title = config?.site?.title || 'Tu Marca Personal'
+    const description = config?.site?.tagline || 'Acompañamiento 1:1 y formación práctica para cambios reales.'
+
+    const initial = (title.trim()[0] || 'T').toUpperCase()
+    const svg = `<?xml version="1.0" encoding="UTF-8"?>\n<svg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'>\n  <rect x='0' y='0' width='64' height='64' rx='12' fill='#10b981'/>\n  <text x='32' y='42' text-anchor='middle' font-family='Arial, Helvetica, sans-serif' font-size='36' fill='#ffffff'>${initial}</text>\n</svg>`
+    const dataUrl = `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`
+
+    return {
+      title,
+      description,
+      generator: 'Next.js',
+      keywords: 'landing page, coaching, consultoría, hotmart, calendly, panel de administración',
+      authors: [{ name: 'Tu Nombre' }],
+      creator: 'Tu Nombre',
+      publisher: 'Tu Marca',
+      openGraph: {
+        title,
+        description,
+        type: 'website',
+      },
+      twitter: {
+        card: 'summary',
+        title,
+        description,
+      },
+      icons: {
+        icon: dataUrl,
+        shortcut: dataUrl,
+        apple: dataUrl,
+      },
+    }
+  } catch {
+    return {
+      title: 'Tu Marca Personal',
+      description: 'Acompañamiento 1:1 y formación práctica para cambios reales.',
+    }
+  }
 }
 
 // Configuración por defecto para el AdminProvider

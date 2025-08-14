@@ -20,7 +20,48 @@ import { useAdminAuth } from "@/hooks/use-admin-auth"
 import { useRouter } from "next/navigation"
 import { AdminLoginModal } from "@/components/admin-login-modal"
 
-interface FormData extends Config {}
+type LinkHubProfile = {
+  name: string
+  bio: string
+  avatar: string
+  location?: string
+  email?: string
+  phone?: string
+}
+
+type LinkHubLink = {
+  id: string
+  title: string
+  url: string
+  icon?: string
+  category?: string
+  isActive?: boolean
+}
+
+type LinkHubTheme = {
+  primaryColor: string
+  backgroundColor: string
+  textColor: string
+  accentColor: string
+}
+
+type LinkHubSocial = {
+  instagram?: string
+  twitter?: string
+  linkedin?: string
+  youtube?: string
+  facebook?: string
+  website?: string
+}
+
+type AdminFormData = Omit<Config, 'linkHub'> & {
+  linkHub?: {
+    profile?: Partial<LinkHubProfile>
+    links?: LinkHubLink[]
+    theme?: Partial<LinkHubTheme>
+    social?: Partial<LinkHubSocial>
+  }
+}
 
 export default function AdminPage() {
   const { isAuthenticated, logout } = useAdminAuth()
@@ -32,7 +73,7 @@ export default function AdminPage() {
   const [showTemplateSelector, setShowTemplateSelector] = useState(false)
   const [showDesignSelector, setShowDesignSelector] = useState(false)
   const [selectedDesigns, setSelectedDesigns] = useState<{[key: string]: string}>({})
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState<AdminFormData>({
     site: {
       title: "Tu Marca Personal",
       tagline: "Acompañamiento 1:1 y formación práctica para cambios reales."
@@ -83,7 +124,13 @@ export default function AdminPage() {
       }
     ],
     contact: {
-      email: "hola@tumarca.com"
+      email: "hola@tumarca.com",
+      emails: [],
+      phones: [],
+      addresses: [],
+      cbus: [],
+      cuits: [],
+      urls: []
     },
     legal: {
       termsUrl: "",
@@ -149,32 +196,25 @@ export default function AdminPage() {
     }
   })
 
+  // Función reutilizable para cargar configuración guardada
+  const loadInitialConfig = async () => {
+    try {
+      const response = await fetch('/api/config')
+      if (response.ok) {
+        const config = await response.json()
+        setFormData(config)
+        if (config.selectedTemplates) setSelectedTemplates(config.selectedTemplates)
+        if (config.selectedDesigns) setSelectedDesigns(config.selectedDesigns)
+      }
+    } catch (error) {
+      console.error('Error loading config:', error)
+    }
+  }
+
   // Cargar configuración al montar el componente
   useEffect(() => {
     const tenant = getTenantId()
     setCurrentTenant(tenant)
-    
-    const loadInitialConfig = async () => {
-      try {
-        const response = await fetch('/api/config')
-        if (response.ok) {
-          const config = await response.json()
-          setFormData(config)
-          
-          // Cargar plantillas y diseños seleccionados
-          if (config.selectedTemplates) {
-            setSelectedTemplates(config.selectedTemplates)
-          }
-          if (config.selectedDesigns) {
-            setSelectedDesigns(config.selectedDesigns)
-          }
-        }
-      } catch (error) {
-        console.error('Error loading config:', error)
-      }
-    }
-    
-    // Llamar la función async
     loadInitialConfig()
   }, [])
 
@@ -340,6 +380,25 @@ export default function AdminPage() {
     return () => clearTimeout(timer)
   }, [isAuthenticated])
 
+  // Actualizar dinámicamente el título de la pestaña y el favicon según el título del sitio en el panel
+  useEffect(() => {
+    if (typeof document === 'undefined') return
+    const siteTitle = formData?.site?.title || 'Tu Marca Personal'
+    document.title = siteTitle
+
+    const initial = (siteTitle.trim()[0] || 'T').toUpperCase()
+    const svg = `<?xml version="1.0" encoding="UTF-8"?>\n<svg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'>\n  <rect x='0' y='0' width='64' height='64' rx='12' fill='#10b981'/>\n  <text x='32' y='42' text-anchor='middle' font-family='Arial, Helvetica, sans-serif' font-size='36' fill='#ffffff'>${initial}</text>\n</svg>`
+    const dataUrl = `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`
+
+    let link = document.querySelector("link[rel='icon']") as HTMLLinkElement | null
+    if (!link) {
+      link = document.createElement('link')
+      link.setAttribute('rel', 'icon')
+      document.head.appendChild(link)
+    }
+    link.setAttribute('href', dataUrl)
+  }, [formData?.site?.title])
+
   // Mostrar loading mientras se verifica la autenticación
   if (!hasCheckedAuth) {
     return (
@@ -419,9 +478,10 @@ export default function AdminPage() {
           </Alert>
         )}
 
-        <Tabs defaultValue="general" className="space-y-6">
+         <Tabs defaultValue="general" className="space-y-6">
                      <TabsList>
              <TabsTrigger value="general">General</TabsTrigger>
+             <TabsTrigger value="designs">Diseños</TabsTrigger>
              <TabsTrigger value="integrations">Integraciones</TabsTrigger>
              <TabsTrigger value="sessions">Sesiones 1:1</TabsTrigger>
              <TabsTrigger value="course">Curso Online</TabsTrigger>
@@ -463,94 +523,278 @@ export default function AdminPage() {
                        />
                      </div>
                    </div>
-                   <div className="space-y-2">
-                     <Label htmlFor="contactEmail">Email de Contacto</Label>
-                     <Input
-                       id="contactEmail"
-                       type="email"
-                       value={formData.contact.email}
-                       onChange={(e) => handleInputChange("contact.email", e.target.value)}
-                     />
-                   </div>
-                 </div>
-
-                 <Separator />
-
-                 <div className="space-y-4">
-                   <div className="flex items-center justify-between">
-                     <div>
-                       <h3 className="text-lg font-medium">Plantilla del Sitio</h3>
-                       <p className="text-sm text-muted-foreground">
-                         Selecciona el tipo de sitio web que mejor se adapte a tus necesidades
-                       </p>
+                   <div className="space-y-4">
+                     <div className="space-y-2">
+                       <Label htmlFor="contactEmail">Email de Contacto</Label>
+                       <Input
+                         id="contactEmail"
+                         type="email"
+                         value={formData.contact.email}
+                         onChange={(e) => handleInputChange("contact.email", e.target.value)}
+                       />
                      </div>
-                     <Button 
-                       variant="outline" 
-                       onClick={() => setShowTemplateSelector(!showTemplateSelector)}
-                     >
-                       <Layers className="h-4 w-4 mr-2" />
-                       {showTemplateSelector ? "Ocultar" : "Cambiar Plantilla"}
-                     </Button>
-                   </div>
-                   
-                   {showTemplateSelector && (
-                     <TemplateSelector 
-                       onTemplateSelect={handleTemplateSelect}
-                       selectedTemplates={selectedTemplates}
-                     />
-                   )}
-                 </div>
-
-                 <Separator />
-
-                 <div className="space-y-4">
-                   <div className="flex items-center justify-between">
-                     <div>
-                       <h3 className="text-lg font-medium">Diseño Visual</h3>
-                       <p className="text-sm text-muted-foreground">
-                         Personaliza el estilo visual según tu tipo de negocio
-                       </p>
-                     </div>
-                     <Button 
-                       variant="outline" 
-                       onClick={() => setShowDesignSelector(!showDesignSelector)}
-                     >
-                       <Palette className="h-4 w-4 mr-2" />
-                       {showDesignSelector ? "Ocultar" : "Seleccionar Diseño"}
-                     </Button>
-                   </div>
-                   
-                   {showDesignSelector && selectedTemplates.length > 0 && (
-                     <div className="space-y-6">
-                       {selectedTemplates.map((templateType) => (
-                         <div key={templateType} className="space-y-4">
-                           <div className="flex items-center gap-2">
-                             <h4 className="text-md font-medium capitalize">
-                               Diseño para {templateType === 'landing' ? 'Landing Page' : templateType === 'shop' ? 'Tienda Online' : templateType}
-                             </h4>
-                             {selectedDesigns[templateType] && (
-                               <Badge variant="secondary" className="text-xs">
-                                 Diseño seleccionado
-                               </Badge>
-                             )}
+                     <div className="space-y-2">
+                       <div className="flex items-center justify-between">
+                         <Label>Emails</Label>
+                         <Button
+                           variant="outline"
+                           size="sm"
+                           onClick={() => {
+                             const current = formData.contact.emails || []
+                             setFormData({
+                               ...formData,
+                               contact: { ...formData.contact, emails: [...current, ""] }
+                             })
+                           }}
+                         >
+                           Agregar Email
+                         </Button>
+                       </div>
+                       <div className="space-y-2">
+                         {(formData.contact.emails || []).map((email, index) => (
+                           <div key={index} className="flex gap-2">
+                             <Input
+                               type="email"
+                               value={email}
+                               placeholder="contacto@ejemplo.com"
+                               onChange={(e) => {
+                                 const emails = [...(formData.contact.emails || [])]
+                                 emails[index] = e.target.value
+                                 setFormData({ ...formData, contact: { ...formData.contact, emails } })
+                               }}
+                             />
+                             <Button
+                               variant="outline"
+                               onClick={() => {
+                                 const emails = [...(formData.contact.emails || [])]
+                                 emails.splice(index, 1)
+                                 setFormData({ ...formData, contact: { ...formData.contact, emails } })
+                               }}
+                             >
+                               Eliminar
+                             </Button>
                            </div>
-                           <DesignSelector 
-                             onDesignSelect={handleDesignSelect}
-                             selectedDesign={selectedDesigns[templateType]}
-                             templateType={templateType}
-                           />
-                         </div>
-                       ))}
+                         ))}
+                       </div>
                      </div>
-                   )}
-                   
-                   {showDesignSelector && selectedTemplates.length === 0 && (
-                     <div className="text-center py-8">
-                       <Palette className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                       <h3 className="text-lg font-medium text-gray-900 mb-2">Selecciona una plantilla primero</h3>
-                       <p className="text-gray-500">Necesitas seleccionar al menos una plantilla para poder elegir su diseño.</p>
+                     <Separator />
+                     <div className="space-y-2">
+                       <div className="flex items-center justify-between">
+                         <Label>Teléfonos</Label>
+                         <Button
+                           variant="outline"
+                           size="sm"
+                           onClick={() => {
+                             const current = formData.contact.phones || []
+                             setFormData({
+                               ...formData,
+                               contact: { ...formData.contact, phones: [...current, ""] }
+                             })
+                           }}
+                         >
+                           Agregar Teléfono
+                         </Button>
+                       </div>
+                       <div className="space-y-2">
+                         {(formData.contact.phones || []).map((phone, index) => (
+                           <div key={index} className="flex gap-2">
+                             <Input
+                               value={phone}
+                               placeholder="+54 9 11 1234 5678"
+                               onChange={(e) => {
+                                 const phones = [...(formData.contact.phones || [])]
+                                 phones[index] = e.target.value
+                                 setFormData({ ...formData, contact: { ...formData.contact, phones } })
+                               }}
+                             />
+                             <Button
+                               variant="outline"
+                               onClick={() => {
+                                 const phones = [...(formData.contact.phones || [])]
+                                 phones.splice(index, 1)
+                                 setFormData({ ...formData, contact: { ...formData.contact, phones } })
+                               }}
+                             >
+                               Eliminar
+                             </Button>
+                           </div>
+                         ))}
+                       </div>
                      </div>
-                   )}
+                     <div className="space-y-2">
+                       <div className="flex items-center justify-between">
+                         <Label>Direcciones</Label>
+                         <Button
+                           variant="outline"
+                           size="sm"
+                           onClick={() => {
+                             const current = formData.contact.addresses || []
+                             setFormData({
+                               ...formData,
+                               contact: { ...formData.contact, addresses: [...current, ""] }
+                             })
+                           }}
+                         >
+                           Agregar Dirección
+                         </Button>
+                       </div>
+                       <div className="space-y-2">
+                         {(formData.contact.addresses || []).map((address, index) => (
+                           <div key={index} className="flex gap-2">
+                             <Input
+                               value={address}
+                               placeholder="Calle 123, Ciudad, País"
+                               onChange={(e) => {
+                                 const addresses = [...(formData.contact.addresses || [])]
+                                 addresses[index] = e.target.value
+                                 setFormData({ ...formData, contact: { ...formData.contact, addresses } })
+                               }}
+                             />
+                             <Button
+                               variant="outline"
+                               onClick={() => {
+                                 const addresses = [...(formData.contact.addresses || [])]
+                                 addresses.splice(index, 1)
+                                 setFormData({ ...formData, contact: { ...formData.contact, addresses } })
+                               }}
+                             >
+                               Eliminar
+                             </Button>
+                           </div>
+                         ))}
+                       </div>
+                     </div>
+                     <div className="space-y-2">
+                       <div className="flex items-center justify-between">
+                         <Label>CBU</Label>
+                         <Button
+                           variant="outline"
+                           size="sm"
+                           onClick={() => {
+                             const current = formData.contact.cbus || []
+                             setFormData({
+                               ...formData,
+                               contact: { ...formData.contact, cbus: [...current, ""] }
+                             })
+                           }}
+                         >
+                           Agregar CBU
+                         </Button>
+                       </div>
+                       <div className="space-y-2">
+                         {(formData.contact.cbus || []).map((cbu, index) => (
+                           <div key={index} className="flex gap-2">
+                             <Input
+                               value={cbu}
+                               placeholder="00000000-00000000000000000000"
+                               onChange={(e) => {
+                                 const cbus = [...(formData.contact.cbus || [])]
+                                 cbus[index] = e.target.value
+                                 setFormData({ ...formData, contact: { ...formData.contact, cbus } })
+                               }}
+                             />
+                             <Button
+                               variant="outline"
+                               onClick={() => {
+                                 const cbus = [...(formData.contact.cbus || [])]
+                                 cbus.splice(index, 1)
+                                 setFormData({ ...formData, contact: { ...formData.contact, cbus } })
+                               }}
+                             >
+                               Eliminar
+                             </Button>
+                           </div>
+                         ))}
+                       </div>
+                     </div>
+                     <div className="space-y-2">
+                       <div className="flex items-center justify-between">
+                         <Label>CUIT</Label>
+                         <Button
+                           variant="outline"
+                           size="sm"
+                           onClick={() => {
+                             const current = formData.contact.cuits || []
+                             setFormData({
+                               ...formData,
+                               contact: { ...formData.contact, cuits: [...current, ""] }
+                             })
+                           }}
+                         >
+                           Agregar CUIT
+                         </Button>
+                       </div>
+                       <div className="space-y-2">
+                         {(formData.contact.cuits || []).map((cuit, index) => (
+                           <div key={index} className="flex gap-2">
+                             <Input
+                               value={cuit}
+                               placeholder="20-12345678-9"
+                               onChange={(e) => {
+                                 const cuits = [...(formData.contact.cuits || [])]
+                                 cuits[index] = e.target.value
+                                 setFormData({ ...formData, contact: { ...formData.contact, cuits } })
+                               }}
+                             />
+                             <Button
+                               variant="outline"
+                               onClick={() => {
+                                 const cuits = [...(formData.contact.cuits || [])]
+                                 cuits.splice(index, 1)
+                                 setFormData({ ...formData, contact: { ...formData.contact, cuits } })
+                               }}
+                             >
+                               Eliminar
+                             </Button>
+                           </div>
+                         ))}
+                       </div>
+                     </div>
+                     <div className="space-y-2">
+                       <div className="flex items-center justify-between">
+                         <Label>URLs</Label>
+                         <Button
+                           variant="outline"
+                           size="sm"
+                           onClick={() => {
+                             const current = formData.contact.urls || []
+                             setFormData({
+                               ...formData,
+                               contact: { ...formData.contact, urls: [...current, ""] }
+                             })
+                           }}
+                         >
+                           Agregar URL
+                         </Button>
+                       </div>
+                       <div className="space-y-2">
+                         {(formData.contact.urls || []).map((url, index) => (
+                           <div key={index} className="flex gap-2">
+                             <Input
+                               type="url"
+                               value={url}
+                               placeholder="https://ejemplo.com"
+                               onChange={(e) => {
+                                 const urls = [...(formData.contact.urls || [])]
+                                 urls[index] = e.target.value
+                                 setFormData({ ...formData, contact: { ...formData.contact, urls } })
+                               }}
+                             />
+                             <Button
+                               variant="outline"
+                               onClick={() => {
+                                 const urls = [...(formData.contact.urls || [])]
+                                 urls.splice(index, 1)
+                                 setFormData({ ...formData, contact: { ...formData.contact, urls } })
+                               }}
+                             >
+                               Eliminar
+                             </Button>
+                           </div>
+                         ))}
+                       </div>
+                     </div>
+                   </div>
                  </div>
 
                  <Separator />
@@ -1098,7 +1342,7 @@ export default function AdminPage() {
                      </Button>
                    </div>
                    
-                   {(formData.linkHub?.links || []).map((link, index) => (
+                    {(formData.linkHub?.links || []).map((link: LinkHubLink, index: number) => (
                      <div key={link.id} className="border rounded-lg p-4 space-y-4">
                        <div className="flex items-center justify-between">
                          <h5 className="font-medium">Enlace {index + 1}</h5>
@@ -1437,6 +1681,95 @@ export default function AdminPage() {
                    />
                  </div>
                </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="designs" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Layers className="h-5 w-5" />
+                  Tipo de sitio web
+                </CardTitle>
+                <CardDescription>
+                  Elije las secciones y estilos para tu web!
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-lg font-medium">Paginas web</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Selecciona todas las paginas que quieras
+                      </p>
+                    </div>
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setShowTemplateSelector(!showTemplateSelector)}
+                    >
+                      <Layers className="h-4 w-4 mr-2" />
+                      {showTemplateSelector ? "Ocultar" : "Ver páginas"}
+                    </Button>
+                  </div>
+                  {showTemplateSelector && (
+                    <TemplateSelector 
+                      onTemplateSelect={handleTemplateSelect}
+                      selectedTemplates={selectedTemplates}
+                    />
+                  )}
+                </div>
+
+                <Separator />
+
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-lg font-medium">Diseño Visual</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Personaliza el estilo visual según tu tipo de negocio
+                      </p>
+                    </div>
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setShowDesignSelector(!showDesignSelector)}
+                    >
+                      <Palette className="h-4 w-4 mr-2" />
+                      {showDesignSelector ? "Ocultar" : "Seleccionar Diseño"}
+                    </Button>
+                  </div>
+                  {showDesignSelector && selectedTemplates.length > 0 && (
+                    <div className="space-y-6">
+                      {selectedTemplates.map((templateType) => (
+                        <div key={templateType} className="space-y-4">
+                          <div className="flex items-center gap-2">
+                            <h4 className="text-md font-medium capitalize">
+                              Diseño para {templateType === 'landing' ? 'Landing Page' : templateType === 'shop' ? 'Tienda Online' : templateType}
+                            </h4>
+                            {selectedDesigns[templateType] && (
+                              <Badge variant="secondary" className="text-xs">
+                                Diseño seleccionado
+                              </Badge>
+                            )}
+                          </div>
+                          <DesignSelector 
+                            onDesignSelect={handleDesignSelect}
+                            selectedDesign={selectedDesigns[templateType]}
+                            templateType={templateType}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {showDesignSelector && selectedTemplates.length === 0 && (
+                    <div className="text-center py-8">
+                      <Palette className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">Selecciona una plantilla primero</h3>
+                      <p className="text-gray-500">Necesitas seleccionar al menos una plantilla para poder elegir su diseño.</p>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
             </Card>
           </TabsContent>
 

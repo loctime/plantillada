@@ -277,13 +277,13 @@ export default function MultiPage() {
           
           <div className="max-w-md mx-auto text-center">
             <a
-              href={`mailto:${config.contact.email}`}
+              href={`mailto:${(config.contact as any).emails?.[0] || config.contact.email}`}
               className="inline-block bg-purple-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-purple-700 transition-colors"
             >
               {config.buttons?.ctaButton || "Contactar"}
             </a>
             <p className="mt-4 text-gray-600">
-              O escríbeme directamente a: <a href={`mailto:${config.contact.email}`} className="text-purple-600 hover:underline">{config.contact.email}</a>
+              O escríbeme directamente a: <a href={`mailto:${(config.contact as any).emails?.[0] || config.contact.email}`} className="text-purple-600 hover:underline">{(config.contact as any).emails?.[0] || config.contact.email}</a>
             </p>
           </div>
         </div>
@@ -296,8 +296,8 @@ export default function MultiPage() {
             <h4 className="text-xl font-semibold mb-4">{config.site.title}</h4>
             <p className="text-gray-400 mb-6">{config.site.tagline}</p>
             <div className="flex justify-center space-x-6">
-              <a href={`mailto:${config.contact.email}`} className="text-gray-400 hover:text-white">
-                {config.contact.email}
+              <a href={`mailto:${(config.contact as any).emails?.[0] || config.contact.email}`} className="text-gray-400 hover:text-white">
+                {(config.contact as any).emails?.[0] || config.contact.email}
               </a>
             </div>
           </div>

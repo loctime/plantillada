@@ -283,6 +283,12 @@ export interface Config {
   }>
   contact: {
     email: string
+    emails?: string[]
+    phones?: string[]
+    addresses?: string[]
+    cbus?: string[]
+    cuits?: string[]
+    urls?: string[]
   }
   legal: {
     termsUrl: string
@@ -604,7 +610,13 @@ export function getDefaultConfig(tenantId: string): Config {
       }
     ],
     contact: {
-      email: "hola@tumarca.com"
+      email: "hola@tumarca.com",
+      emails: [],
+      phones: [],
+      addresses: [],
+      cbus: [],
+      cuits: [],
+      urls: []
     },
     legal: {
       termsUrl: "",

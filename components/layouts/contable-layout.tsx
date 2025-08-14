@@ -304,12 +304,26 @@ export function ContableLayout({ config }: ContableLayoutProps) {
             
             <div>
               <h4 className="text-lg font-semibold mb-4">Contacto</h4>
-              <p className="text-blue-300">
-                <EditableText
-                  value={config.contact.email}
-                  onSave={(value) => updateConfig({ contact: { ...config.contact, email: value } })}
-                />
-              </p>
+              <div className="space-y-2 text-blue-300">
+                <p>
+                  <EditableText
+                    value={config.contact.email}
+                    onSave={(value) => updateConfig({ contact: { ...config.contact, email: value } })}
+                  />
+                </p>
+                {(config.contact.emails || []).map((e, i) => (
+                  <p key={`email-${i}`}>{e}</p>
+                ))}
+                {(config.contact.phones || []).map((p, i) => (
+                  <p key={`phone-${i}`}>{p}</p>
+                ))}
+                {(config.contact.addresses || []).map((a, i) => (
+                  <p key={`address-${i}`}>{a}</p>
+                ))}
+                {(config.contact.urls || []).map((u, i) => (
+                  <p key={`url-${i}`}>{u}</p>
+                ))}
+              </div>
             </div>
             
             <div>

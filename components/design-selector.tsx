@@ -27,7 +27,7 @@ interface DesignSelectorProps {
 
 export function DesignSelector({ onDesignSelect, selectedDesign, templateType, onApply }: DesignSelectorProps) {
   const [selectedDesignState, setSelectedDesignState] = useState<string>(selectedDesign || '')
-  const [applyContent, setApplyContent] = useState(true)
+  const [applyContent, setApplyContent] = useState(false)
   const [applyColors, setApplyColors] = useState(true)
   const [applying, setApplying] = useState(false)
 
