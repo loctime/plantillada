@@ -73,6 +73,7 @@ export function SectionButtonManager({ buttons, onButtonsChange, sectionId, sect
   const { isAdminMode } = useAdmin()
   const [showAddDialog, setShowAddDialog] = useState(false)
   const [editingButton, setEditingButton] = useState<ButtonConfig | null>(null)
+  const [isExpanded, setIsExpanded] = useState(false)
   const [buttonData, setButtonData] = useState({
     text: '',
     type: 'url' as const,
@@ -204,8 +205,6 @@ export function SectionButtonManager({ buttons, onButtonsChange, sectionId, sect
       </div>
     )
   }
-
-  const [isExpanded, setIsExpanded] = useState(false)
 
   return (
     <div className={cn("mt-6", className)}>
