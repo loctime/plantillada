@@ -27,6 +27,7 @@ import { useAdmin } from '@/lib/admin-context'
 import { AdminToggle } from '@/components/admin-toggle'
 import { ShopDesignSelector } from '@/components/shop-design-selector'
 import { Design } from '@/lib/designs'
+import './layout-styles.css'
 
 interface Product {
   id: string
@@ -194,6 +195,14 @@ export default function ShopPage() {
   const [editingField, setEditingField] = useState<string | null>(null)
   const [editingValue, setEditingValue] = useState('')
   const [selectedDesign, setSelectedDesign] = useState<string>('tech-shop')
+  const [layoutConfig, setLayoutConfig] = useState({
+    type: 'sidebar-left',
+    productStyle: 'cards-square',
+    backgroundColor: '#f8fafc',
+    cardStyle: 'modern',
+    headerStyle: 'dark',
+    sidebarStyle: 'white-shadow'
+  })
   
   // Estados para gestión de productos
   const [showProductModal, setShowProductModal] = useState(false)
@@ -273,6 +282,11 @@ export default function ShopPage() {
           // Cargar diseño seleccionado si existe
           if (shopConfig.selectedDesign) {
             setSelectedDesign(shopConfig.selectedDesign)
+          }
+          
+          // Cargar configuración de layout si existe
+          if (shopConfig.layout) {
+            setLayoutConfig(shopConfig.layout)
           }
         }
       } catch (error) {
@@ -597,12 +611,25 @@ export default function ShopPage() {
         root.style.setProperty('--secondary', design.colorScheme.secondary)
         root.style.setProperty('--accent', design.colorScheme.accent)
         
+        // Aplicar configuración de layout si existe
+        if (designConfig.config?.layout) {
+          const layout = designConfig.config.layout
+          setLayoutConfig(layout)
+          root.style.setProperty('--layout-type', layout.type)
+          root.style.setProperty('--product-style', layout.productStyle)
+          root.style.setProperty('--background-color', layout.backgroundColor)
+          root.style.setProperty('--card-style', layout.cardStyle)
+          root.style.setProperty('--header-style', layout.headerStyle)
+          root.style.setProperty('--sidebar-style', layout.sidebarStyle)
+        }
+        
         // Guardar la configuración completa del diseño
         await saveConfigPreservingRest({ 
           selectedDesign: design.id,
           shopDesign: design,
           shopConfig: designConfig.config?.shopConfig,
-          products: designConfig.config?.products
+          products: designConfig.config?.products,
+          layout: designConfig.config?.layout
         })
         
         console.log(`✅ Diseño ${design.name} aplicado exitosamente`)
@@ -633,9 +660,17 @@ export default function ShopPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div 
+      className="min-h-screen shop-page"
+      data-layout={layoutConfig.type}
+      data-product-style={layoutConfig.productStyle}
+      data-background-color={layoutConfig.backgroundColor}
+      data-card-style={layoutConfig.cardStyle}
+      data-header-style={layoutConfig.headerStyle}
+      data-sidebar-style={layoutConfig.sidebarStyle}
+    >
       {/* Header */}
-      <header className="bg-black text-white shadow-lg">
+      <header className="shop-header text-white shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center">
@@ -689,9 +724,9 @@ export default function ShopPage() {
       </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex gap-8">
+        <div className="shop-container">
           {/* Sidebar */}
-          <div className="w-80 flex-shrink-0">
+          <div className="sidebar">
             <div className="bg-white rounded-lg shadow-md p-6 space-y-6">
               {/* Búsqueda */}
               <div className="space-y-2">
@@ -787,7 +822,7 @@ export default function ShopPage() {
           </div>
 
           {/* Contenido principal */}
-          <div className="flex-1">
+          <div className="main-content">
             {/* Breadcrumbs y controles */}
             <div className="flex justify-between items-center mb-6">
               <div className="text-sm text-gray-600 group">
@@ -825,17 +860,17 @@ export default function ShopPage() {
               </div>
             </div>
 
-                         {/* Grid de productos */}
-             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-               {filteredProducts.map(product => (
-                 <Card key={product.id} className="group hover:shadow-lg transition-shadow">
+                                       {/* Grid de productos */}
+              <div className="product-grid">
+                {filteredProducts.map(product => (
+                  <Card key={product.id} className="product-card group hover:shadow-lg transition-shadow">
                    <CardContent className="p-4">
                                              <div className="relative group">
-                          <img
-                            src={product.image}
-                            alt={product.name}
-                            className="w-full h-48 object-cover rounded-lg mb-4"
-                          />
+                                                     <img
+                             src={product.image}
+                             alt={product.name}
+                             className="product-image w-full h-48 object-cover rounded-lg mb-4"
+                           />
                           <div className="absolute top-2 right-2 space-y-2 opacity-0 group-hover:opacity-100 transition-opacity">
                             <Button size="sm" variant="secondary" className="h-8 w-8 p-0">
                               <Heart className="h-4 w-4" />
@@ -862,7 +897,7 @@ export default function ShopPage() {
                           )}
                         </div>
 
-                     <div className="space-y-2">
+                     <div className="product-info space-y-2">
                        <div className="flex items-center justify-between">
                          <span className="text-xs text-gray-500 uppercase">{product.brand}</span>
                          <div className="flex items-center space-x-1">

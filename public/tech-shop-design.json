@@ -31,6 +31,14 @@
       "checkoutText": "Proceder al Pago",
       "totalText": "Total:"
     },
+    "layout": {
+      "type": "sidebar-left",
+      "productStyle": "cards-square",
+      "backgroundColor": "#f8fafc",
+      "cardStyle": "modern",
+      "headerStyle": "dark",
+      "sidebarStyle": "white-shadow"
+    },
     "products": [
       {
         "id": "1",
@@ -78,8 +86,8 @@
   },
   "theme": {
     "light": {
-      "backgroundColor": "#ffffff",
-      "sectionBackground": "#f8fafc",
+      "backgroundColor": "#f8fafc",
+      "sectionBackground": "#ffffff",
       "navbarBackground": "#1f2937",
       "textColor": "#1f2937",
       "accentColor": "#3b82f6",

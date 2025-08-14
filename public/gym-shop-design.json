@@ -31,6 +31,14 @@
       "checkoutText": "Finalizar Compra",
       "totalText": "Total:"
     },
+    "layout": {
+      "type": "no-sidebar",
+      "productStyle": "cards-round",
+      "backgroundColor": "#1f2937",
+      "cardStyle": "dark-sport",
+      "headerStyle": "red-gradient",
+      "sidebarStyle": "none"
+    },
     "products": [
       {
         "id": "1",
@@ -78,10 +86,10 @@
   },
   "theme": {
     "light": {
-      "backgroundColor": "#ffffff",
-      "sectionBackground": "#fef2f2",
+      "backgroundColor": "#1f2937",
+      "sectionBackground": "#374151",
       "navbarBackground": "#dc2626",
-      "textColor": "#1f2937",
+      "textColor": "#f9fafb",
       "accentColor": "#dc2626",
       "primaryButtonColor": "#dc2626",
       "secondaryButtonColor": "#f59e0b",
