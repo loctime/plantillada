@@ -217,6 +217,19 @@ export function FumigacionesLayout() {
                      isScrolled ? "text-lg" : "text-xl"
                    )}
                    tag="h1"
+                   textColor={config.site?.titleColor}
+                   onColorChange={(color) => {
+                     if (updateConfig) {
+                       updateConfig({
+                         ...config,
+                         site: {
+                           ...config.site,
+                           titleColor: color
+                         }
+                       })
+                     }
+                   }}
+                   showColorPicker={true}
                  />
                  <EditableText 
                    value={config.fumigaciones?.tagline || "Control de Plagas Profesional"} 

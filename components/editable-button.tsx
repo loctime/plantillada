@@ -5,6 +5,7 @@ import { useAdmin } from '@/lib/admin-context'
 import { Edit2, Check, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { ColorPicker } from '@/components/color-picker'
 
 interface EditableButtonProps {
   value: string
@@ -15,6 +16,11 @@ interface EditableButtonProps {
   size?: "default" | "sm" | "lg" | "icon"
   disabled?: boolean
   children?: React.ReactNode
+  backgroundColor?: string
+  textColor?: string
+  onBackgroundColorChange?: (color: string) => void
+  onTextColorChange?: (color: string) => void
+  showColorPickers?: boolean
   [key: string]: any // Para pasar otras props al botón
 }
 
@@ -27,6 +33,11 @@ export function EditableButton({
   size = "default",
   disabled = false,
   children,
+  backgroundColor,
+  textColor,
+  onBackgroundColorChange,
+  onTextColorChange,
+  showColorPickers = false,
   ...buttonProps
 }: EditableButtonProps) {
   const { isAdminMode, isSaving } = useAdmin()
@@ -84,6 +95,10 @@ export function EditableButton({
         size={size}
         className={className}
         disabled={disabled}
+        style={{
+          backgroundColor: backgroundColor,
+          color: textColor
+        }}
         {...buttonProps}
       >
         {children}
@@ -149,25 +164,52 @@ export function EditableButton({
           className
         )}
         disabled={disabled || isSaving}
+        style={{
+          backgroundColor: backgroundColor,
+          color: textColor
+        }}
         {...buttonProps}
       >
         {children}
         {value}
       </Button>
       
-      {/* Botón de edición */}
-      <Button
-        size="sm"
-        variant="ghost"
-        onClick={() => setIsEditing(true)}
-        disabled={isSaving}
-        className={cn(
-          "absolute -top-2 -right-2 h-6 w-6 p-0 theme-transition theme-bg-card theme-border theme-shadow theme-hover-bg z-10",
-          isAdminMode ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+      {/* Controles de edición */}
+      <div className={cn(
+        "absolute -top-2 -right-2 flex gap-1 theme-transition theme-bg-card theme-border theme-shadow theme-hover-bg z-10",
+        isAdminMode ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+      )}>
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={() => setIsEditing(true)}
+          disabled={isSaving}
+          className="h-6 w-6 p-0"
+        >
+          <Edit2 className="h-3 w-3" />
+        </Button>
+        
+        {showColorPickers && (
+          <>
+            {onBackgroundColorChange && (
+              <ColorPicker
+                value={backgroundColor || '#000000'}
+                onChange={onBackgroundColorChange}
+                compact={true}
+                className="h-6 w-6 p-0"
+              />
+            )}
+            {onTextColorChange && (
+              <ColorPicker
+                value={textColor || '#ffffff'}
+                onChange={onTextColorChange}
+                compact={true}
+                className="h-6 w-6 p-0"
+              />
+            )}
+          </>
         )}
-      >
-        <Edit2 className="h-3 w-3" />
-      </Button>
+      </div>
     </div>
   )
 }

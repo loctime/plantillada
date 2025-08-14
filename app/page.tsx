@@ -26,6 +26,7 @@ import { ThemeSwitch } from "@/components/theme-switch"
 import { DynamicNavigation } from "@/components/dynamic-navigation"
 import { SectionButtonManager } from "@/components/section-button-manager"
 import { FumigacionesLayout } from "@/components/fumigaciones-layout"
+import { useGlobalColors } from "@/hooks/use-global-colors"
 
 
 export default function Page() {
@@ -36,6 +37,9 @@ function PageContent() {
   const [config, setConfig] = useState<Config | null>(null)
   const [loading, setLoading] = useState(true)
   const { updateConfig } = useAdmin()
+  
+  // Aplicar colores globales
+  useGlobalColors()
   const [sections, setSections] = useState([
     {
       id: 'hero',
@@ -402,6 +406,9 @@ function Hero() {
               value={config.site.tagline}
               onSave={(newValue) => updateConfig({ site: { ...config.site, tagline: newValue } })}
               placeholder="Tagline del sitio..."
+              textColor={config.site?.taglineColor}
+              onColorChange={(color) => updateConfig({ site: { ...config.site, taglineColor: color } })}
+              showColorPicker={true}
             />
           </div>
           <EditableText
@@ -409,6 +416,9 @@ function Hero() {
             onSave={(newValue) => updateConfig({ site: { ...config.site, heroTitle: newValue } })}
             className="text-4xl/tight sm:text-5xl/tight font-bold tracking-tighter theme-text-heading"
             tag="h1"
+            textColor={config.site?.heroTitleColor}
+            onColorChange={(color) => updateConfig({ site: { ...config.site, heroTitleColor: color } })}
+            showColorPicker={true}
           />
           <EditableText
             value={config.site.heroSubtitle || "Sesiones 1:1 y un curso online diseñados para desbloquear tu potencial, definir un plan claro y ejecutarlo con confianza."}
@@ -416,6 +426,9 @@ function Hero() {
             className="theme-text-subtitle text-lg"
             tag="p"
             multiline
+            textColor={config.site?.heroSubtitleColor}
+            onColorChange={(color) => updateConfig({ site: { ...config.site, heroSubtitleColor: color } })}
+            showColorPicker={true}
           />
           {/* Gestión de botones del Hero */}
           <SectionButtonManager
@@ -494,6 +507,9 @@ function Sessions() {
             onSave={(newValue) => updateConfig({ site: { ...config.site, sessionsTitle: newValue } })}
             className="text-3xl sm:text-4xl font-bold tracking-tight theme-text-heading"
             tag="h2"
+            textColor={config.site?.sessionsTitleColor}
+            onColorChange={(color) => updateConfig({ site: { ...config.site, sessionsTitleColor: color } })}
+            showColorPicker={true}
           />
           <EditableText
             value={config.site.sessionsSubtitle || "Elige la sesión que mejor se adapta a tu momento. Enfocadas, prácticas y orientadas a resultados."}
@@ -501,6 +517,9 @@ function Sessions() {
             className="theme-text-subtitle mt-3"
             tag="p"
             multiline
+            textColor={config.site?.sessionsSubtitleColor}
+            onColorChange={(color) => updateConfig({ site: { ...config.site, sessionsSubtitleColor: color } })}
+            showColorPicker={true}
           />
         </div>
         <div className="grid gap-6 md:grid-cols-3">

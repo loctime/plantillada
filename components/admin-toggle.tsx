@@ -11,14 +11,15 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { ThemeManager } from './theme-manager'
+
 import { AdminAuthStatus } from './admin-auth-status'
 import { useAdminAuth } from '@/hooks/use-admin-auth'
+import { GlobalColorEditor } from './global-color-editor'
 
 export function AdminToggle() {
   const { isAdminMode, toggleAdminMode, isSaving, lastSaved, refreshConfig, forceReload } = useAdmin()
   const { isAuthenticated } = useAdminAuth()
-  const [showColorManager, setShowColorManager] = useState(false)
+
 
   // No renderizar nada si no está autenticado
   if (!isAuthenticated) {
@@ -28,61 +29,42 @@ export function AdminToggle() {
   return (
     <TooltipProvider>
       <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2">
-        {/* Fila superior: Botón Admin y Estado de autenticación */}
-        <div className="flex items-center gap-2">
-          {/* Toggle del modo admin */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                onClick={toggleAdminMode}
-                variant={isAdminMode ? "default" : "outline"}
-                size="sm"
-                className={cn(
-                  "shadow-lg transition-all duration-200",
-                  isAdminMode && "bg-emerald-600 hover:bg-emerald-700"
-                )}
-              >
-                <Settings className="h-4 w-4 mr-2" />
-                {isAdminMode ? "Modo Admin" : "Admin"}
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Activar modo admin</p>
-              <p className="text-xs text-muted-foreground">Atajo: Ctrl+Shift+A</p>
-            </TooltipContent>
-          </Tooltip>
+                 {/* Fila superior: Botón Admin y Estado de autenticación */}
+         <div className="flex items-center gap-2">
+           {/* Toggle del modo admin */}
+           <Tooltip>
+             <TooltipTrigger asChild>
+               <Button
+                 onClick={toggleAdminMode}
+                 variant={isAdminMode ? "default" : "outline"}
+                 size="sm"
+                 className={cn(
+                   "shadow-lg transition-all duration-200",
+                   isAdminMode && "bg-emerald-600 hover:bg-emerald-700"
+                 )}
+               >
+                 <Settings className="h-4 w-4 mr-2" />
+                 {isAdminMode ? "Modo Admin" : "Admin"}
+               </Button>
+             </TooltipTrigger>
+             <TooltipContent>
+               <p>Activar modo admin</p>
+               <p className="text-xs text-muted-foreground">Atajo: Ctrl+Shift+A</p>
+             </TooltipContent>
+           </Tooltip>
 
-          {/* Estado de autenticación */}
-          <AdminAuthStatus />
-        </div>
+           {/* Estado de autenticación */}
+           <AdminAuthStatus />
+         </div>
 
-        {/* Botón del gestor de colores - solo visible en modo admin */}
-        {isAdminMode && (
-          <div className="flex items-center gap-2">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  onClick={() => setShowColorManager(!showColorManager)}
-                  variant={showColorManager ? "default" : "outline"}
-                  size="sm"
-                  className={cn(
-                    "shadow-lg transition-all duration-200",
-                    showColorManager && "bg-blue-600 hover:bg-blue-700"
-                  )}
-                >
-                  <Palette className="h-4 w-4 mr-2" />
-                  Colores
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Gestionar colores del tema</p>
-              </TooltipContent>
-            </Tooltip>
-          </div>
-        )}
+         {/* Fila inferior: Editor de colores globales - solo visible en modo admin */}
+         {isAdminMode && (
+           <div className="flex items-center gap-2">
+             <GlobalColorEditor />
+           </div>
+         )}
 
-        {/* Gestor de colores - solo visible cuando se activa */}
-        {isAdminMode && showColorManager && <ThemeManager />}
+
 
         {/* Indicador de guardado - solo visible en modo admin */}
         {isAdminMode && (
