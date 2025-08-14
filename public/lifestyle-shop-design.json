@@ -1,0 +1,101 @@
+{
+  "name": "Lifestyle Shop",
+  "description": "Diseño moderno y minimalista para tiendas de lifestyle",
+  "category": "shop",
+  "colorScheme": {
+    "primary": "#059669",
+    "secondary": "#6b7280",
+    "accent": "#8b5cf6"
+  },
+  "config": {
+    "shopConfig": {
+      "storeName": "LIFESTYLE STORE",
+      "storeTagline": "Productos para una vida más consciente",
+      "navigation": ["TIENDA", "HOGAR", "BIENESTAR", "ECO", "DECORACIÓN", "REGALOS", "NOVEDADES"],
+      "categories": ["Todos", "Hogar", "Bienestar", "Eco-friendly", "Decoración", "Regalos"],
+      "searchPlaceholder": "Buscar productos lifestyle...",
+      "filterButtonText": "FILTRAR",
+      "bestSellersTitle": "Productos Destacados",
+      "breadcrumbText": "Inicio / Lifestyle Store",
+      "resultsText": "Mostrando 1-{count} de {total} resultados",
+      "sortOptions": [
+        { "value": "latest", "label": "Novedades" },
+        { "value": "price-low", "label": "Precio: Menor a Mayor" },
+        { "value": "price-high", "label": "Precio: Mayor a Menor" },
+        { "value": "rating", "label": "Mejor Valorados" }
+      ],
+      "addToCartText": "Agregar al Carrito",
+      "outOfStockText": "Agotado",
+      "cartTitle": "Carrito de Compras",
+      "emptyCartText": "Tu carrito está vacío",
+      "checkoutText": "Finalizar Compra",
+      "totalText": "Total:"
+    },
+    "products": [
+      {
+        "id": "1",
+        "name": "Vela Aromática",
+        "brand": "ZenLife",
+        "price": 24.99,
+        "originalPrice": 34.99,
+        "image": "https://images.unsplash.com/photo-1603006905005-6a2d4e5f0e8f?w=400&h=400&fit=crop",
+        "rating": 4.8,
+        "reviews": 67,
+        "category": "hogar",
+        "inStock": true,
+        "description": "Vela aromática de lavanda, perfecta para relajación.",
+        "features": ["Lavanda natural", "50 horas de duración", "Cera de soja", "Sin parafina"]
+      },
+      {
+        "id": "2",
+        "name": "Botella de Agua Reutilizable",
+        "brand": "EcoFlow",
+        "price": 19.99,
+        "originalPrice": 29.99,
+        "image": "https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=400&h=400&fit=crop",
+        "rating": 4.6,
+        "reviews": 189,
+        "category": "eco",
+        "inStock": true,
+        "description": "Botella de agua reutilizable de acero inoxidable.",
+        "features": ["500ml", "Acero inoxidable", "Mantiene temperatura", "Libre de BPA"]
+      },
+      {
+        "id": "3",
+        "name": "Cojín Decorativo",
+        "brand": "HomeStyle",
+        "price": 39.99,
+        "originalPrice": 49.99,
+        "image": "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=400&fit=crop",
+        "rating": 4.5,
+        "reviews": 123,
+        "category": "decoracion",
+        "inStock": true,
+        "description": "Cojín decorativo con diseño minimalista.",
+        "features": ["Algodón orgánico", "45x45cm", "Diseño geométrico", "Lavable"]
+      }
+    ]
+  },
+  "theme": {
+    "light": {
+      "backgroundColor": "#ffffff",
+      "sectionBackground": "#f0fdf4",
+      "navbarBackground": "#059669",
+      "textColor": "#1f2937",
+      "accentColor": "#059669",
+      "primaryButtonColor": "#059669",
+      "secondaryButtonColor": "#8b5cf6",
+      "outlineButtonColor": "#6b7280"
+    },
+    "dark": {
+      "backgroundColor": "#0f172a",
+      "sectionBackground": "#064e3b",
+      "navbarBackground": "#065f46",
+      "textColor": "#f1f5f9",
+      "accentColor": "#6ee7b7",
+      "primaryButtonColor": "#059669",
+      "secondaryButtonColor": "#8b5cf6",
+      "outlineButtonColor": "#94a3b8"
+    }
+  }
+}

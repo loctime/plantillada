@@ -25,6 +25,8 @@ import {
 } from 'lucide-react'
 import { useAdmin } from '@/lib/admin-context'
 import { AdminToggle } from '@/components/admin-toggle'
+import { ShopDesignSelector } from '@/components/shop-design-selector'
+import { Design } from '@/lib/designs'
 
 interface Product {
   id: string
@@ -191,6 +193,7 @@ export default function ShopPage() {
   const [shopConfig, setShopConfig] = useState<ShopConfig>(defaultShopConfig)
   const [editingField, setEditingField] = useState<string | null>(null)
   const [editingValue, setEditingValue] = useState('')
+  const [selectedDesign, setSelectedDesign] = useState<string>('tech-shop')
   
   // Estados para gestión de productos
   const [showProductModal, setShowProductModal] = useState(false)
@@ -265,6 +268,11 @@ export default function ShopPage() {
           if (shopConfig.products && Array.isArray(shopConfig.products)) {
             setProducts(shopConfig.products)
             setFilteredProducts(shopConfig.products)
+          }
+          
+          // Cargar diseño seleccionado si existe
+          if (shopConfig.selectedDesign) {
+            setSelectedDesign(shopConfig.selectedDesign)
           }
         }
       } catch (error) {
@@ -564,6 +572,58 @@ export default function ShopPage() {
     closeImageModal()
   }
 
+  const handleDesignSelect = async (design: Design) => {
+    setSelectedDesign(design.id)
+    
+    try {
+      // Cargar la configuración completa del diseño desde el archivo JSON
+      const response = await fetch(`/${design.id}-design.json`)
+      if (response.ok) {
+        const designConfig = await response.json()
+        
+        // Aplicar la configuración del diseño
+        if (designConfig.config?.shopConfig) {
+          setShopConfig(designConfig.config.shopConfig)
+        }
+        
+        if (designConfig.config?.products) {
+          setProducts(designConfig.config.products)
+          setFilteredProducts(designConfig.config.products)
+        }
+        
+        // Aplicar los colores del diseño
+        const root = document.documentElement
+        root.style.setProperty('--primary', design.colorScheme.primary)
+        root.style.setProperty('--secondary', design.colorScheme.secondary)
+        root.style.setProperty('--accent', design.colorScheme.accent)
+        
+        // Guardar la configuración completa del diseño
+        await saveConfigPreservingRest({ 
+          selectedDesign: design.id,
+          shopDesign: design,
+          shopConfig: designConfig.config?.shopConfig,
+          products: designConfig.config?.products
+        })
+        
+        console.log(`✅ Diseño ${design.name} aplicado exitosamente`)
+      }
+    } catch (error) {
+      console.error('Error cargando configuración del diseño:', error)
+      
+      // Fallback: aplicar solo los colores
+      const root = document.documentElement
+      root.style.setProperty('--primary', design.colorScheme.primary)
+      root.style.setProperty('--secondary', design.colorScheme.secondary)
+      root.style.setProperty('--accent', design.colorScheme.accent)
+      
+      // Guardar solo la información básica del diseño
+      await saveConfigPreservingRest({ 
+        selectedDesign: design.id,
+        shopDesign: design 
+      })
+    }
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -606,6 +666,10 @@ export default function ShopPage() {
             </nav>
 
             <div className="flex items-center space-x-4">
+              <ShopDesignSelector
+                selectedDesign={selectedDesign}
+                onDesignSelect={handleDesignSelect}
+              />
               <Button
                 variant="ghost"
                 size="sm"

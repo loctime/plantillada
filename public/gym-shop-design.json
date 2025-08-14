@@ -1,0 +1,101 @@
+{
+  "name": "Gym Shop",
+  "description": "Diseño deportivo y energético para tiendas de fitness",
+  "category": "shop",
+  "colorScheme": {
+    "primary": "#dc2626",
+    "secondary": "#1f2937",
+    "accent": "#f59e0b"
+  },
+  "config": {
+    "shopConfig": {
+      "storeName": "POWER GYM",
+      "storeTagline": "Tu equipamiento fitness de confianza",
+      "navigation": ["TIENDA", "EQUIPOS", "SUPLEMENTOS", "ROPA", "ACCESORIOS", "NUTRICIÓN", "OFERTAS"],
+      "categories": ["Todos", "Equipos", "Suplementos", "Ropa Deportiva", "Accesorios", "Nutrición"],
+      "searchPlaceholder": "Buscar productos fitness...",
+      "filterButtonText": "FILTRAR",
+      "bestSellersTitle": "Productos Más Vendidos",
+      "breadcrumbText": "Inicio / Power Gym",
+      "resultsText": "Mostrando 1-{count} de {total} resultados",
+      "sortOptions": [
+        { "value": "latest", "label": "Nuevos Productos" },
+        { "value": "price-low", "label": "Precio: Menor a Mayor" },
+        { "value": "price-high", "label": "Precio: Mayor a Menor" },
+        { "value": "rating", "label": "Mejor Valorados" }
+      ],
+      "addToCartText": "Agregar al Carrito",
+      "outOfStockText": "Sin Stock",
+      "cartTitle": "Carrito de Compras",
+      "emptyCartText": "Tu carrito está vacío",
+      "checkoutText": "Finalizar Compra",
+      "totalText": "Total:"
+    },
+    "products": [
+      {
+        "id": "1",
+        "name": "Mancuernas Ajustables",
+        "brand": "PowerFit",
+        "price": 299.99,
+        "originalPrice": 399.99,
+        "image": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=400&fit=crop",
+        "rating": 4.7,
+        "reviews": 89,
+        "category": "equipos",
+        "inStock": true,
+        "description": "Mancuernas ajustables de 5-50kg, perfectas para entrenamiento en casa.",
+        "features": ["5-50kg ajustable", "Agarre ergonómico", "Base estable", "Incluye rack"]
+      },
+      {
+        "id": "2",
+        "name": "Proteína Whey",
+        "brand": "MuscleMax",
+        "price": 49.99,
+        "originalPrice": 69.99,
+        "image": "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=400&fit=crop",
+        "rating": 4.5,
+        "reviews": 234,
+        "category": "suplementos",
+        "inStock": true,
+        "description": "Proteína whey de alta calidad, 25g de proteína por porción.",
+        "features": ["25g proteína", "Bajo en azúcar", "Sabor chocolate", "1kg"]
+      },
+      {
+        "id": "3",
+        "name": "Leggings Deportivos",
+        "brand": "FitStyle",
+        "price": 39.99,
+        "originalPrice": 59.99,
+        "image": "https://images.unsplash.com/photo-1544966503-7cc5ac882d5f?w=400&h=400&fit=crop",
+        "rating": 4.6,
+        "reviews": 156,
+        "category": "ropa",
+        "inStock": true,
+        "description": "Leggings deportivos de alta compresión, ideales para entrenamiento.",
+        "features": ["Alta compresión", "Tecnología dry-fit", "Talla XS-XXL", "Bolsa lateral"]
+      }
+    ]
+  },
+  "theme": {
+    "light": {
+      "backgroundColor": "#ffffff",
+      "sectionBackground": "#fef2f2",
+      "navbarBackground": "#dc2626",
+      "textColor": "#1f2937",
+      "accentColor": "#dc2626",
+      "primaryButtonColor": "#dc2626",
+      "secondaryButtonColor": "#f59e0b",
+      "outlineButtonColor": "#6b7280"
+    },
+    "dark": {
+      "backgroundColor": "#0f172a",
+      "sectionBackground": "#450a0a",
+      "navbarBackground": "#7f1d1d",
+      "textColor": "#f1f5f9",
+      "accentColor": "#fca5a5",
+      "primaryButtonColor": "#dc2626",
+      "secondaryButtonColor": "#f59e0b",
+      "outlineButtonColor": "#94a3b8"
+    }
+  }
+}

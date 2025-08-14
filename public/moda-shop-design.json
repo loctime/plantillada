@@ -1,0 +1,101 @@
+{
+  "name": "Moda Shop",
+  "description": "Diseño elegante y fashion para tiendas de moda",
+  "category": "shop",
+  "colorScheme": {
+    "primary": "#ec4899",
+    "secondary": "#6b7280",
+    "accent": "#f59e0b"
+  },
+  "config": {
+    "shopConfig": {
+      "storeName": "FASHION BOUTIQUE",
+      "storeTagline": "Estilo y elegancia en cada prenda",
+      "navigation": ["TIENDA", "MUJER", "HOMBRE", "ACCESORIOS", "CALZADO", "BOLSOS", "OFERTAS"],
+      "categories": ["Todos", "Mujer", "Hombre", "Accesorios", "Calzado", "Bolsos"],
+      "searchPlaceholder": "Buscar prendas y accesorios...",
+      "filterButtonText": "FILTRAR",
+      "bestSellersTitle": "Tendencias del Momento",
+      "breadcrumbText": "Inicio / Fashion Boutique",
+      "resultsText": "Mostrando 1-{count} de {total} resultados",
+      "sortOptions": [
+        { "value": "latest", "label": "Novedades" },
+        { "value": "price-low", "label": "Precio: Menor a Mayor" },
+        { "value": "price-high", "label": "Precio: Mayor a Menor" },
+        { "value": "rating", "label": "Más Populares" }
+      ],
+      "addToCartText": "Agregar al Carrito",
+      "outOfStockText": "Agotado",
+      "cartTitle": "Carrito de Compras",
+      "emptyCartText": "Tu carrito está vacío",
+      "checkoutText": "Finalizar Compra",
+      "totalText": "Total:"
+    },
+    "products": [
+      {
+        "id": "1",
+        "name": "Vestido Elegante",
+        "brand": "Elegance",
+        "price": 89.99,
+        "originalPrice": 129.99,
+        "image": "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=400&h=400&fit=crop",
+        "rating": 4.6,
+        "reviews": 89,
+        "category": "mujer",
+        "inStock": true,
+        "description": "Vestido elegante perfecto para ocasiones especiales.",
+        "features": ["100% Poliéster", "Talla S-XL", "Lavable en seco", "Cierre trasero"]
+      },
+      {
+        "id": "2",
+        "name": "Camisa Formal",
+        "brand": "Classic",
+        "price": 45.99,
+        "originalPrice": 59.99,
+        "image": "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=400&h=400&fit=crop",
+        "rating": 4.4,
+        "reviews": 156,
+        "category": "hombre",
+        "inStock": true,
+        "description": "Camisa formal de algodón premium para el trabajo.",
+        "features": ["100% Algodón", "Talla S-XXL", "Planchado fácil", "Cuello clásico"]
+      },
+      {
+        "id": "3",
+        "name": "Bolso de Mano",
+        "brand": "Luxury",
+        "price": 199.99,
+        "originalPrice": 249.99,
+        "image": "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400&h=400&fit=crop",
+        "rating": 4.8,
+        "reviews": 234,
+        "category": "bolsos",
+        "inStock": true,
+        "description": "Bolso de mano elegante con acabados premium.",
+        "features": ["Cuero genuino", "Interior forrado", "Asa ajustable", "Múltiples compartimentos"]
+      }
+    ]
+  },
+  "theme": {
+    "light": {
+      "backgroundColor": "#ffffff",
+      "sectionBackground": "#fdf2f8",
+      "navbarBackground": "#ec4899",
+      "textColor": "#1f2937",
+      "accentColor": "#ec4899",
+      "primaryButtonColor": "#ec4899",
+      "secondaryButtonColor": "#f59e0b",
+      "outlineButtonColor": "#6b7280"
+    },
+    "dark": {
+      "backgroundColor": "#0f172a",
+      "sectionBackground": "#1e1b4b",
+      "navbarBackground": "#831843",
+      "textColor": "#f1f5f9",
+      "accentColor": "#f472b6",
+      "primaryButtonColor": "#ec4899",
+      "secondaryButtonColor": "#f59e0b",
+      "outlineButtonColor": "#94a3b8"
+    }
+  }
+}
