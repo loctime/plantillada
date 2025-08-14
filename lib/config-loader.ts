@@ -89,6 +89,12 @@ export interface Config {
     ctaTitle?: string
     ctaSubtitle?: string
     showPrices?: boolean
+    // Campos de color opcionales para edición visual
+    taglineColor?: string
+    heroTitleColor?: string
+    heroSubtitleColor?: string
+    sessionsTitleColor?: string
+    sessionsSubtitleColor?: string
   }
   fumigaciones?: {
     // Información de contacto

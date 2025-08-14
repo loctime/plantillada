@@ -14,7 +14,7 @@ type Props = {
 }
 
 export function DesignQuickPicker({ templateType = "landing", fullWidth = false }: Props) {
-  const { config, updateConfig, isAdminMode, forceReload } = useAdmin()
+  const { config, updateConfig, isAdminMode, refreshConfig } = useAdmin()
   const [open, setOpen] = useState(false)
   const [applyingId, setApplyingId] = useState<string | null>(null)
 
@@ -45,8 +45,8 @@ export function DesignQuickPicker({ templateType = "landing", fullWidth = false 
       })
       setOpen(false)
       if (success) {
-        // Recargar para que la página aplique el layout correcto (fumigaciones u otros)
-        forceReload()
+        // Refrescar config de forma reactiva sin recargar la página
+        await refreshConfig()
       }
     } finally {
       setApplyingId(null)

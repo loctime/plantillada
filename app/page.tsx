@@ -36,9 +36,7 @@ export default function Page() {
 }
 
 function PageContent() {
-  const [config, setConfig] = useState<Config | null>(null)
-  const [loading, setLoading] = useState(true)
-  const { updateConfig } = useAdmin()
+  const { config, updateConfig, isLoading } = useAdmin()
   
   // Aplicar colores globales
   useGlobalColors()
@@ -101,130 +99,94 @@ function PageContent() {
     }
   ])
 
-  // Cargar configuración
-  useEffect(() => {
-    const loadConfig = async () => {
-      try {
-        const response = await fetch('/api/config')
-        if (response.ok) {
-          const data = await response.json()
-          setConfig(data)
-        }
-      } catch (error) {
-        console.error('Error loading config:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
+  // Config se obtiene de useAdmin() de forma reactiva
 
-    loadConfig()
-  }, [])
-
-  // Cargar secciones guardadas al iniciar
+  // Cargar secciones reactivamente desde config o localStorage
   useEffect(() => {
-    const loadSections = async () => {
-      try {
-        // Primero intentar cargar desde la configuración global
-        const response = await fetch('/api/config')
-        if (response.ok) {
-          const globalConfig = await response.json()
-          if (globalConfig.sections && globalConfig.sections.length > 0) {
-            console.log('✅ Cargando secciones desde configuración global')
-            const sectionsWithComponents = globalConfig.sections.map((section: any) => {
-              let component: React.ReactNode
-              
-              // Mapear secciones existentes
-              switch (section.id) {
-                case 'hero':
-                  component = <Hero />
-                  break
-                case 'sessions':
-                  component = <Sessions />
-                  break
-                case 'course':
-                  component = <Course />
-                  break
-                case 'about':
-                  component = <About />
-                  break
-                case 'testimonials':
-                  component = <Testimonials />
-                  break
-                case 'linkhub':
-                  component = <LinkHubSection />
-                  break
-                case 'cta':
-                  component = <CTABanner />
-                  break
-                default:
-                  // Para secciones dinámicas
-                  if (section.type) {
-                    switch (section.type) {
-                      case 'linkhub':
-                        component = <LinkHubSection />
-                        break
-                      case 'shop':
-                        component = <ShopSection />
-                        break
-                      default:
-                        component = (
-                          <DynamicSection 
-                            section={section}
-                            onUpdate={(newContent: any) => {
-                              const updatedSections = globalConfig.sections.map((s: any) =>
-                                s.id === section.id 
-                                  ? { ...s, content: newContent }
-                                  : s
-                              )
-                              handleSectionsChange(updatedSections)
-                            }}
-                          />
-                        )
-                    }
-                  }
-              }
-              
-              return {
-                ...section,
-                component
-              }
-            })
-            setSections(sectionsWithComponents)
-            return
-          }
-        }
-        
-        // Si no hay configuración global, cargar desde localStorage
-        const savedSections = localStorage.getItem('landing-sections')
-        if (savedSections) {
-          console.log('📱 Cargando secciones desde localStorage')
-          const parsedSections = JSON.parse(savedSections)
-          // Actualizar solo las propiedades de configuración, mantener los componentes
-          setSections(prevSections => 
-            prevSections.map(section => {
-              const savedSection = parsedSections.find((s: any) => s.id === section.id)
-              if (savedSection) {
-                return {
-                  ...section,
-                  title: savedSection.title,
-                  visible: savedSection.visible,
-                  description: savedSection.description,
-                  type: savedSection.type
+    try {
+      if (config?.sections && config.sections.length > 0) {
+        const sectionsWithComponents = config.sections.map((section: any) => {
+          let component: React.ReactNode
+          switch (section.id) {
+            case 'hero':
+              component = <Hero />
+              break
+            case 'sessions':
+              component = <Sessions />
+              break
+            case 'course':
+              component = <Course />
+              break
+            case 'about':
+              component = <About />
+              break
+            case 'testimonials':
+              component = <Testimonials />
+              break
+            case 'linkhub':
+              component = <LinkHubSection />
+              break
+            case 'cta':
+              component = <CTABanner />
+              break
+            default:
+              if (section.type) {
+                switch (section.type) {
+                  case 'linkhub':
+                    component = <LinkHubSection />
+                    break
+                  case 'shop':
+                    component = <ShopSection />
+                    break
+                  default:
+                    component = (
+                      <DynamicSection 
+                        section={section}
+                        onUpdate={(newContent: any) => {
+                          const updatedSections = (config.sections || []).map((s: any) =>
+                            s.id === section.id 
+                              ? { ...s, content: newContent }
+                              : s
+                          )
+                          handleSectionsChange(updatedSections)
+                        }}
+                      />
+                    )
                 }
               }
-              return section
-            })
-          )
-        }
-      } catch (error) {
-        console.warn('Error al cargar secciones guardadas:', error)
+          }
+          return { ...section, component }
+        })
+        setSections(sectionsWithComponents)
+        return
       }
-    }
-    
-    loadSections()
-  }, [])
 
-  if (loading || !config) {
+      // Si no hay configuración global, cargar desde localStorage
+      const savedSections = localStorage.getItem('landing-sections')
+      if (savedSections) {
+        const parsedSections = JSON.parse(savedSections)
+        setSections(prevSections => 
+          prevSections.map(section => {
+            const savedSection = parsedSections.find((s: any) => s.id === section.id)
+            if (savedSection) {
+              return {
+                ...section,
+                title: savedSection.title,
+                visible: savedSection.visible,
+                description: savedSection.description,
+                type: savedSection.type
+              }
+            }
+            return section
+          })
+        )
+      }
+    } catch (error) {
+      console.warn('Error al cargar secciones guardadas:', error)
+    }
+  }, [config])
+
+  if (isLoading || !config) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -416,7 +378,7 @@ function Hero() {
               onSave={(newValue) => updateConfig({ site: { ...config.site, tagline: newValue } })}
               placeholder="Tagline del sitio..."
               textColor={config.site?.taglineColor}
-              onColorChange={(color) => updateConfig({ site: { ...config.site, taglineColor: color } })}
+              onColorChange={(color) => updateConfig({ site: { ...config.site, taglineColor: color } as any } as any)}
               showColorPicker={true}
             />
           </div>
@@ -426,7 +388,7 @@ function Hero() {
             className="text-4xl/tight sm:text-5xl/tight font-bold tracking-tighter theme-text-heading"
             tag="h1"
             textColor={config.site?.heroTitleColor}
-            onColorChange={(color) => updateConfig({ site: { ...config.site, heroTitleColor: color } })}
+            onColorChange={(color) => updateConfig({ site: { ...config.site, heroTitleColor: color } as any } as any)}
             showColorPicker={true}
           />
           <EditableText
@@ -436,7 +398,7 @@ function Hero() {
             tag="p"
             multiline
             textColor={config.site?.heroSubtitleColor}
-            onColorChange={(color) => updateConfig({ site: { ...config.site, heroSubtitleColor: color } })}
+            onColorChange={(color) => updateConfig({ site: { ...config.site, heroSubtitleColor: color } as any } as any)}
             showColorPicker={true}
           />
           {/* Gestión de botones del Hero */}
@@ -517,7 +479,7 @@ function Sessions() {
             className="text-3xl sm:text-4xl font-bold tracking-tight theme-text-heading"
             tag="h2"
             textColor={config.site?.sessionsTitleColor}
-            onColorChange={(color) => updateConfig({ site: { ...config.site, sessionsTitleColor: color } })}
+            onColorChange={(color) => updateConfig({ site: { ...config.site, sessionsTitleColor: color } as any } as any)}
             showColorPicker={true}
           />
           <EditableText
@@ -527,7 +489,7 @@ function Sessions() {
             tag="p"
             multiline
             textColor={config.site?.sessionsSubtitleColor}
-            onColorChange={(color) => updateConfig({ site: { ...config.site, sessionsSubtitleColor: color } })}
+            onColorChange={(color) => updateConfig({ site: { ...config.site, sessionsSubtitleColor: color } as any } as any)}
             showColorPicker={true}
           />
         </div>
