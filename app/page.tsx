@@ -326,7 +326,7 @@ function Header() {
         {/* Lado izquierdo: Título */}
         <div className="flex items-center">
           <EditableText
-            value={config.site.title}
+            value={config.site?.title || ""}
             onSave={(newValue) => updateConfig({ site: { ...config.site, title: newValue } })}
             className="font-semibold tracking-tight text-lg theme-text-heading"
             tag="span"

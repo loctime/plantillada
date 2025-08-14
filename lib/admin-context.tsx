@@ -3,6 +3,46 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import { Config, saveConfig } from './config-loader'
 
+// Merge profundo para asegurar presencia de claves críticas como site.title
+function mergeConfig<T extends Partial<Config>>(base: Config, incoming?: T | null): Config {
+  const src = incoming || {} as Partial<Config>
+  const merged: Config = {
+    ...base,
+    ...src,
+    site: { ...base.site, ...(src.site || {}) },
+    integrations: { ...base.integrations, ...(src.integrations || {}) },
+    buttons: { ...base.buttons, ...(src.buttons || {}) },
+    course: { ...base.course, ...(src.course || {}) },
+    about: { ...base.about, ...(src.about || {}) },
+    contact: { ...base.contact, ...(src.contact || {}) },
+    legal: { ...base.legal, ...(src.legal || {}) },
+    theme: src.theme
+      ? {
+          light: { ...(base.theme?.light || {}), ...(src.theme.light || {}) },
+          dark: { ...(base.theme?.dark || {}), ...(src.theme.dark || {}) }
+        }
+      : base.theme,
+    linkHub: src.linkHub
+      ? {
+          profile: { ...(base.linkHub?.profile || {}), ...(src.linkHub.profile || {}) },
+          links: src.linkHub.links ?? base.linkHub?.links ?? [],
+          theme: { ...(base.linkHub?.theme || {}), ...(src.linkHub.theme || {}) },
+          social: { ...(base.linkHub?.social || {}), ...(src.linkHub.social || {}) }
+        }
+      : base.linkHub,
+    shopConfig: { ...(base.shopConfig || {}), ...(src.shopConfig || {}) } as any,
+    sessions: src.sessions ?? base.sessions,
+    testimonials: src.testimonials ?? base.testimonials,
+    products: src.products ?? base.products,
+    sections: src.sections ?? base.sections,
+    selectedTemplates: src.selectedTemplates ?? base.selectedTemplates,
+    selectedDesigns: { ...(base.selectedDesigns || {}), ...(src.selectedDesigns || {}) },
+    currentTemplate: src.currentTemplate ?? base.currentTemplate,
+    fumigaciones: src.fumigaciones ? { ...(base.fumigaciones || {}), ...src.fumigaciones } : base.fumigaciones
+  }
+  return merged
+}
+
 interface AdminContextType {
   isAdminMode: boolean
   toggleAdminMode: () => void
@@ -32,7 +72,8 @@ export function AdminProvider({ children, initialConfig }: { children: ReactNode
         const response = await fetch('/api/config')
         if (response.ok) {
           const data = await response.json()
-          setConfig(data)
+          // Merge profundo con initialConfig para garantizar estructura completa
+          setConfig(mergeConfig(initialConfig, data))
           console.log('✅ Configuración cargada desde Firebase:', data.site?.title)
         } else {
           console.error('❌ Error cargando configuración, usando configuración por defecto')
@@ -101,7 +142,7 @@ export function AdminProvider({ children, initialConfig }: { children: ReactNode
       })
       if (response.ok) {
         const data = await response.json()
-        setConfig(data)
+        setConfig(prev => mergeConfig(prev || initialConfig, data))
         console.log('✅ Configuración actualizada desde servidor')
       } else {
         console.error('❌ Error en respuesta:', response.status, response.statusText)
@@ -118,7 +159,8 @@ export function AdminProvider({ children, initialConfig }: { children: ReactNode
 
   const updateConfig = async (updates: Partial<Config>) => {
     if (!config) return
-    const newConfig = { ...config, ...updates }
+    // Merge profundo para no perder propiedades anidadas
+    const newConfig = mergeConfig(config, updates)
     setConfig(newConfig)
     
     setIsSaving(true)
