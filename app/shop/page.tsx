@@ -28,6 +28,7 @@ import { AdminToggle } from '@/components/admin-toggle'
 import { ShopDesignSelector } from '@/components/shop-design-selector'
 import { Design } from '@/lib/designs'
 import './layout-styles.css'
+import { useToast } from '@/hooks/use-toast'
 
 interface Product {
   id: string
@@ -188,7 +189,20 @@ export default function ShopPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [priceRange, setPriceRange] = useState([0, 1500])
   const [selectedCategory, setSelectedCategory] = useState('all')
-  const [cart, setCart] = useState<CartItem[]>([])
+  const [cart, setCart] = useState<CartItem[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = localStorage.getItem('shop-cart')
+        if (stored) {
+          const parsed: CartItem[] = JSON.parse(stored)
+          return Array.isArray(parsed) ? parsed : []
+        }
+      } catch (error) {
+        console.warn('No se pudo parsear el carrito desde localStorage:', error)
+      }
+    }
+    return []
+  })
   const [showCart, setShowCart] = useState(false)
   const [sortBy, setSortBy] = useState('latest')
   const [shopConfig, setShopConfig] = useState<ShopConfig>(defaultShopConfig)
@@ -204,6 +218,7 @@ export default function ShopPage() {
     sidebarStyle: 'white-shadow'
   })
   const [showMobileSidebar, setShowMobileSidebar] = useState(false)
+  const { toast } = useToast()
   
   // Estados para gestión de productos
   const [showProductModal, setShowProductModal] = useState(false)
@@ -331,6 +346,15 @@ export default function ShopPage() {
     setFilteredProducts(filtered)
   }, [products, searchTerm, priceRange, selectedCategory, sortBy])
 
+  // Guardar carrito en localStorage cuando cambie
+  useEffect(() => {
+    try {
+      localStorage.setItem('shop-cart', JSON.stringify(cart))
+    } catch (error) {
+      console.warn('No se pudo guardar el carrito en localStorage:', error)
+    }
+  }, [cart])
+
   const addToCart = (product: Product) => {
     setCart(prevCart => {
       const existingItem = prevCart.find(item => item.id === product.id)
@@ -342,6 +366,11 @@ export default function ShopPage() {
         )
       }
       return [...prevCart, { ...product, quantity: 1 }]
+    })
+    // Mostrar feedback sin abrir el carrito
+    toast({
+      title: 'Agregado al carrito',
+      description: product.name
     })
   }
 
@@ -407,7 +436,7 @@ export default function ShopPage() {
   const renderEditableText = (field: string, value: string, className: string = "") => {
     if (isAdminMode && editingField === field) {
       return (
-        <div className="flex items-center gap-2">
+        <span className="inline-flex items-center gap-2">
           <Input
             value={editingValue}
             onChange={(e) => setEditingValue(e.target.value)}
@@ -420,12 +449,12 @@ export default function ShopPage() {
           />
           <Button size="sm" onClick={saveEdit}>✓</Button>
           <Button size="sm" variant="outline" onClick={cancelEdit}>✕</Button>
-        </div>
+        </span>
       )
     }
 
     return (
-      <div className="flex items-center gap-2 group">
+      <span className="inline-flex items-center gap-2 group">
         <span className={className}>{value}</span>
         {isAdminMode && (
           <Button
@@ -437,7 +466,7 @@ export default function ShopPage() {
             <Edit3 className="h-3 w-3" />
           </Button>
         )}
-      </div>
+      </span>
     )
   }
 
@@ -1144,8 +1173,14 @@ export default function ShopPage() {
 
       {/* Carrito lateral */}
       {showCart && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50">
-          <div className="fixed right-0 top-0 h-full w-96 bg-white shadow-xl">
+        <div
+          className="fixed inset-0 bg-black bg-opacity-30 z-50"
+          onClick={() => setShowCart(false)}
+        >
+          <div
+            className="fixed right-0 top-0 h-full w-[28rem] bg-white shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex justify-between items-center p-6 border-b">
               <h2 className="text-xl font-bold group">
                 {renderEditableText('cartTitle', shopConfig.cartTitle, "text-xl font-bold")}

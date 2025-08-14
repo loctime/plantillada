@@ -5,6 +5,7 @@ import './globals.css'
 import { ThemeProvider } from '@/components/theme-provider'
 import { AdminProvider } from '@/lib/admin-context'
 import { DesignApplier } from '@/components/design-applier'
+import { Toaster } from '@/components/ui/toaster'
 
 export const metadata: Metadata = {
   title: 'Landing Page - Hotmart + Calendly',
@@ -102,6 +103,7 @@ html {
           <AdminProvider initialConfig={defaultConfig}>
             <DesignApplier currentTemplate="landing" />
             {children}
+            <Toaster />
           </AdminProvider>
         </ThemeProvider>
       </body>
