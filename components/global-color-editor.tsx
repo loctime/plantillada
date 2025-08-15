@@ -220,40 +220,37 @@ export function GlobalColorEditor() {
             </SheetTrigger>
             <SheetContent 
               side="bottom" 
-              className="w-full h-[20vh] max-h-[180px] overflow-hidden"
+              className="w-full h-[25vh] max-h-[220px] overflow-hidden"
             >
-              <SheetHeader className="mb-1">
-                <div className="flex items-center justify-between w-full">
-                  <SheetTitle className="flex items-center gap-2 text-base font-semibold text-blue-600">
+              <div className="flex flex-col h-full">
+                <div className="flex items-start gap-4 mb-2">
+                  <SheetTitle className="flex items-center gap-2 text-base font-semibold text-blue-600 flex-shrink-0">
                     <Palette className="h-4 w-4" />
                     Colores Globales
                   </SheetTitle>
                   
-                  <div className="flex items-center gap-1">
-                    <span className="text-xs text-muted-foreground">Cambios automáticos</span>
+                  <div className="flex-1 overflow-y-auto">
+                    <div className="grid grid-cols-3 gap-1">
+                      {COLORS.map((color) => {
+                        const currentValue = getEffectiveColor(color.key) || "#000000"
+                        
+                        return (
+                          <div key={color.key} className="flex items-center gap-1 p-1 border rounded bg-background/50">
+                            <span className="text-xs font-medium whitespace-nowrap text-foreground/80">{color.label}:</span>
+                            <Input
+                              type="color"
+                              value={currentValue}
+                              onChange={(e) => handleColorChange(color.key, e.target.value)}
+                              className="w-6 h-6 p-0 cursor-pointer rounded border"
+                            />
+                          </div>
+                        )
+                      })}
+                    </div>
                   </div>
-                </div>
-              </SheetHeader>
-
-              <div className="flex flex-col h-full">
-                {/* Colores en grid reactivo */}
-                <div className="flex-1 overflow-y-auto">
-                  <div className="grid grid-cols-10 gap-1">
-                    {COLORS.map((color) => {
-                      const currentValue = getEffectiveColor(color.key) || "#000000"
-                      
-                      return (
-                        <div key={color.key} className="flex items-center gap-1 p-1 border rounded">
-                          <span className="text-sm font-medium whitespace-nowrap text-red-600">{color.label}:</span>
-                          <Input
-                            type="color"
-                            value={currentValue}
-                            onChange={(e) => handleColorChange(color.key, e.target.value)}
-                            className="w-8 h-8 p-0 cursor-pointer rounded border"
-                          />
-                        </div>
-                      )
-                    })}
+                  
+                  <div className="flex items-center gap-1 flex-shrink-0">
+                    <span className="text-xs text-muted-foreground">Cambios automáticos</span>
                   </div>
                 </div>
               </div>
