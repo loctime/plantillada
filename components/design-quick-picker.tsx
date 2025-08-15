@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useAdmin } from "@/lib/admin-context"
-import { getDesignsForTemplate, applyDesignToConfig, applyDesignToDocument } from "@/lib/designs"
+import { getDesignsForTemplate, applyDesignToDocument } from "@/lib/designs"
 import { getTenantId } from "@/lib/config-loader"
 import { Button } from "@/components/ui/button"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
@@ -28,26 +28,75 @@ export function DesignQuickPicker({ templateType = "landing", fullWidth = false 
     if (!design) return
     try {
       setApplyingId(designId)
-      // Aplicación visual inmediata de colores (no contenido)
+      // Aplicación visual inmediata de variables CSS del diseño
       applyDesignToDocument(design)
+
+      // Construir tema base desde el diseño seleccionado
+      const buildBaseThemeFromDesign = (d: any) => {
+        const scheme = d?.colorScheme || { primary: '#10b981', secondary: '#3b82f6', accent: '#10b981' }
+        return {
+          light: {
+            backgroundColor: '#ffffff',
+            sectionBackground: '#f8fafc',
+            navbarBackground: '#ffffff',
+            textColor: '#1e293b',
+            accentColor: scheme.accent,
+            primaryButtonColor: scheme.primary,
+            secondaryButtonColor: scheme.secondary,
+            outlineButtonColor: scheme.secondary,
+            headingColor: undefined
+          },
+          dark: {
+            backgroundColor: '#0f172a',
+            sectionBackground: '#1e293b',
+            navbarBackground: '#0f172a',
+            textColor: '#f1f5f9',
+            accentColor: scheme.accent,
+            primaryButtonColor: scheme.primary,
+            secondaryButtonColor: scheme.secondary,
+            outlineButtonColor: '#9ca3af',
+            headingColor: undefined
+          }
+        }
+      }
+      const mergeTheme = (base: any, override?: any) => ({
+        light: { ...(base?.light || {}), ...(override?.light || {}) },
+        dark: { ...(base?.dark || {}), ...(override?.dark || {}) }
+      })
+
+      // Overrides guardados por diseño (si existen)
+      const overrides = (config as any)?.designOverrides?.[designId]?.theme
+      const baseTheme = buildBaseThemeFromDesign(design)
+      const effectiveTheme = mergeTheme(baseTheme, overrides)
+
+      // Aplicar al DOM variables CSS principales (modo claro)
+      const CSS_VAR_MAP: Record<string, string> = {
+        backgroundColor: '--background-color',
+        sectionBackground: '--section-background',
+        navbarBackground: '--navbar-background',
+        textColor: '--text-color',
+        accentColor: '--accent-color',
+        primaryButtonColor: '--primary-button-color',
+        secondaryButtonColor: '--secondary-button-color',
+        outlineButtonColor: '--outline-button-color',
+        headingColor: '--heading-color'
+      }
+      const light = effectiveTheme.light || {}
+      Object.entries(CSS_VAR_MAP).forEach(([k, cssVar]) => {
+        const val = (light as any)[k]
+        if (val) document.documentElement.style.setProperty(cssVar, val)
+      })
+
+      // Guardar selección y tema efectivo (no pisar overrides)
       await updateConfig({
         selectedDesigns: {
           ...(config.selectedDesigns || {}),
           [templateType]: designId
-        }
+        },
+        theme: effectiveTheme
       } as any)
-      // Guardar en backend (solo colores)
-      const tenantId = getTenantId()
-      const success = await applyDesignToConfig(designId, tenantId, {
-        applyColors: true,
-        applyContent: false,
-        createBackup: true
-      })
+
       setOpen(false)
-      if (success) {
-        // Al cambiar de diseño, limpiar overrides de otro diseño (opcional) y refrescar
-        await refreshConfig()
-      }
     } finally {
       setApplyingId(null)
     }

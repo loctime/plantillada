@@ -16,6 +16,11 @@ function mergeConfig<T extends Partial<Config>>(base: Config, incoming?: T | nul
     about: { ...base.about, ...(src.about || {}) },
     contact: { ...base.contact, ...(src.contact || {}) },
     legal: { ...base.legal, ...(src.legal || {}) },
+    // Merge seguro de overrides por diseño
+    designOverrides: {
+      ...(base as any).designOverrides,
+      ...(src as any).designOverrides
+    },
     theme: src.theme
       ? {
           light: { ...(base.theme?.light || {}), ...(src.theme.light || {}) },
@@ -75,13 +80,40 @@ export function AdminProvider({ children, initialConfig }: { children: ReactNode
           // Merge profundo con initialConfig para garantizar estructura completa
           setConfig(mergeConfig(initialConfig, data))
           console.log('✅ Configuración cargada desde Firebase:', data.site?.title)
+          try {
+            localStorage.setItem('config-cache', JSON.stringify(data))
+          } catch {}
         } else {
           console.error('❌ Error cargando configuración, usando configuración por defecto')
-          setConfig(initialConfig)
+          // Fallback: intentar cache local
+          try {
+            const cached = localStorage.getItem('config-cache')
+            if (cached) {
+              const parsed = JSON.parse(cached)
+              setConfig(mergeConfig(initialConfig, parsed))
+              console.log('📦 Usando configuración desde cache local')
+            } else {
+              setConfig(initialConfig)
+            }
+          } catch {
+            setConfig(initialConfig)
+          }
         }
       } catch (error) {
         console.error('❌ Error cargando configuración, usando configuración por defecto:', error)
-        setConfig(initialConfig)
+        // Fallback: intentar cache local
+        try {
+          const cached = localStorage.getItem('config-cache')
+          if (cached) {
+            const parsed = JSON.parse(cached)
+            setConfig(mergeConfig(initialConfig, parsed))
+            console.log('📦 Usando configuración desde cache local (fallback)')
+          } else {
+            setConfig(initialConfig)
+          }
+        } catch {
+          setConfig(initialConfig)
+        }
       } finally {
         setIsLoading(false)
       }
@@ -144,6 +176,9 @@ export function AdminProvider({ children, initialConfig }: { children: ReactNode
         const data = await response.json()
         setConfig(prev => mergeConfig(prev || initialConfig, data))
         console.log('✅ Configuración actualizada desde servidor')
+        try {
+          localStorage.setItem('config-cache', JSON.stringify(data))
+        } catch {}
       } else {
         console.error('❌ Error en respuesta:', response.status, response.statusText)
       }
@@ -170,6 +205,9 @@ export function AdminProvider({ children, initialConfig }: { children: ReactNode
       if (success) {
         setLastSaved(new Date())
         console.log('✅ Configuración guardada exitosamente')
+        try {
+          localStorage.setItem('config-cache', JSON.stringify(newConfig))
+        } catch {}
         
         // NO recargar desde el servidor para evitar sobrescribir cambios locales
         // await refreshConfig()

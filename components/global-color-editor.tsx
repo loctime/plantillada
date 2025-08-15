@@ -14,6 +14,70 @@ import {
 } from '@/components/ui/tooltip'
 import { getDesignById } from '@/lib/designs'
 
+// Mapeo de claves del editor a claves del theme
+const THEME_KEY_MAP: Record<string, string | undefined> = {
+  backgroundColor: 'backgroundColor',
+  sectionBackgroundColor: 'sectionBackground',
+  navbarBackgroundColor: 'navbarBackground',
+  buttonBackgroundColor: 'primaryButtonColor',
+  titleColor: 'headingColor',
+  // Los siguientes no pertenecen al theme directamente; se manejan como overrides de site
+  buttonTextColor: undefined,
+  heroTitleColor: undefined,
+  heroSubtitleColor: undefined,
+  taglineColor: undefined,
+  sessionsTitleColor: undefined,
+  heroBackgroundColor: undefined
+}
+
+// Mapeo a variables CSS kebab-case
+const CSS_VAR_MAP: Record<string, string> = {
+  backgroundColor: '--background-color',
+  sectionBackgroundColor: '--section-background',
+  navbarBackgroundColor: '--navbar-background',
+  buttonBackgroundColor: '--primary-button-color',
+  buttonTextColor: '--button-text-color',
+  titleColor: '--heading-color',
+  linkColor: '--link-color',
+  linkHoverColor: '--link-hover-color',
+  heroBackgroundColor: '--section-background'
+}
+
+function buildBaseThemeFromDesign(design: any) {
+  const scheme = design?.colorScheme || { primary: '#10b981', secondary: '#3b82f6', accent: '#10b981' }
+  return {
+    light: {
+      backgroundColor: '#ffffff',
+      sectionBackground: '#f8fafc',
+      navbarBackground: '#ffffff',
+      textColor: '#1e293b',
+      accentColor: scheme.accent,
+      primaryButtonColor: scheme.primary,
+      secondaryButtonColor: scheme.secondary,
+      outlineButtonColor: scheme.secondary,
+      headingColor: undefined
+    },
+    dark: {
+      backgroundColor: '#0f172a',
+      sectionBackground: '#1e293b',
+      navbarBackground: '#0f172a',
+      textColor: '#f1f5f9',
+      accentColor: scheme.accent,
+      primaryButtonColor: scheme.primary,
+      secondaryButtonColor: scheme.secondary,
+      outlineButtonColor: '#9ca3af',
+      headingColor: undefined
+    }
+  }
+}
+
+function mergeTheme(base: any, override?: any) {
+  return {
+    light: { ...(base?.light || {}), ...(override?.light || {}) },
+    dark: { ...(base?.dark || {}), ...(override?.dark || {}) }
+  }
+}
+
 const COLORS = [
   { key: "backgroundColor", label: "fondo" },
   { key: "buttonBackgroundColor", label: "botones" },
@@ -36,11 +100,16 @@ export function GlobalColorEditor() {
   const activeDesign = useMemo(() => activeDesignId ? getDesignById(activeDesignId) : undefined, [activeDesignId])
 
   const getEffectiveColor = (key: string): string | undefined => {
-    // 1) Override específico del diseño activo
+    // 1) Override del theme por diseño (modo claro)
+    const themeKey = THEME_KEY_MAP[key]
+    const themeOverride = (activeOverrides as any)?.theme?.light
+    if (themeKey && themeOverride?.[themeKey]) return themeOverride[themeKey]
+
+    // 2) Override específico del diseño activo en site (para claves no-theme)
     const overrideVal = activeOverrides?.site?.[key]
     if (overrideVal) return overrideVal
 
-    // 2) Mapeo desde theme del tenant (modo claro)
+    // 3) Mapeo desde theme del tenant (modo claro)
     const theme = (config as any)?.theme?.light || {}
     const themeMap: Record<string, string | undefined> = {
       backgroundColor: theme.backgroundColor,
@@ -53,22 +122,11 @@ export function GlobalColorEditor() {
     }
     if (key in themeMap && themeMap[key as keyof typeof themeMap]) return themeMap[key as keyof typeof themeMap]
 
-    // 3) Variables CSS por defecto del diseño
-    const cssVarMap: Record<string, string> = {
-      backgroundColor: '--background-color',
-      sectionBackgroundColor: '--section-background',
-      navbarBackgroundColor: '--navbar-background',
-      buttonBackgroundColor: '--primary-button-color',
-      buttonTextColor: '--button-text-color',
-      titleColor: '--heading-color',
-      linkColor: '--link-color',
-      linkHoverColor: '--link-hover-color',
-      heroBackgroundColor: '--section-background'
-    }
-    const cssVar = cssVarMap[key]
+    // 4) Variables CSS por defecto del diseño
+    const cssVar = CSS_VAR_MAP[key]
     if (cssVar && activeDesign?.cssVariables?.[cssVar]) return activeDesign.cssVariables[cssVar]
 
-    // 4) Fallback: valores sueltos en site
+    // 5) Fallback: valores sueltos en site
     const siteVal = (config?.site as any)?.[key]
     if (siteVal) return siteVal
     return undefined
@@ -78,25 +136,54 @@ export function GlobalColorEditor() {
 
   const handleColorChange = async (key: string, value: string) => {
     try {
-      // Aplicar color inmediatamente al DOM
-      document.documentElement.style.setProperty(`--${key}`, value)
+      // Aplicar color inmediatamente al DOM (kebab-case)
+      const cssVar = CSS_VAR_MAP[key]
+      if (cssVar) {
+        document.documentElement.style.setProperty(cssVar, value)
+      }
       
       // Guardar en la configuración
       const designId = config.selectedDesigns?.landing
       if (designId) {
-        // Guardar override específico del diseño activo
-        await updateConfig({
-          designOverrides: {
-            ...(config as any).designOverrides,
-            [designId]: {
-              ...(config as any).designOverrides?.[designId],
-              site: {
-                ...(config as any).designOverrides?.[designId]?.site,
-                [key]: value
+        const themeKey = THEME_KEY_MAP[key]
+        if (themeKey) {
+          // Edita el theme por diseño (modo claro). Se puede extender a dark si agregas un toggle.
+          const base = buildBaseThemeFromDesign(activeDesign)
+          const currentOverride = (config as any)?.designOverrides?.[designId]?.theme
+          const newOverride = {
+            light: {
+              ...(currentOverride?.light || {}),
+              [themeKey]: value
+            },
+            dark: { ...(currentOverride?.dark || {}) }
+          }
+          const effective = mergeTheme(base, newOverride)
+
+          await updateConfig({
+            designOverrides: {
+              ...(config as any).designOverrides,
+              [designId]: {
+                ...(config as any).designOverrides?.[designId],
+                theme: newOverride
+              }
+            },
+            theme: effective
+          } as any)
+        } else {
+          // Claves no-theme: guardar como overrides de site por diseño
+          await updateConfig({
+            designOverrides: {
+              ...(config as any).designOverrides,
+              [designId]: {
+                ...(config as any).designOverrides?.[designId],
+                site: {
+                  ...(config as any).designOverrides?.[designId]?.site,
+                  [key]: value
+                }
               }
             }
-          }
-        } as any)
+          } as any)
+        }
       } else {
         await updateConfig({
           ...config,

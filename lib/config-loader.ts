@@ -560,9 +560,7 @@ export function getDefaultConfig(tenantId: string): Config {
       tagline: "Acompañamiento 1:1 y formación práctica para cambios reales."
     },
     selectedTemplates: ['landing'],
-    selectedDesigns: {
-      landing: 'coach-personal'
-    },
+    selectedDesigns: {},
     integrations: {
       calendlyUrl: "https://calendly.com/tu-usuario/sesion",
       hotmartBaseUrl: "https://pay.hotmart.com"
