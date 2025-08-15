@@ -27,6 +27,7 @@ import { DynamicNavigation } from "@/components/dynamic-navigation"
 import { SectionButtonManager } from "@/components/section-button-manager"
 import { FumigacionesLayout } from "@/components/layouts/fumigaciones-layout"
 import { useGlobalColors } from "@/hooks/use-global-colors"
+import { useDynamicTitle } from "@/hooks/use-dynamic-title"
 import { Button } from "@/components/ui/button"
 import { DesignQuickPicker } from "@/components/design-quick-picker"
 
@@ -40,6 +41,9 @@ function PageContent() {
   
   // Aplicar colores globales
   useGlobalColors()
+  
+  // Actualizar dinámicamente el título de la página
+  useDynamicTitle()
   const [sections, setSections] = useState([
     {
       id: 'hero',

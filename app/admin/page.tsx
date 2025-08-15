@@ -302,6 +302,20 @@ export default function AdminPage() {
     router.push('/')
   }
 
+  // Función para recargar la configuración desde Firebase
+  const reloadConfig = async () => {
+    try {
+      const response = await fetch('/api/config')
+      if (response.ok) {
+        const freshConfig = await response.json()
+        updateConfig(freshConfig)
+        console.log('🔄 Configuración recargada desde Firebase')
+      }
+    } catch (error) {
+      console.error('❌ Error recargando configuración:', error)
+    }
+  }
+
   const handleSave = async () => {
     setIsLoading(true)
     setMessage("")
@@ -335,6 +349,18 @@ export default function AdminPage() {
       if (response.ok) {
         setMessage(result.message || "✅ Configuración guardada exitosamente")
         console.log('✅ Guardado exitoso')
+        
+        // Actualizar el contexto global para que se refleje inmediatamente en toda la app
+        updateConfig(payload)
+        
+        // Recargar la configuración desde Firebase para asegurar sincronización
+        await reloadConfig()
+        
+        // Mostrar mensaje adicional sobre la actualización del título
+        setTimeout(() => {
+          setMessage("✅ Configuración guardada. El título de la página se ha actualizado automáticamente.")
+        }, 1000)
+        
       } else {
         setMessage(`❌ Error: ${result.error || result.details || 'Error al guardar la configuración'}`)
         console.error('❌ Error en respuesta:', result)
