@@ -12,6 +12,7 @@ import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import { Save, Eye, EyeOff, Settings, User, ShoppingCart, Calendar, Quote, Globe, Layers, Palette, Download, LogOut } from "lucide-react"
 import { Config, getTenantId } from "@/lib/config-loader"
+import { useAdmin } from "@/lib/admin-context"
 import { TemplateSelector } from "@/components/template-selector"
 import { DesignSelector } from "@/components/design-selector"
 import BackupManager from "@/components/backup-manager"
@@ -64,6 +65,7 @@ type AdminFormData = Omit<Config, 'linkHub'> & {
 }
 
 export default function AdminPage() {
+  const { updateConfig, config: adminCtxConfig } = useAdmin()
   const { isAuthenticated, logout } = useAdminAuth()
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
@@ -218,6 +220,17 @@ export default function AdminPage() {
     loadInitialConfig()
   }, [])
 
+  // Sincronizar con la configuración del contexto para evitar sobrescribir
+  // cambios hechos desde otros lugares (selector rápido, editor de colores, etc.)
+  useEffect(() => {
+    try {
+      if (adminCtxConfig) {
+        setFormData(adminCtxConfig as any)
+        if (adminCtxConfig.selectedDesigns) setSelectedDesigns(adminCtxConfig.selectedDesigns)
+      }
+    } catch {}
+  }, [adminCtxConfig])
+
   const handleTemplateSelect = async (templates: any[]) => {
     const templateIds = templates.map(t => t.id)
     setSelectedTemplates(templateIds)
@@ -259,28 +272,11 @@ export default function AdminPage() {
     }
     setSelectedDesigns(newSelectedDesigns)
     
-    // Guardar automáticamente la configuración con el diseño seleccionado
-    const updatedConfig = {
-      ...formData,
-      selectedDesigns: newSelectedDesigns
-    }
-    setFormData(updatedConfig)
-    
-    // Guardar en Firestore
+    // Guardar en Firestore y sincronizar el contexto (evita que otros editores lo sobreescriban)
     try {
-      const response = await fetch('/api/config', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedConfig),
-      })
-      
-      if (response.ok) {
-        setMessage(`✅ Diseño seleccionado: ${design.name}`)
-      } else {
-        setMessage("❌ Error al guardar el diseño")
-      }
+      await updateConfig({ selectedDesigns: newSelectedDesigns } as any)
+      setFormData(prev => ({ ...prev, selectedDesigns: newSelectedDesigns }))
+      setMessage(`✅ Diseño seleccionado: ${design.name}`)
     } catch (error) {
       console.error('Error saving design:', error)
       setMessage("❌ Error al guardar el diseño")
@@ -311,14 +307,17 @@ export default function AdminPage() {
     setMessage("")
     
     try {
-      console.log('Enviando configuración:', formData)
+      // Preferir guardar la config actual del contexto si existe para no
+      // sobreescribir selecciones recientes del selector rápido
+      const payload = (adminCtxConfig as any) || formData
+      console.log('Enviando configuración:', payload)
       
       const response = await fetch('/api/config', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       })
       
       console.log('Respuesta recibida:', response.status, response.statusText)

@@ -389,49 +389,46 @@ export function getTenantId(): string {
     // Server-side: usar header o variable de entorno
     return process.env.NEXT_PUBLIC_DEFAULT_TENANT || 'default'
   }
-  
-  // Client-side: usar el dominio actual
-  const hostname = window.location.hostname
-  
-  // Mapeo de dominios a tenant IDs
+
+  // Client-side: usar host (incluye puerto). Esto permite distinguir localhost:3000, 3001, 3003, etc.
+  const host = window.location.host
+
+  // Mapeo de dominios a tenant IDs (solo dominios reales/prod). No forzamos localhost -> default.
   const domainToTenant: Record<string, string> = {
-    'localhost': 'default',
     'landing-six-gold.vercel.app': 'gold',
     'marcamia.com': 'marcamia',
     'tumarca.com': 'tumarca',
     'controldoc.app': 'controldoc',
-    // Agregar más dominios según necesites
   }
-  
+
   // Buscar coincidencia exacta
-  if (domainToTenant[hostname]) {
-    return domainToTenant[hostname]
+  if (domainToTenant[host]) {
+    return domainToTenant[host]
   }
-  
+
   // IMPORTANTE: Para subdominios de Vercel, extraer el tenant base
-  // Ejemplo: plantilla-5dqaylk9f-loctimes-projects.vercel.app -> plantilla
-  if (hostname.includes('.vercel.app')) {
-    const parts = hostname.split('.')
+  // Ejemplo: plantilla-xxxxx.vercel.app -> plantilla
+  if (host.includes('.vercel.app')) {
+    const parts = host.split('.')
     if (parts.length >= 3) {
       const firstPart = parts[0]
-      // Si el primer parte contiene guiones, tomar solo la parte antes del primer guión
       if (firstPart.includes('-')) {
         const baseTenant = firstPart.split('-')[0]
-        console.log(`🔍 Detectado subdominio Vercel: ${hostname} -> tenant: ${baseTenant}`)
+        console.log(`🔍 Detectado subdominio Vercel: ${host} -> tenant: ${baseTenant}`)
         return baseTenant
       }
       return firstPart
     }
   }
-  
+
   // Buscar coincidencia por subdominio (solo para dominios no-Vercel)
-  const subdomain = hostname.split('.')[0]
+  const subdomain = host.split('.')[0]
   if (subdomain && subdomain !== 'www') {
     return subdomain
   }
-  
-  // Fallback al dominio completo como tenant ID
-  return hostname.replace(/[^a-zA-Z0-9]/g, '-')
+
+  // Fallback al host completo
+  return host.replace(/[^a-zA-Z0-9]/g, '-')
 }
 
 // Función para cargar un diseño desde archivo JSON

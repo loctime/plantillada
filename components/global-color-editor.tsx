@@ -159,6 +159,7 @@ export function GlobalColorEditor() {
           }
           const effective = mergeTheme(base, newOverride)
 
+          console.log('🎨 Guardando override de theme para diseño:', designId, newOverride)
           await updateConfig({
             designOverrides: {
               ...(config as any).designOverrides,
@@ -169,8 +170,10 @@ export function GlobalColorEditor() {
             },
             theme: effective
           } as any)
+          console.log('✅ Override de theme guardado y tema efectivo actualizado')
         } else {
           // Claves no-theme: guardar como overrides de site por diseño
+          console.log('📝 Guardando override de site para diseño:', designId, key, value)
           await updateConfig({
             designOverrides: {
               ...(config as any).designOverrides,
@@ -183,6 +186,7 @@ export function GlobalColorEditor() {
               }
             }
           } as any)
+          console.log('✅ Override de site guardado')
         }
       } else {
         await updateConfig({
@@ -192,6 +196,7 @@ export function GlobalColorEditor() {
             [key]: value
           }
         })
+        console.log('🗂️ Guardado global en site (sin diseño activo)', key, value)
       }
     } catch (error) {
       console.error('Error updating color:', error)

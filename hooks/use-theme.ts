@@ -40,21 +40,28 @@ export function useTheme() {
     // Aplicar estilos CSS personalizados si existen en la configuración
     if (config?.theme) {
       console.log('✅ useTheme: Configuración de tema disponible')
-      const activeTheme = config.theme[isDarkMode ? 'dark' : 'light']
+      // Merge con overrides del diseño activo (si existen)
+      const designId = config.selectedDesigns?.landing
+      const designOverride = designId ? (config as any).designOverrides?.[designId]?.theme : undefined
+      const mergedTheme = {
+        light: { ...(config.theme.light || {}), ...(designOverride?.light || {}) },
+        dark: { ...(config.theme.dark || {}), ...(designOverride?.dark || {}) }
+      }
+      const activeTheme = mergedTheme[isDarkMode ? 'dark' : 'light']
       
       // Aplicar variables CSS personalizadas
       console.log('🎨 useTheme: Aplicando variables CSS personalizadas')
-      root.style.setProperty('--background-color', activeTheme.backgroundColor)
-      root.style.setProperty('--section-background', activeTheme.sectionBackground)
-      root.style.setProperty('--navbar-background', activeTheme.navbarBackground)
-      root.style.setProperty('--text-color', activeTheme.textColor)
-      root.style.setProperty('--accent-color', activeTheme.accentColor)
-      root.style.setProperty('--primary-button-color', activeTheme.primaryButtonColor)
-      root.style.setProperty('--secondary-button-color', activeTheme.secondaryButtonColor)
-      root.style.setProperty('--outline-button-color', activeTheme.outlineButtonColor)
+      if (activeTheme.backgroundColor) root.style.setProperty('--background-color', activeTheme.backgroundColor)
+      if (activeTheme.sectionBackground) root.style.setProperty('--section-background', activeTheme.sectionBackground)
+      if (activeTheme.navbarBackground) root.style.setProperty('--navbar-background', activeTheme.navbarBackground)
+      if (activeTheme.textColor) root.style.setProperty('--text-color', activeTheme.textColor)
+      if (activeTheme.accentColor) root.style.setProperty('--accent-color', activeTheme.accentColor)
+      if (activeTheme.primaryButtonColor) root.style.setProperty('--primary-button-color', activeTheme.primaryButtonColor)
+      if (activeTheme.secondaryButtonColor) root.style.setProperty('--secondary-button-color', activeTheme.secondaryButtonColor)
+      if (activeTheme.outlineButtonColor) root.style.setProperty('--outline-button-color', activeTheme.outlineButtonColor)
       
       // Crear color de navegación con transparencia
-      const navbarColor = activeTheme.navbarBackground
+      const navbarColor = activeTheme.navbarBackground || '#ffffff'
       let navbarWithOpacity = navbarColor
       
       if (navbarColor.startsWith('#')) {

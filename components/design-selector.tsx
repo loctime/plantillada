@@ -15,8 +15,9 @@ import {
   AlertTriangle,
   Info
 } from "lucide-react"
-import { Design, getDesignsForTemplate, applyDesignToConfig } from "@/lib/designs"
+import { Design, getDesignsForTemplate } from "@/lib/designs"
 import { getTenantId } from "@/lib/config-loader"
+import { useAdmin } from "@/lib/admin-context"
 
 interface DesignSelectorProps {
   onDesignSelect: (design: Design) => void
@@ -26,6 +27,7 @@ interface DesignSelectorProps {
 }
 
 export function DesignSelector({ onDesignSelect, selectedDesign, templateType, onApply }: DesignSelectorProps) {
+  const { config, updateConfig } = useAdmin()
   const [selectedDesignState, setSelectedDesignState] = useState<string>(selectedDesign || '')
   const [applyContent, setApplyContent] = useState(false)
   const [applyColors, setApplyColors] = useState(true)
@@ -50,24 +52,20 @@ export function DesignSelector({ onDesignSelect, selectedDesign, templateType, o
 
     try {
       setApplying(true)
-      const tenantId = getTenantId()
-      
-      const success = await applyDesignToConfig(selectedDesignState, tenantId, {
-        applyContent,
-        applyColors,
-        createBackup: true
-      })
+      const designs = getDesignsForTemplate(templateType)
+      const selected = designs.find(d => d.id === selectedDesignState)
+      if (!selected) return
 
-      if (success) {
-        if (onApply) {
-          onApply()
-        } else {
-          // Recargar la página para aplicar los cambios
-          window.location.reload()
+      // Guardar selección del diseño
+      await updateConfig({
+        selectedDesigns: {
+          ...(config?.selectedDesigns || {}),
+          [templateType]: selectedDesignState
         }
-      } else {
-        alert('Error aplicando el diseño')
-      }
+      } as any)
+
+      // Si el usuario eligió aplicar contenido predefinido, podemos delegarlo a la página (o mostrar aviso)
+      if (applyContent && onApply) onApply()
     } catch (error) {
       console.error('Error aplicando diseño:', error)
       alert('Error aplicando el diseño')
