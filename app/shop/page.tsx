@@ -21,7 +21,8 @@ import {
   Plus,
   Edit3,
   Plus as PlusIcon,
-  Trash2
+  Trash2,
+  Menu
 } from 'lucide-react'
 import { useAdmin } from '@/lib/admin-context'
 import { AdminToggle } from '@/components/admin-toggle'
@@ -29,6 +30,8 @@ import { ShopDesignSelector } from '@/components/shop-design-selector'
 import { Design } from '@/lib/designs'
 import './layout-styles.css'
 import { useToast } from '@/hooks/use-toast'
+import { ImageModal } from '@/components/image-modal'
+import { useImageModal } from '@/hooks/use-image-modal'
 
 interface Product {
   id: string
@@ -237,10 +240,25 @@ export default function ShopPage() {
     features: ['']
   })
   
-  // Estados para edición de imagen
-  const [showImageModal, setShowImageModal] = useState(false)
-  const [editingImageProduct, setEditingImageProduct] = useState<Product | null>(null)
-  const [newImageUrl, setNewImageUrl] = useState('')
+  // Hook para el modal de imagen
+  const imageModal = useImageModal()
+  
+  // Hook para el modal del logo
+  const logoModal = useImageModal({
+    onSave: async (newLogoUrl: string) => {
+      // Guardar el logo en la configuración
+      await saveConfigPreservingRest({ 
+        site: { 
+          ...config.site, 
+          logo: newLogoUrl 
+        } 
+      })
+      toast({
+        title: 'Logo actualizado',
+        description: 'El logo ha sido actualizado correctamente'
+      })
+    }
+  })
 
   // Función helper para guardar configuración preservando el resto
   const saveConfigPreservingRest = async (updates: any) => {
@@ -585,35 +603,30 @@ export default function ShopPage() {
 
   // Funciones para edición de imagen
   const openImageModal = (product: Product) => {
-    setEditingImageProduct(product)
-    setNewImageUrl(product.image)
-    setShowImageModal(true)
-  }
-
-  const closeImageModal = () => {
-    setShowImageModal(false)
-    setEditingImageProduct(null)
-    setNewImageUrl('')
-  }
-
-  const saveImageUrl = async () => {
-    if (!editingImageProduct || !newImageUrl.trim()) return
-    
-    const updatedProduct = {
-      ...editingImageProduct,
-      image: newImageUrl.trim()
-    }
-    
-    const updatedProducts = products.map(p => 
-      p.id === editingImageProduct.id ? updatedProduct : p
-    )
-    
-    setProducts(updatedProducts)
-    
-    // Guardar en Firestore preservando toda la configuración
-    await saveConfigPreservingRest({ products: updatedProducts })
-    
-    closeImageModal()
+    imageModal.openModal({
+      currentImage: product.image,
+      title: `Editar Imagen - ${product.name}`,
+      onSave: async (newImageUrl: string) => {
+        const updatedProduct = {
+          ...product,
+          image: newImageUrl
+        }
+        
+        const updatedProducts = products.map(p => 
+          p.id === product.id ? updatedProduct : p
+        )
+        
+        setProducts(updatedProducts)
+        
+        // Guardar en Firestore preservando toda la configuración
+        await saveConfigPreservingRest({ products: updatedProducts })
+        
+        toast({
+          title: 'Imagen actualizada',
+          description: `La imagen de ${product.name} ha sido actualizada`
+        })
+      }
+    })
   }
 
   const handleDesignSelect = async (design: Design) => {
@@ -703,29 +716,58 @@ export default function ShopPage() {
       <header className="shop-header text-white shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
-            <div className="flex items-center">
-              <div className="text-blue-600 font-bold text-xl group">
-                {renderEditableText('storeName', shopConfig.storeName, "text-blue-600 font-bold text-xl")}
-                {isAdminMode && (
-                  <div className="text-xs text-gray-400 mt-1 group">
-                    {renderEditableText('storeTagline', shopConfig.storeTagline, "text-xs text-gray-400")}
-                  </div>
-                )}
-              </div>
-            </div>
+                         <div className="flex items-center">
+               <div className="logo-container">
+                 <div className="logo relative group">
+                   🍽️
+                   {isAdminMode && (
+                     <button
+                       onClick={() => logoModal.openModal({
+                         title: 'Cambiar Logo',
+                         placeholder: 'https://ejemplo.com/logo.png'
+                       })}
+                       className="absolute inset-0 bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                     >
+                       <Edit3 className="h-4 w-4 text-white" />
+                     </button>
+                   )}
+                 </div>
+                 <div className="flex flex-col">
+                   <div className="store-name">
+                     {renderEditableText('storeName', shopConfig.storeName, "store-name")}
+                   </div>
+                   {isAdminMode && (
+                     <div className="store-tagline">
+                       {renderEditableText('storeTagline', shopConfig.storeTagline, "store-tagline")}
+                     </div>
+                   )}
+                 </div>
+               </div>
+             </div>
             
             <nav className="hidden md:flex space-x-8">
-              {shopConfig.navigation.map((item, index) => (
+              {/* Navegación estándar */}
+              <a href="/" className="hover:text-blue-400 transition-colors">
+                Inicio
+              </a>
+              <a href="/shop" className="hover:text-blue-400 transition-colors">
+                Tienda
+              </a>
+              <a href="/linkhub" className="hover:text-blue-400 transition-colors">
+                LinkHub
+              </a>
+              <a href="/admin" className="hover:text-blue-400 transition-colors">
+                Admin
+              </a>
+              
+              {/* Páginas adicionales del usuario (si existen) */}
+              {config?.pages?.map((page, index) => (
                 <a 
-                  key={index} 
-                  href="#" 
-                  className="hover:text-blue-400 transition-colors group"
+                  key={page.id} 
+                  href={`/${page.slug}`} 
+                  className="hover:text-blue-400 transition-colors"
                 >
-                  {isAdminMode ? (
-                    renderEditableText(`navigation.${index}`, item, "hover:text-blue-400 transition-colors")
-                  ) : (
-                    item
-                  )}
+                  {page.title}
                 </a>
               ))}
             </nav>
@@ -748,10 +790,49 @@ export default function ShopPage() {
                   </Badge>
                 )}
               </Button>
+              
+              {/* Botón de menú móvil */}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowMobileSidebar(!showMobileSidebar)}
+                className="md:hidden text-white hover:text-blue-400"
+              >
+                <Menu className="h-6 w-6" />
+              </Button>
             </div>
           </div>
         </div>
       </header>
+
+      {/* Menú móvil */}
+      {showMobileSidebar && (
+        <div className="md:hidden bg-white border-b border-gray-200">
+          <div className="px-4 py-2 space-y-2">
+            <a href="/" className="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">
+              Inicio
+            </a>
+            <a href="/shop" className="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">
+              Tienda
+            </a>
+            <a href="/linkhub" className="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">
+              LinkHub
+            </a>
+            <a href="/admin" className="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">
+              Admin
+            </a>
+            {config?.pages?.map((page) => (
+              <a 
+                key={page.id} 
+                href={`/${page.slug}`} 
+                className="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
+              >
+                {page.title}
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="shop-container">
@@ -1275,74 +1356,23 @@ export default function ShopPage() {
         </Button>
       </div>
 
-             {/* Modal de Edición de Imagen */}
-       {showImageModal && editingImageProduct && (
-         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-           <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
-             <div className="flex justify-between items-center p-6 border-b">
-               <h2 className="text-xl font-bold">Editar Imagen del Producto</h2>
-               <Button variant="ghost" size="sm" onClick={closeImageModal}>
-                 <X className="h-5 w-5" />
-               </Button>
-             </div>
-
-             <div className="p-6 space-y-4">
-               <div>
-                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                   Imagen Actual
-                 </label>
-                 <div className="border rounded-lg p-2 bg-gray-50">
-                   <img
-                     src={editingImageProduct.image}
-                     alt={editingImageProduct.name}
-                     className="w-full h-32 object-cover rounded"
-                     onError={(e) => {
-                       e.currentTarget.src = 'https://via.placeholder.com/300x200?text=Imagen+no+disponible'
-                     }}
-                   />
-                 </div>
-               </div>
-
-               <div>
-                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                   Nueva URL de la imagen
-                 </label>
-                 <Input
-                   value={newImageUrl}
-                   onChange={(e) => setNewImageUrl(e.target.value)}
-                   placeholder="https://ejemplo.com/nueva-imagen.jpg"
-                   className="w-full"
-                 />
-               </div>
-
-               <div>
-                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                   Vista Previa
-                 </label>
-                 <div className="border rounded-lg p-2 bg-gray-50">
-                   <img
-                     src={newImageUrl || editingImageProduct.image}
-                     alt="Vista previa"
-                     className="w-full h-32 object-cover rounded"
-                     onError={(e) => {
-                       e.currentTarget.src = 'https://via.placeholder.com/300x200?text=URL+inválida'
-                     }}
-                   />
-                 </div>
-               </div>
-             </div>
-
-             <div className="flex justify-end gap-2 p-6 border-t">
-               <Button variant="outline" onClick={closeImageModal}>
-                 Cancelar
-               </Button>
-               <Button onClick={saveImageUrl} className="bg-blue-600 hover:bg-blue-700">
-                 Guardar Imagen
-               </Button>
-             </div>
-           </div>
-         </div>
-       )}
+                   {/* Modal de Imagen Reutilizable */}
+      <ImageModal
+        isOpen={imageModal.isOpen}
+        onClose={imageModal.closeModal}
+        onSave={imageModal.handleSave}
+        currentImage={imageModal.modalConfig.currentImage}
+        title={imageModal.modalConfig.title}
+      />
+      
+      {/* Modal del Logo */}
+      <ImageModal
+        isOpen={logoModal.isOpen}
+        onClose={logoModal.closeModal}
+        onSave={logoModal.handleSave}
+        currentImage={logoModal.modalConfig.currentImage}
+        title={logoModal.modalConfig.title}
+      />
 
                {/* Botón de modo admin */}
         <AdminToggle />

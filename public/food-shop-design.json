@@ -1,40 +1,40 @@
 {
   "name": "Food Shop",
-  "description": "Diseño inspirado en apps de pedidos de comida con estilo moderno y vibrante",
+  "description": "Diseño exclusivo para restaurantes y tiendas de comida con estilo moderno y acogedor",
   "category": "shop",
   "colorScheme": {
-    "primary": "#fbbf24",
-    "secondary": "#374151",
-    "accent": "#dc2626"
+    "primary": "#dc2626",
+    "secondary": "#fbbf24",
+    "accent": "#059669"
   },
   "config": {
     "shopConfig": {
-      "storeName": "FOOD STORE",
-      "storeTagline": "Los mejores sabores a tu alcance",
-      "navigation": ["INICIO", "MENÚ", "PROMOCIONES", "CONTACTO", "UBICACIÓN", "HORARIOS"],
-      "categories": ["Todos", "Pizzas", "Hamburguesas", "Bebidas", "Postres", "Promociones"],
-      "searchPlaceholder": "Buscar productos...",
+      "storeName": "RESTAURANTE DELICIAS",
+      "storeTagline": "Los mejores sabores de la ciudad",
+      "navigation": ["INICIO", "MENÚ", "PROMOCIONES", "RESERVAS", "CONTACTO", "UBICACIÓN"],
+      "categories": ["Todos", "Entradas", "Platos Principales", "Postres", "Bebidas", "Promociones"],
+      "searchPlaceholder": "Buscar platos...",
       "filterButtonText": "FILTRAR",
-      "bestSellersTitle": "Más Pedidos",
-      "breadcrumbText": "Inicio / Food Store",
-      "resultsText": "Mostrando 1-{count} de {total} resultados",
+      "bestSellersTitle": "Platos Más Pedidos",
+      "breadcrumbText": "Inicio / Restaurante Delicias",
+      "resultsText": "Mostrando 1-{count} de {total} platos",
       "sortOptions": [
         { "value": "latest", "label": "Más Recientes" },
         { "value": "price-low", "label": "Precio: Menor a Mayor" },
         { "value": "price-high", "label": "Precio: Mayor a Menor" },
         { "value": "rating", "label": "Mejor Valorados" }
       ],
-      "addToCartText": "Agregar al Carrito",
+      "addToCartText": "Agregar al Pedido",
       "outOfStockText": "Agotado",
       "cartTitle": "Tu Pedido",
-      "emptyCartText": "Tu carrito está vacío",
+      "emptyCartText": "Tu pedido está vacío",
       "checkoutText": "Finalizar Pedido",
       "totalText": "Total:"
     },
     "layout": {
-      "type": "mobile-first",
+      "type": "food-layout",
       "productStyle": "food-cards",
-      "backgroundColor": "#fbbf24",
+      "backgroundColor": "#fef3c7",
       "cardStyle": "food-modern",
       "headerStyle": "food-header",
       "sidebarStyle": "food-sidebar"
@@ -49,7 +49,7 @@
         "image": "https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=400&h=400&fit=crop",
         "rating": 4.8,
         "reviews": 156,
-        "category": "pizzas",
+        "category": "platos-principales",
         "inStock": true,
         "description": "Pizza clásica con tomate, mozzarella y albahaca fresca.",
         "features": ["30cm", "Masa artesanal", "Ingredientes frescos", "Horno de piedra"]
@@ -63,34 +63,34 @@
         "image": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=400&fit=crop",
         "rating": 4.6,
         "reviews": 234,
-        "category": "hamburguesas",
+        "category": "platos-principales",
         "inStock": true,
         "description": "Hamburguesa con carne 100% de res, lechuga, tomate y queso.",
         "features": ["150g carne", "Pan brioche", "Papas incluidas", "Bebida opcional"]
       },
       {
         "id": "3",
-        "name": "Coca Cola",
-        "brand": "Coca Cola",
-        "price": 2.50,
-        "originalPrice": 3.00,
-        "image": "https://images.unsplash.com/photo-1629203851122-3726ecdf080e?w=400&h=400&fit=crop",
+        "name": "Ensalada César",
+        "brand": "Fresh Greens",
+        "price": 6.50,
+        "originalPrice": 7.50,
+        "image": "https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&h=400&fit=crop",
         "rating": 4.5,
         "reviews": 89,
-        "category": "bebidas",
+        "category": "entradas",
         "inStock": true,
-        "description": "Refresco Coca Cola 500ml, perfecto para acompañar tu comida.",
-        "features": ["500ml", "Sin azúcar disponible", "Hielo incluido", "Straw opcional"]
+        "description": "Ensalada fresca con lechuga romana, crutones y aderezo César.",
+        "features": ["Lechuga romana", "Crutones caseros", "Parmesano", "Aderezo César"]
       }
     ]
   },
   "theme": {
     "light": {
-      "backgroundColor": "#fbbf24",
+      "backgroundColor": "#fef3c7",
       "sectionBackground": "#ffffff",
-      "navbarBackground": "#374151",
+      "navbarBackground": "#dc2626",
       "textColor": "#374151",
-      "accentColor": "#dc2626",
+      "accentColor": "#fbbf24",
       "primaryButtonColor": "#dc2626",
       "secondaryButtonColor": "#fbbf24",
       "outlineButtonColor": "#6b7280"
@@ -98,9 +98,9 @@
     "dark": {
       "backgroundColor": "#92400e",
       "sectionBackground": "#1f2937",
-      "navbarBackground": "#111827",
+      "navbarBackground": "#991b1b",
       "textColor": "#f9fafb",
-      "accentColor": "#fca5a5",
+      "accentColor": "#fbbf24",
       "primaryButtonColor": "#dc2626",
       "secondaryButtonColor": "#fbbf24",
       "outlineButtonColor": "#94a3b8"

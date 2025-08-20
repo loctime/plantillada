@@ -82,6 +82,29 @@
   padding: 0;
 }
 
+/* Layout: Food Layout (Food Shop) */
+[data-layout="food-layout"] {
+  --sidebar-width: 320px;
+  --main-padding: 2rem;
+}
+
+[data-layout="food-layout"] .shop-container {
+  display: flex;
+  gap: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+[data-layout="food-layout"] .sidebar {
+  width: var(--sidebar-width);
+  flex-shrink: 0;
+}
+
+[data-layout="food-layout"] .main-content {
+  flex: 1;
+  padding-left: 0;
+}
+
 /* Estilos de productos */
 
 /* Cards Square (Tech Shop) */
@@ -193,6 +216,84 @@
   box-shadow: 0 4px 12px rgba(5, 150, 105, 0.1);
 }
 
+/* Food Cards Style (Food Shop) */
+[data-product-style="food-cards"] .product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 2rem;
+}
+
+[data-product-style="food-cards"] .product-card {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 8px 25px rgba(220, 38, 38, 0.15);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border: 3px solid transparent;
+  position: relative;
+}
+
+[data-product-style="food-cards"] .product-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 16px 40px rgba(220, 38, 38, 0.25);
+  border-color: #fbbf24;
+}
+
+[data-product-style="food-cards"] .product-image {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+}
+
+[data-product-style="food-cards"] .product-info {
+  padding: 1.5rem;
+  background: white;
+}
+
+[data-product-style="food-cards"] .product-card .category-badge {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background: #dc2626;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 25px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+}
+
+[data-product-style="food-cards"] .product-card .price {
+  color: #dc2626;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+[data-product-style="food-cards"] .product-card .original-price {
+  color: #6b7280;
+  text-decoration: line-through;
+  font-size: 1rem;
+  margin-left: 0.5rem;
+}
+
+[data-product-style="food-cards"] .product-card button {
+  background: #dc2626 !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 25px !important;
+  padding: 0.75rem 1.5rem !important;
+  font-weight: 600 !important;
+  transition: all 0.2s !important;
+  width: 100% !important;
+  margin-top: 1rem !important;
+}
+
+[data-product-style="food-cards"] .product-card button:hover {
+  background: #b91c1c !important;
+  transform: scale(1.02) !important;
+}
+
 /* Estilos de header */
 
 /* Dark Header (Tech Shop) */
@@ -218,6 +319,163 @@
   background: #059669;
   color: white;
   border-bottom: 3px solid #047857;
+}
+
+/* Food Header Style (Food Shop) */
+[data-header-style="food-header"] .shop-header {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  color: white;
+  border-bottom: 4px solid #fbbf24;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  box-shadow: 0 4px 20px rgba(220, 38, 38, 0.3);
+}
+
+[data-header-style="food-header"] .shop-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, #fbbf24 0%, #dc2626 50%, #fbbf24 100%);
+}
+
+[data-header-style="food-header"] .shop-header .logo-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+[data-header-style="food-header"] .shop-header .logo {
+  width: 50px;
+  height: 50px;
+  background: #fbbf24;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #dc2626;
+  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4);
+  transition: all 0.3s ease;
+}
+
+[data-header-style="food-header"] .shop-header .logo:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(251, 191, 36, 0.6);
+}
+
+[data-header-style="food-header"] .shop-header .store-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+[data-header-style="food-header"] .shop-header .store-tagline {
+  font-size: 0.875rem;
+  color: #fbbf24;
+  font-weight: 500;
+  margin-top: 0.25rem;
+}
+
+[data-header-style="food-header"] .shop-header nav a {
+  color: white;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  padding: 0.5rem 1rem;
+  border-radius: 25px;
+  position: relative;
+}
+
+[data-header-style="food-header"] .shop-header nav a:hover {
+  color: #fbbf24;
+  background: rgba(251, 191, 36, 0.1);
+  transform: translateY(-2px);
+}
+
+[data-header-style="food-header"] .shop-header nav a::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 2px;
+  background: #fbbf24;
+  transition: width 0.3s ease;
+}
+
+[data-header-style="food-header"] .shop-header nav a:hover::after {
+  width: 80%;
+}
+
+/* Estilos para la navegación estándar en todos los headers */
+.shop-header nav a {
+  color: white;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  position: relative;
+}
+
+.shop-header nav a:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+/* Estilos específicos para el logo en la navegación */
+.shop-header nav a .w-8.h-8 {
+  transition: all 0.3s ease;
+}
+
+.shop-header nav a:hover .w-8.h-8 {
+  transform: scale(1.1);
+}
+
+/* Estilos generales para el logo en todos los headers */
+.shop-header .logo-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.shop-header .logo {
+  width: 50px;
+  height: 50px;
+  background: #fbbf24;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #dc2626;
+  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4);
+  transition: all 0.3s ease;
+}
+
+.shop-header .logo:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(251, 191, 36, 0.6);
+}
+
+.shop-header .store-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.shop-header .store-tagline {
+  font-size: 0.875rem;
+  color: #fbbf24;
+  font-weight: 500;
+  margin-top: 0.25rem;
 }
 
 /* Estilos de sidebar */
@@ -260,6 +518,37 @@
   padding: 1.5rem;
 }
 
+/* Food Sidebar Style (Food Shop) */
+[data-sidebar-style="food-sidebar"] .sidebar {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 8px 25px rgba(220, 38, 38, 0.15);
+  padding: 2rem;
+  border: 2px solid #fbbf24;
+}
+
+[data-sidebar-style="food-sidebar"] .sidebar h3 {
+  color: #dc2626;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+[data-sidebar-style="food-sidebar"] .sidebar button {
+  background: #dc2626 !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 25px !important;
+  padding: 0.75rem 1.5rem !important;
+  font-weight: 600 !important;
+  transition: all 0.2s !important;
+}
+
+[data-sidebar-style="food-sidebar"] .sidebar button:hover {
+  background: #b91c1c !important;
+  transform: scale(1.02) !important;
+}
+
 /* Estilos de fondo */
 
 [data-background-color="#f8fafc"] .shop-page {
@@ -282,6 +571,11 @@
 /* Food Shop Design Styles */
 [data-background-color="#fbbf24"] .shop-page {
   background-color: #fbbf24;
+  color: #374151;
+}
+
+[data-background-color="#fef3c7"] .shop-page {
+  background-color: #fef3c7;
   color: #374151;
 }
 
@@ -463,12 +757,14 @@
 /* Responsive */
 @media (max-width: 768px) {
   [data-layout="sidebar-left"] .shop-container,
-  [data-layout="sidebar-right"] .shop-container {
+  [data-layout="sidebar-right"] .shop-container,
+  [data-layout="food-layout"] .shop-container {
     flex-direction: column;
   }
   
   [data-layout="sidebar-left"] .sidebar,
-  [data-layout="sidebar-right"] .sidebar {
+  [data-layout="sidebar-right"] .sidebar,
+  [data-layout="food-layout"] .sidebar {
     width: 100%;
     order: 2;
   }
@@ -487,5 +783,20 @@
   [data-product-style="list-horizontal"] .product-image {
     width: 100%;
     height: 200px;
+  }
+  
+  [data-product-style="food-cards"] .product-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  [data-header-style="food-header"] .shop-header .logo {
+    width: 40px;
+    height: 40px;
+    font-size: 1.25rem;
+  }
+  
+  [data-header-style="food-header"] .shop-header .store-name {
+    font-size: 1.25rem;
   }
 }
