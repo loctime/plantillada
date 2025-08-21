@@ -1,0 +1,6 @@
+categoria,nombre,descripcion,urlImagen,precio,precioActual,marca,rating,reviews,enStock,caracteristicas
+tablets,iPad 11th (A16),iPad de 11 pulgadas con chip A16,https://ejemplo.com/ipad.jpg,899.00,999.00,iPad,4.5,128,true,"Chip A16 Bionic, 11 pulgadas, 128GB"
+smartphones,iPhone 15 Pro,Smartphone premium con chip A17,https://ejemplo.com/iphone.jpg,1299.00,1399.00,Apple,4.8,256,true,"Chip A17 Pro, 6.1 pulgadas, 256GB"
+gaming,ROG Phone 8,Smartphone gaming con refrigeración líquida,https://ejemplo.com/rog.jpg,1299.00,1499.00,ASUS,4.6,234,true,"Snapdragon 8 Gen 3, 16GB RAM, Gaming"
+laptops,MacBook Air M2,Portátil ultra ligero con chip M2,https://ejemplo.com/macbook.jpg,1199.00,1299.00,Apple,4.7,189,true,"Chip M2, 13.6 pulgadas, 8GB RAM"
+headphones,Sony WH-1000XM5,Auriculares inalámbricos con cancelación de ruido,https://ejemplo.com/sony.jpg,349.00,399.00,Sony,4.9,312,true,"Cancelación de ruido, 30h batería, Bluetooth 5.2"

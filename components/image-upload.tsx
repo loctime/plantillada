@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef } from 'react'
-import { Upload, X, Check, Image as ImageIcon, Loader2 } from 'lucide-react'
+import { Upload as UploadIcon, X, Check, Image as ImageIcon, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
@@ -158,7 +158,7 @@ export function ImageUpload({
           </div>
         ) : (
           <div className="space-y-2">
-            <Upload className="h-8 w-8 mx-auto text-gray-400" />
+            <UploadIcon className="h-8 w-8 mx-auto text-gray-400" />
             <p className="text-sm text-gray-600 dark:text-gray-400">
               Arrastra una imagen aquí o haz clic para seleccionar
             </p>

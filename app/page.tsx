@@ -20,21 +20,32 @@ export default function Page() {
       return
     }
 
-    // Determinar qué página mostrar basado en la configuración
-    const currentTemplate = config.currentTemplate || 'landing'
-    console.log(`🎯 Plantilla activa: ${currentTemplate}`)
+    // Determinar qué página mostrar basado en el orden de plantillas activas
+    const activeTemplates = config.activeTemplates || []
+    console.log(`🎯 Plantillas activas:`, activeTemplates)
 
     setIsRedirecting(true)
 
-    // Redirigir según la plantilla activa
-    switch (currentTemplate) {
-      case 'shop':
-        console.log("🛒 Redirigiendo a tienda...")
-        router.replace("/shop")
-        break
+    // Si no hay plantillas activas, usar landing por defecto
+    if (activeTemplates.length === 0) {
+      console.log("⚠️ No hay plantillas activas, usando landing por defecto")
+      router.replace("/landing")
+      return
+    }
+
+    // Tomar la primera plantilla activa (en orden de selección)
+    const firstActiveTemplate = activeTemplates[0]
+    console.log(`🎯 Primera plantilla activa: ${firstActiveTemplate}`)
+
+    // Redirigir según la primera plantilla activa
+    switch (firstActiveTemplate) {
       case 'landing':
         console.log("🏠 Redirigiendo a landing...")
         router.replace("/landing")
+        break
+      case 'shop':
+        console.log("🛒 Redirigiendo a tienda...")
+        router.replace("/shop")
         break
       case 'linkhub':
         console.log("🔗 Redirigiendo a LinkHub...")

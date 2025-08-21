@@ -22,7 +22,8 @@ import {
   Edit3,
   Plus as PlusIcon,
   Trash2,
-  Menu
+  Menu,
+  Upload
 } from 'lucide-react'
 import { useAdmin } from '@/lib/admin-context'
 import { AdminToggle } from '@/components/admin-toggle'
@@ -32,6 +33,7 @@ import './layout-styles.css'
 import { useToast } from '@/hooks/use-toast'
 import { ImageModal } from '@/components/image-modal'
 import { useImageModal } from '@/hooks/use-image-modal'
+import { BulkUploadProducts } from '@/components/bulk-upload-products'
 
 interface Product {
   id: string
@@ -225,6 +227,7 @@ export default function ShopPage() {
   
   // Estados para gestión de productos
   const [showProductModal, setShowProductModal] = useState(false)
+  const [showBulkUploadModal, setShowBulkUploadModal] = useState(false)
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
   const [productForm, setProductForm] = useState({
     name: '',
@@ -581,6 +584,21 @@ export default function ShopPage() {
     
     // Guardar en Firestore preservando toda la configuración
     await saveConfigPreservingRest({ products: updatedProducts })
+  }
+
+  // Función para manejar productos cargados masivamente
+  const handleBulkProductsUploaded = async (newProducts: any[]) => {
+    const updatedProducts = [...products, ...newProducts]
+    setProducts(updatedProducts)
+    setFilteredProducts(updatedProducts)
+    
+    // Guardar en Firestore preservando toda la configuración
+    await saveConfigPreservingRest({ products: updatedProducts })
+    
+    toast({
+      title: 'Carga masiva completada',
+      description: `${newProducts.length} productos agregados exitosamente`
+    })
   }
 
   const updateProductForm = (field: string, value: any) => {
@@ -960,13 +978,25 @@ export default function ShopPage() {
                   <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
                 </div>
                 {isAdminMode && (
-                  <Button
-                    onClick={() => openProductModal()}
-                    className="bg-green-600 hover:bg-green-700"
-                  >
-                    <PlusIcon className="h-4 w-4 mr-2" />
-                    Agregar Producto
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={() => openProductModal()}
+                      className="bg-green-600 hover:bg-green-700"
+                    >
+                      <PlusIcon className="h-4 w-4 mr-2" />
+                      Agregar Producto
+                    </Button>
+                    <Button
+                      onClick={() => setShowBulkUploadModal(true)}
+                      className="bg-blue-600 hover:bg-blue-700"
+                    >
+                      <Upload className="h-4 w-4 mr-2" />
+                      Subir Masivo
+                    </Button>
+                    <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 border-yellow-200">
+                      Modo Admin
+                    </Badge>
+                  </div>
                 )}
               </div>
             </div>
@@ -1373,6 +1403,14 @@ export default function ShopPage() {
         currentImage={logoModal.modalConfig.currentImage}
         title={logoModal.modalConfig.title}
       />
+
+      {/* Modal de Carga Masiva */}
+      {showBulkUploadModal && (
+        <BulkUploadProducts
+          onProductsUploaded={handleBulkProductsUploaded}
+          onClose={() => setShowBulkUploadModal(false)}
+        />
+      )}
 
                {/* Botón de modo admin */}
         <AdminToggle />

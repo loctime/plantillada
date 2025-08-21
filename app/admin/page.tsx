@@ -71,7 +71,7 @@ export default function AdminPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [message, setMessage] = useState("")
   const [currentTenant, setCurrentTenant] = useState("")
-  const [selectedTemplates, setSelectedTemplates] = useState<string[]>(['landing'])
+  const [activeTemplates, setActiveTemplates] = useState<string[]>(['landing'])
   const [showTemplateSelector, setShowTemplateSelector] = useState(false)
   const [showDesignSelector, setShowDesignSelector] = useState(false)
   const [selectedDesigns, setSelectedDesigns] = useState<{[key: string]: string}>({})
@@ -205,7 +205,8 @@ export default function AdminPage() {
       if (response.ok) {
         const config = await response.json()
         setFormData(config)
-        if (config.selectedTemplates) setSelectedTemplates(config.selectedTemplates)
+        if (config.activeTemplates) setActiveTemplates(config.activeTemplates)
+      else if (config.selectedTemplates) setActiveTemplates(config.selectedTemplates)
         if (config.selectedDesigns) setSelectedDesigns(config.selectedDesigns)
       }
     } catch (error) {
@@ -233,13 +234,13 @@ export default function AdminPage() {
 
   const handleTemplateSelect = async (templates: any[]) => {
     const templateIds = templates.map(t => t.id)
-    setSelectedTemplates(templateIds)
+    setActiveTemplates(templateIds)
     // No cerrar el selector automáticamente - setShowTemplateSelector(false)
     
     // Guardar automáticamente la configuración con las plantillas seleccionadas
     const updatedConfig = {
       ...formData,
-      selectedTemplates: templateIds
+      activeTemplates: templateIds
     }
     setFormData(updatedConfig)
     
@@ -1740,7 +1741,7 @@ export default function AdminPage() {
                   {showTemplateSelector && (
                     <TemplateSelector 
                       onTemplateSelect={handleTemplateSelect}
-                      selectedTemplates={selectedTemplates}
+                      activeTemplates={activeTemplates}
                     />
                   )}
                 </div>
@@ -1763,9 +1764,9 @@ export default function AdminPage() {
                       {showDesignSelector ? "Ocultar" : "Seleccionar Diseño"}
                     </Button>
                   </div>
-                  {showDesignSelector && selectedTemplates.length > 0 && (
+                  {showDesignSelector && activeTemplates.length > 0 && (
                     <div className="space-y-6">
-                      {selectedTemplates.map((templateType) => (
+                                              {activeTemplates.map((templateType: string) => (
                         <div key={templateType} className="space-y-4">
                           <div className="flex items-center gap-2">
                             <h4 className="text-md font-medium capitalize">
@@ -1786,7 +1787,7 @@ export default function AdminPage() {
                       ))}
                     </div>
                   )}
-                  {showDesignSelector && selectedTemplates.length === 0 && (
+                  {showDesignSelector && activeTemplates.length === 0 && (
                     <div className="text-center py-8">
                       <Palette className="h-12 w-12 mx-auto text-gray-400 mb-4" />
                       <h3 className="text-lg font-medium text-gray-900 mb-2">Selecciona una plantilla primero</h3>

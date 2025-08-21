@@ -199,22 +199,32 @@ npm run dev
 
 ### Configurar Página Principal
 
-El sistema ahora es inteligente y revisa la configuración del usuario para determinar qué página mostrar en la URL principal (`/`).
+El sistema ahora usa **Plantillas Activas** (`activeTemplates`) que permite un control más granular sobre qué plantillas están disponibles y en qué orden se muestran.
 
-#### Configurar Tienda como Página Principal
+#### Sistema de Plantillas Activas
 ```bash
-# Ejecutar el script de configuración
-node scripts/setup-shop-as-main.js
-```
-
-#### Configurar Landing como Página Principal
-```bash
-# Ejecutar el script de configuración
-node scripts/setup-landing-as-main.js
+# Configurar el nuevo sistema
+node scripts/setup-active-templates.js
 ```
 
 #### Cómo Funciona
-- **Página principal (`/`)**: Revisa `config.currentTemplate` y redirige automáticamente
+- **Página principal (`/`)** revisa `config.activeTemplates[0]`
+- **La primera plantilla en el array** será la página principal
+- **Orden de selección** determina la prioridad
+- **Plantillas desactivadas** no están disponibles
+
+#### Ejemplos
+- `activeTemplates: ['shop']` → Página principal: `/shop`
+- `activeTemplates: ['landing', 'shop']` → Página principal: `/landing`
+- `activeTemplates: ['shop', 'landing']` → Página principal: `/shop`
+
+#### Configuración Manual
+1. Ir a `/admin` → "General" → "Cambiar Plantilla"
+2. Seleccionar plantillas en el orden deseado
+3. La primera seleccionada será la página principal
+4. Los cambios se guardan automáticamente
+
+**📖 Ver documentación completa:** [ACTIVE_TEMPLATES_README.md](./ACTIVE_TEMPLATES_README.md)
 - **Plantillas disponibles**: `shop`, `landing`, `linkhub`, `multi`, `psicologos`
 - **Fallback**: Si no hay configuración, usa `landing` por defecto
 - **Navegación dinámica**: Se actualiza automáticamente según la plantilla activa
@@ -343,10 +353,11 @@ vercel env add NEXT_PUBLIC_FIREBASE_API_KEY
 
 ### Configuración
 ```bash
-# Configurar tienda como página principal
-node scripts/setup-shop-as-main.js
+# Configurar sistema de plantillas activas
+node scripts/setup-active-templates.js
 
-# Configurar landing como página principal
+# Scripts de configuración específica (legacy)
+node scripts/setup-shop-as-main.js
 node scripts/setup-landing-as-main.js
 
 # Aplicar diseño específico
@@ -359,6 +370,9 @@ node scripts/setup-controldoc.js
 
 # Consolidar configuración
 node scripts/consolidate-config.js
+
+# Probar sistema de plantillas activas
+node scripts/test-active-templates.js
 ```
 
 ### Pruebas
