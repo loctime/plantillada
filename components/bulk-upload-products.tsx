@@ -38,6 +38,25 @@ export function BulkUploadProducts({ onProductsUploaded, onClose }: BulkUploadPr
       caracteristicas: ''
     }
   ])
+  
+  // Historial para deshacer
+  const [history, setHistory] = useState<any[][]>([[
+    {
+      id: Date.now().toString(),
+      nombre: '',
+      descripcion: '',
+      categoria: '',
+      precio: '',
+      marca: '',
+      urlImagen: '',
+      rating: '4.0',
+      reviews: '0',
+      enStock: true,
+      caracteristicas: ''
+    }
+  ]])
+  const [historyIndex, setHistoryIndex] = useState(0)
+  
   const { toast } = useToast()
   const inputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({})
 
@@ -55,7 +74,9 @@ export function BulkUploadProducts({ onProductsUploaded, onClose }: BulkUploadPr
       enStock: true,
       caracteristicas: ''
     }
-    setProducts([...products, newProduct])
+    const newProducts = [...products, newProduct]
+    setProducts(newProducts)
+    addToHistory(newProducts)
     
     // Enfocar el primer campo de la nueva fila después de un pequeño delay
     setTimeout(() => {
@@ -68,17 +89,69 @@ export function BulkUploadProducts({ onProductsUploaded, onClose }: BulkUploadPr
 
   const removeRow = (id: string) => {
     if (products.length > 1) {
-      setProducts(products.filter(p => p.id !== id))
+      const newProducts = products.filter(p => p.id !== id)
+      setProducts(newProducts)
+      addToHistory(newProducts)
+    }
+  }
+
+  // Función para agregar al historial
+  const addToHistory = (newProducts: any[]) => {
+    const newHistory = history.slice(0, historyIndex + 1)
+    newHistory.push(JSON.parse(JSON.stringify(newProducts))) // Deep copy
+    setHistory(newHistory)
+    setHistoryIndex(newHistory.length - 1)
+  }
+
+  // Función para deshacer
+  const undo = () => {
+    if (historyIndex > 0) {
+      const newIndex = historyIndex - 1
+      setHistoryIndex(newIndex)
+      setProducts(JSON.parse(JSON.stringify(history[newIndex])))
+      toast({
+        title: 'Deshacer',
+        description: 'Cambio deshecho'
+      })
+    }
+  }
+
+  // Función para rehacer
+  const redo = () => {
+    if (historyIndex < history.length - 1) {
+      const newIndex = historyIndex + 1
+      setHistoryIndex(newIndex)
+      setProducts(JSON.parse(JSON.stringify(history[newIndex])))
+      toast({
+        title: 'Rehacer',
+        description: 'Cambio rehecho'
+      })
     }
   }
 
   const updateProduct = (id: string, field: string, value: any) => {
-    setProducts(products.map(p => 
+    const newProducts = products.map(p => 
       p.id === id ? { ...p, [field]: value } : p
-    ))
+    )
+    setProducts(newProducts)
+    addToHistory(newProducts)
   }
 
   const handleKeyDown = (e: React.KeyboardEvent, productId: string, field: string) => {
+    // Manejar Ctrl+Z para deshacer
+    if (e.ctrlKey && e.key === 'z') {
+      e.preventDefault()
+      undo()
+      return
+    }
+    
+    // Manejar Ctrl+Y para rehacer
+    if (e.ctrlKey && e.key === 'y') {
+      e.preventDefault()
+      redo()
+      return
+    }
+    
     if (e.key === 'Enter') {
       e.preventDefault()
       
@@ -225,6 +298,7 @@ export function BulkUploadProducts({ onProductsUploaded, onClose }: BulkUploadPr
         console.log('📋 Final products array:', newProducts.length, 'products')
         
         setProducts(newProducts)
+        addToHistory(newProducts)
         
         // Mostrar notificación
         toast({
@@ -325,16 +399,40 @@ export function BulkUploadProducts({ onProductsUploaded, onClose }: BulkUploadPr
             <CardHeader>
               <div className="flex justify-between items-center">
                 <CardTitle>Tabla de Productos</CardTitle>
-                <div className="flex gap-2">
-                  <Button onClick={addRow} size="sm" variant="outline">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Agregar Fila
-                  </Button>
-                  <Button onClick={handleSave} size="sm" disabled={isProcessing}>
-                    <Save className="h-4 w-4 mr-2" />
-                    {isProcessing ? 'Guardando...' : 'Guardar Productos'}
-                  </Button>
-                </div>
+                                 <div className="flex gap-2">
+                   <Button 
+                     onClick={undo} 
+                     size="sm" 
+                     variant="outline"
+                     disabled={historyIndex === 0}
+                     title="Deshacer (Ctrl+Z)"
+                   >
+                     <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                     </svg>
+                     Deshacer
+                   </Button>
+                   <Button 
+                     onClick={redo} 
+                     size="sm" 
+                     variant="outline"
+                     disabled={historyIndex === history.length - 1}
+                     title="Rehacer (Ctrl+Y)"
+                   >
+                     <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 10h-10a8 8 0 00-8 8v2M21 10l-6 6m6-6l-6-6" />
+                     </svg>
+                     Rehacer
+                   </Button>
+                   <Button onClick={addRow} size="sm" variant="outline">
+                     <Plus className="h-4 w-4 mr-2" />
+                     Agregar Fila
+                   </Button>
+                   <Button onClick={handleSave} size="sm" disabled={isProcessing}>
+                     <Save className="h-4 w-4 mr-2" />
+                     {isProcessing ? 'Guardando...' : 'Guardar Productos'}
+                   </Button>
+                 </div>
               </div>
             </CardHeader>
             <CardContent>
@@ -507,7 +605,7 @@ export function BulkUploadProducts({ onProductsUploaded, onClose }: BulkUploadPr
               </div>
               
                              <div className="mt-4 text-sm text-gray-600">
-                 <p>💡 <strong>Consejo:</strong> Usa las flechas del teclado para navegar entre campos. Enter para nueva fila. Pega múltiples líneas para crear filas automáticamente.</p>
+                 <p>💡 <strong>Consejo:</strong> Usa las flechas del teclado para navegar entre campos. Enter para nueva fila. Pega múltiples líneas para crear filas automáticamente. <strong>Ctrl+Z</strong> para deshacer y <strong>Ctrl+Y</strong> para rehacer.</p>
                </div>
             </CardContent>
           </Card>
