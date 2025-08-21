@@ -12,7 +12,7 @@
       "storeName": "FASHION BOUTIQUE",
       "storeTagline": "Estilo y elegancia en cada prenda",
       "navigation": ["TIENDA", "MUJER", "HOMBRE", "ACCESORIOS", "CALZADO", "BOLSOS", "OFERTAS"],
-      "categories": ["Todos", "Mujer", "Hombre", "Accesorios", "Calzado", "Bolsos"],
+      "categories": ["Todos", "Mujer", "Hombre", "Accesorios", "Calzado", "Bolsos", "Promociones"],
       "searchPlaceholder": "Buscar prendas y accesorios...",
       "filterButtonText": "FILTRAR",
       "bestSellersTitle": "Tendencias del Momento",

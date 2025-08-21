@@ -46,9 +46,9 @@ export function ShopDesignSelector({
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
         <Button 
-          variant="ghost" 
+          variant="outline" 
           size="sm" 
-          className={`text-white hover:text-blue-400 ${className}`}
+          className={`${className}`}
         >
           <Palette className="h-4 w-4 mr-2" />
           {currentDesign ? currentDesign.name : "Diseños"}

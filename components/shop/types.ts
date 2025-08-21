@@ -19,6 +19,12 @@ export interface CartItem {
   price: number
   quantity: number
   image: string
+  isPromotion?: boolean
+  promotionDetails?: {
+    promotionId: string
+    selectedProducts: string[]
+    selectedBeverages: string[]
+  }
 }
 
 export interface ShopConfig {

@@ -10,6 +10,8 @@ import './layout-styles.css'
 import { ImageModal } from '@/components/image-modal'
 import { useImageModal } from '@/hooks/use-image-modal'
 import { BulkUploadProducts } from '@/components/bulk-upload-products'
+import { PromotionsSection } from '@/components/promotions-section'
+import { PromotionSelectorModal } from '@/components/promotion-selector-modal'
 
 // Componentes de la tienda
 import { ShopHeader } from '@/components/shop/shop-header'
@@ -25,7 +27,8 @@ export default function ShopPage() {
   const [config, setConfig] = useState<Config | null>(null)
   const [loading, setLoading] = useState(true)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const { openImageModal } = useImageModal()
+  const [selectedDesign, setSelectedDesign] = useState<string>('')
+  const { isOpen: imageModalOpen, closeModal: closeImageModal, modalConfig } = useImageModal()
 
   // Usar el hook personalizado para toda la lógica de la tienda
   const {
@@ -47,12 +50,19 @@ export default function ShopPage() {
     setIsCartOpen,
     showBulkUploadModal,
     setShowBulkUploadModal,
+    promotions,
+    selectedPromotion,
+    showPromotionSelector,
+    setShowPromotionSelector,
     addToCart,
     updateCartQuantity,
     removeFromCart,
     clearCart,
     handleBulkProductsUploaded,
-    clearFilters
+    clearFilters,
+    addPromotion,
+    handleAddPromotionToCart,
+    handlePromotionSelection
   } = useShop()
 
   // Debug logs
@@ -87,6 +97,11 @@ export default function ShopPage() {
         const response = await fetch('/api/config')
         const data = await response.json()
         setConfig(data)
+        
+        // Cargar diseño seleccionado desde la configuración
+        if (data.selectedDesigns?.shop) {
+          setSelectedDesign(data.selectedDesigns.shop)
+        }
       } catch (error) {
         console.error('Error loading config:', error)
       } finally {
@@ -96,6 +111,61 @@ export default function ShopPage() {
 
     loadConfig()
   }, [])
+
+  // Aplicar diseño seleccionado cuando cambie
+  useEffect(() => {
+    const applySelectedDesign = async () => {
+      if (selectedDesign && typeof document !== 'undefined') {
+        try {
+          const { getDesignById, applyDesignToDocument } = await import('@/lib/designs')
+          const design = getDesignById(selectedDesign)
+          if (design) {
+            applyDesignToDocument(design)
+            console.log('🎨 Diseño aplicado al cargar:', design.name)
+          }
+        } catch (error) {
+          console.error('Error aplicando diseño al cargar:', error)
+        }
+      }
+    }
+
+    applySelectedDesign()
+  }, [selectedDesign])
+
+  // Manejar selección de diseño
+  const handleDesignSelect = async (design: Design) => {
+    try {
+      setSelectedDesign(design.id)
+      
+      // Aplicar estilos visuales inmediatamente
+      if (typeof document !== 'undefined') {
+        // Importar la función para aplicar el diseño
+        const { applyDesignToDocument } = await import('@/lib/designs')
+        applyDesignToDocument(design)
+        console.log('🎨 Estilos aplicados:', design.name)
+      }
+      
+      // Guardar la selección en la configuración
+      const response = await fetch('/api/config', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          selectedDesigns: {
+            ...(config?.selectedDesigns || {}),
+            shop: design.id
+          }
+        }),
+      })
+
+      if (response.ok) {
+        console.log('✅ Diseño guardado:', design.name)
+      }
+    } catch (error) {
+      console.error('Error guardando diseño:', error)
+    }
+  }
 
   if (loading) {
     return (
@@ -117,6 +187,8 @@ export default function ShopPage() {
         onOpenCart={() => setIsCartOpen(true)}
         onOpenBulkUpload={() => setShowBulkUploadModal(true)}
         onToggleMobileMenu={() => setMobileMenuOpen(!mobileMenuOpen)}
+        selectedDesign={selectedDesign}
+        onDesignSelect={handleDesignSelect}
       />
 
       {/* Contenido principal */}
@@ -136,6 +208,14 @@ export default function ShopPage() {
 
           {/* Contenido principal */}
           <div className="flex-1">
+            {/* Sección de Promociones */}
+            <PromotionsSection
+              promotions={promotions}
+              onAddPromotion={addPromotion}
+              onAddToCart={handleAddPromotionToCart}
+              availableProducts={products}
+            />
+
             {/* Filtros superiores */}
             <ShopFilters
               searchTerm={searchTerm}
@@ -194,12 +274,24 @@ export default function ShopPage() {
         />
       )}
 
+      {/* Modal de selección de promociones */}
+      <PromotionSelectorModal
+        isOpen={showPromotionSelector}
+        onClose={() => setShowPromotionSelector(false)}
+        onConfirm={handlePromotionSelection}
+        promotion={selectedPromotion}
+        availableProducts={products}
+      />
+
       {/* Modal de imagen */}
-      <ImageModal />
+      <ImageModal 
+        isOpen={imageModalOpen}
+        onClose={closeImageModal}
+        onSave={modalConfig.onSave}
+      />
 
       {/* Componentes de administración */}
       <AdminToggle />
-      <ShopDesignSelector />
     </div>
   )
 }

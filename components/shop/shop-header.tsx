@@ -3,6 +3,8 @@
 import { Button } from '@/components/ui/button'
 import { ShoppingCart, Menu, Upload } from 'lucide-react'
 import { useAdmin } from '@/lib/admin-context'
+import { ShopDesignSelector } from '@/components/shop-design-selector'
+import { Design } from '@/lib/designs'
 
 interface ShopHeaderProps {
   shopConfig: any
@@ -10,6 +12,8 @@ interface ShopHeaderProps {
   onOpenCart: () => void
   onOpenBulkUpload: () => void
   onToggleMobileMenu: () => void
+  selectedDesign?: string
+  onDesignSelect?: (design: Design) => void
 }
 
 export function ShopHeader({
@@ -17,7 +21,9 @@ export function ShopHeader({
   cartItemCount,
   onOpenCart,
   onOpenBulkUpload,
-  onToggleMobileMenu
+  onToggleMobileMenu,
+  selectedDesign,
+  onDesignSelect
 }: ShopHeaderProps) {
   const { isAdminMode } = useAdmin()
 
@@ -50,6 +56,15 @@ export function ShopHeader({
 
           {/* Acciones del lado derecho */}
           <div className="flex items-center space-x-4">
+            {/* Selector de diseños (solo en modo admin) */}
+            {isAdminMode && onDesignSelect && (
+              <ShopDesignSelector
+                selectedDesign={selectedDesign}
+                onDesignSelect={onDesignSelect}
+                className="hidden md:flex"
+              />
+            )}
+
             {/* Botón de carga masiva (solo en modo admin) */}
             {isAdminMode && (
               <Button

@@ -12,7 +12,7 @@
       "storeName": "LIFESTYLE STORE",
       "storeTagline": "Productos para una vida más consciente",
       "navigation": ["TIENDA", "HOGAR", "BIENESTAR", "ECO", "DECORACIÓN", "REGALOS", "NOVEDADES"],
-      "categories": ["Todos", "Hogar", "Bienestar", "Eco-friendly", "Decoración", "Regalos"],
+      "categories": ["Todos", "Hogar", "Bienestar", "Eco-friendly", "Decoración", "Regalos", "Promociones"],
       "searchPlaceholder": "Buscar productos lifestyle...",
       "filterButtonText": "FILTRAR",
       "bestSellersTitle": "Productos Destacados",

@@ -3,6 +3,20 @@ import { Product, CartItem } from '@/components/shop/types'
 import { sampleProducts } from '@/components/shop/sample-products'
 import { useToast } from '@/hooks/use-toast'
 
+interface Promotion {
+  id: string
+  name: string
+  productType: 'choice' | 'fixed'
+  selectedProducts: string[]
+  beverageType: 'choice' | 'fixed'
+  selectedBeverages: string[]
+  description: string
+  price: number
+  originalPrice: number
+  image: string
+  isActive: boolean
+}
+
 export function useShop() {
   const [products, setProducts] = useState<Product[]>(sampleProducts)
   const [filteredProducts, setFilteredProducts] = useState<Product[]>(sampleProducts)
@@ -14,6 +28,9 @@ export function useShop() {
   const [cartItems, setCartItems] = useState<CartItem[]>([])
   const [isCartOpen, setIsCartOpen] = useState(false)
   const [showBulkUploadModal, setShowBulkUploadModal] = useState(false)
+  const [promotions, setPromotions] = useState<Promotion[]>([])
+  const [selectedPromotion, setSelectedPromotion] = useState<Promotion | null>(null)
+  const [showPromotionSelector, setShowPromotionSelector] = useState(false)
   const { toast } = useToast()
 
   // Obtener categorías únicas
@@ -145,6 +162,57 @@ export function useShop() {
     setSortBy('name-asc')
   }
 
+  // Funciones de promociones
+  const addPromotion = (promotion: Promotion) => {
+    setPromotions(prev => [...prev, promotion])
+    toast({
+      title: 'Promoción creada',
+      description: `${promotion.name} se ha creado exitosamente`
+    })
+  }
+
+  const handleAddPromotionToCart = (promotion: Promotion) => {
+    setSelectedPromotion(promotion)
+    setShowPromotionSelector(true)
+  }
+
+  const handlePromotionSelection = (selectedItems: { products: string[], beverages: string[] }) => {
+    if (!selectedPromotion) return
+
+    const selectedProductNames = selectedItems.products.map(id => 
+      products.find(p => p.id === id)?.name
+    ).filter(Boolean).join(', ')
+
+    const selectedBeverageNames = selectedItems.beverages.map(id => {
+      const beverage = products.find(p => p.id === id)
+      return beverage?.name
+    }).filter(Boolean).join(', ')
+
+    const promotionItem: CartItem = {
+      id: `promo-${selectedPromotion.id}-${Date.now()}`,
+      name: `${selectedPromotion.name} - ${selectedProductNames}${selectedBeverageNames ? ` + ${selectedBeverageNames}` : ''}`,
+      price: selectedPromotion.price,
+      quantity: 1,
+      image: selectedPromotion.image,
+      isPromotion: true,
+      promotionDetails: {
+        promotionId: selectedPromotion.id,
+        selectedProducts: selectedItems.products,
+        selectedBeverages: selectedItems.beverages
+      }
+    }
+
+    setCartItems(prev => [...prev, promotionItem])
+    
+    toast({
+      title: 'Promoción agregada',
+      description: `${selectedPromotion.name} se agregó al carrito`
+    })
+
+    setSelectedPromotion(null)
+    setShowPromotionSelector(false)
+  }
+
   return {
     // Estado
     products,
@@ -165,6 +233,10 @@ export function useShop() {
     setIsCartOpen,
     showBulkUploadModal,
     setShowBulkUploadModal,
+    promotions,
+    selectedPromotion,
+    showPromotionSelector,
+    setShowPromotionSelector,
     
     // Funciones
     addToCart,
@@ -172,6 +244,9 @@ export function useShop() {
     removeFromCart,
     clearCart,
     handleBulkProductsUploaded,
-    clearFilters
+    clearFilters,
+    addPromotion,
+    handleAddPromotionToCart,
+    handlePromotionSelection
   }
 }

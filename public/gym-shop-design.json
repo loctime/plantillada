@@ -12,7 +12,7 @@
       "storeName": "POWER GYM",
       "storeTagline": "Tu equipamiento fitness de confianza",
       "navigation": ["TIENDA", "EQUIPOS", "SUPLEMENTOS", "ROPA", "ACCESORIOS", "NUTRICIÓN", "OFERTAS"],
-      "categories": ["Todos", "Equipos", "Suplementos", "Ropa Deportiva", "Accesorios", "Nutrición"],
+      "categories": ["Todos", "Equipos", "Suplementos", "Ropa Deportiva", "Accesorios", "Nutrición", "Promociones"],
       "searchPlaceholder": "Buscar productos fitness...",
       "filterButtonText": "FILTRAR",
       "bestSellersTitle": "Productos Más Vendidos",

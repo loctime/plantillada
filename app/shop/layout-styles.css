@@ -1,9 +1,74 @@
 /* Estilos dinámicos para diferentes layouts de tienda */
 
+/* Variables CSS dinámicas - se aplican desde los diseños */
+:root {
+  --primary: #3b82f6;
+  --secondary: #1f2937;
+  --accent: #10b981;
+  --font-family: 'Inter', sans-serif;
+  --background-color: #ffffff;
+  --section-background: #f8fafc;
+  --navbar-background: #ffffff;
+  --text-color: #1f2937;
+  --accent-color: #10b981;
+  --primary-button-color: #3b82f6;
+  --secondary-button-color: #1f2937;
+  --outline-button-color: #3b82f6;
+  --heading-color: #1f2937;
+}
+
+/* Aplicar variables CSS dinámicas a elementos de la tienda */
+.shop-page {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  font-family: var(--font-family);
+}
+
+.shop-header {
+  background-color: var(--navbar-background);
+  color: var(--text-color);
+}
+
+.shop-header h1 {
+  color: var(--heading-color);
+}
+
+.shop-header nav a {
+  color: var(--text-color);
+}
+
+.shop-header nav a:hover {
+  color: var(--accent-color);
+}
+
+.shop-sidebar {
+  background-color: var(--section-background);
+}
+
+.product-card {
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+.product-card button {
+  background-color: var(--primary-button-color);
+  color: white;
+}
+
+.product-card button:hover {
+  background-color: var(--accent-color);
+}
+
 /* Layout: Sidebar Left (Tech Shop) */
 [data-layout="sidebar-left"] {
   --sidebar-width: 320px;
   --main-padding: 2rem;
+}
+
+/* Layout: Sidebar Left con barra más grande */
+[data-layout="sidebar-left"] .sidebar {
+  width: 320px;
+  flex-shrink: 0;
 }
 
 [data-layout="sidebar-left"] .shop-container {
@@ -25,6 +90,12 @@
 [data-layout="sidebar-right"] {
   --sidebar-width: 320px;
   --main-padding: 2rem;
+}
+
+/* Layout: Sidebar Right con barra más grande */
+[data-layout="sidebar-right"] .sidebar {
+  width: 320px;
+  flex-shrink: 0;
 }
 
 [data-layout="sidebar-right"] .shop-container {

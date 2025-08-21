@@ -1063,7 +1063,16 @@ export const shopDesigns: Design[] = [
       '--primary': '#3b82f6',
       '--secondary': '#1f2937',
       '--accent': '#10b981',
-      '--font-family': 'Roboto, sans-serif'
+      '--font-family': 'Roboto, sans-serif',
+      '--background-color': '#ffffff',
+      '--section-background': '#f8fafc',
+      '--navbar-background': '#3b82f6',
+      '--text-color': '#1f2937',
+      '--accent-color': '#10b981',
+      '--primary-button-color': '#3b82f6',
+      '--secondary-button-color': '#1f2937',
+      '--outline-button-color': '#3b82f6',
+      '--heading-color': '#1f2937'
     }
   },
   {
@@ -1088,7 +1097,16 @@ export const shopDesigns: Design[] = [
       '--primary': '#ec4899',
       '--secondary': '#6b7280',
       '--accent': '#f59e0b',
-      '--font-family': 'Playfair Display, serif'
+      '--font-family': 'Playfair Display, serif',
+      '--background-color': '#ffffff',
+      '--section-background': '#fdf2f8',
+      '--navbar-background': '#ec4899',
+      '--text-color': '#374151',
+      '--accent-color': '#f59e0b',
+      '--primary-button-color': '#ec4899',
+      '--secondary-button-color': '#6b7280',
+      '--outline-button-color': '#ec4899',
+      '--heading-color': '#374151'
     }
   },
   {
@@ -1113,7 +1131,16 @@ export const shopDesigns: Design[] = [
       '--primary': '#dc2626',
       '--secondary': '#1f2937',
       '--accent': '#f59e0b',
-      '--font-family': 'Bebas Neue, sans-serif'
+      '--font-family': 'Bebas Neue, sans-serif',
+      '--background-color': '#ffffff',
+      '--section-background': '#fef2f2',
+      '--navbar-background': '#dc2626',
+      '--text-color': '#1f2937',
+      '--accent-color': '#f59e0b',
+      '--primary-button-color': '#dc2626',
+      '--secondary-button-color': '#1f2937',
+      '--outline-button-color': '#dc2626',
+      '--heading-color': '#1f2937'
     }
   },
   {
@@ -1138,7 +1165,16 @@ export const shopDesigns: Design[] = [
       '--primary': '#059669',
       '--secondary': '#6b7280',
       '--accent': '#8b5cf6',
-      '--font-family': 'Montserrat, sans-serif'
+      '--font-family': 'Montserrat, sans-serif',
+      '--background-color': '#ffffff',
+      '--section-background': '#f0fdf4',
+      '--navbar-background': '#059669',
+      '--text-color': '#374151',
+      '--accent-color': '#8b5cf6',
+      '--primary-button-color': '#059669',
+      '--secondary-button-color': '#6b7280',
+      '--outline-button-color': '#059669',
+      '--heading-color': '#374151'
     }
   },
   {
@@ -1163,7 +1199,16 @@ export const shopDesigns: Design[] = [
       '--primary': '#fbbf24',
       '--secondary': '#374151',
       '--accent': '#dc2626',
-      '--font-family': 'Inter, sans-serif'
+      '--font-family': 'Inter, sans-serif',
+      '--background-color': '#ffffff',
+      '--section-background': '#fefce8',
+      '--navbar-background': '#fbbf24',
+      '--text-color': '#374151',
+      '--accent-color': '#dc2626',
+      '--primary-button-color': '#fbbf24',
+      '--secondary-button-color': '#374151',
+      '--outline-button-color': '#fbbf24',
+      '--heading-color': '#374151'
     }
   }
 ]

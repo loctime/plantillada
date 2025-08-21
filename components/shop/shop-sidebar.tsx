@@ -37,7 +37,7 @@ export function ShopSidebar({
   }
 
   return (
-    <aside className="w-64 bg-white p-6 border-r">
+    <aside className="w-80 bg-white p-6 border-r">
       <div className="space-y-6">
         {/* Título */}
         <h2 className="text-lg font-semibold text-gray-900">Filtros</h2>
