@@ -2,14 +2,16 @@
 
 import React, { useState, useRef } from 'react'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { 
-  Upload, 
-  Download, 
-  FileSpreadsheet, 
   X, 
   CheckCircle,
-  AlertCircle
+  AlertCircle,
+  Plus,
+  Trash2,
+  Save
 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 
@@ -18,92 +20,150 @@ interface BulkUploadProductsProps {
   onClose: () => void
 }
 
-const CSV_HEADERS = [
-  'categoria',
-  'nombre', 
-  'descripcion',
-  'urlImagen',
-  'precio',
-  'precioActual',
-  'marca',
-  'rating',
-  'reviews',
-  'enStock',
-  'caracteristicas'
-]
-
 export function BulkUploadProducts({ onProductsUploaded, onClose }: BulkUploadProductsProps) {
   const [isProcessing, setIsProcessing] = useState(false)
   const [validationErrors, setValidationErrors] = useState<string[]>([])
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [products, setProducts] = useState<any[]>([
+    {
+      id: '1',
+      nombre: '',
+      descripcion: '',
+      categoria: '',
+      precio: '',
+      marca: '',
+      urlImagen: '',
+      rating: '4.0',
+      reviews: '0',
+      enStock: true,
+      caracteristicas: ''
+    }
+  ])
   const { toast } = useToast()
+  const inputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({})
 
-  const downloadTemplate = () => {
-    // Intentar descargar desde la carpeta public primero
-    const a = document.createElement('a')
-    a.href = '/plantilla_productos.csv'
-    a.download = 'plantilla_productos.csv'
-    a.click()
+  const addRow = () => {
+    const newProduct = {
+      id: Date.now().toString(),
+      nombre: '',
+      descripcion: '',
+      categoria: '',
+      precio: '',
+      marca: '',
+      urlImagen: '',
+      rating: '4.0',
+      reviews: '0',
+      enStock: true,
+      caracteristicas: ''
+    }
+    setProducts([...products, newProduct])
     
-    toast({
-      title: 'Plantilla descargada',
-      description: 'Archivo CSV descargado. Llénalo con tus productos y súbelo.'
-    })
+    // Enfocar el primer campo de la nueva fila después de un pequeño delay
+    setTimeout(() => {
+      const newInputRef = inputRefs.current[`${newProduct.id}-nombre`]
+      if (newInputRef) {
+        newInputRef.focus()
+      }
+    }, 100)
   }
 
-  const parseCSV = (csvText: string): any[] => {
-    const lines = csvText.trim().split('\n')
-    const headers = lines[0].split(',').map(h => h.trim().toLowerCase())
-    
-    const products: any[] = []
-    
-    for (let i = 1; i < lines.length; i++) {
-      const values = lines[i].split(',').map(v => v.trim())
-      const product: any = { id: `bulk_${Date.now()}_${i}` }
+  const removeRow = (id: string) => {
+    if (products.length > 1) {
+      setProducts(products.filter(p => p.id !== id))
+    }
+  }
+
+  const updateProduct = (id: string, field: string, value: any) => {
+    setProducts(products.map(p => 
+      p.id === id ? { ...p, [field]: value } : p
+    ))
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent, productId: string, field: string) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
       
-      headers.forEach((header, index) => {
-        if (values[index]) {
-          switch (header) {
-            case 'precio':
-            case 'precioactual':
-            case 'rating':
-            case 'reviews':
-              product[header] = parseFloat(values[index]) || 0
-              break
-            case 'enstock':
-              product[header] = values[index].toLowerCase() === 'true' || values[index] === '1'
-              break
-            default:
-              product[header] = values[index]
+      // Si estamos en la última fila, agregar una nueva
+      const currentIndex = products.findIndex(p => p.id === productId)
+      if (currentIndex === products.length - 1) {
+        addRow()
+      } else {
+        // Si no es la última fila, mover el foco a la siguiente fila
+        const nextProduct = products[currentIndex + 1]
+        if (nextProduct) {
+          const nextInputRef = inputRefs.current[`${nextProduct.id}-nombre`]
+          if (nextInputRef) {
+            nextInputRef.focus()
           }
         }
-      })
+      }
+    } else if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+      e.preventDefault()
       
-      products.push(product)
+      const currentIndex = products.findIndex(p => p.id === productId)
+      const fields = ['nombre', 'descripcion', 'categoria', 'precio', 'marca', 'urlImagen', 'rating', 'reviews', 'caracteristicas']
+      const currentFieldIndex = fields.indexOf(field)
+      
+      let nextProductIndex = currentIndex
+      let nextFieldIndex = currentFieldIndex
+      
+      if (e.key === 'ArrowUp') {
+        if (currentIndex > 0) {
+          nextProductIndex = currentIndex - 1
+        }
+      } else if (e.key === 'ArrowDown') {
+        if (currentIndex < products.length - 1) {
+          nextProductIndex = currentIndex + 1
+        } else {
+          // Si estamos en la última fila, agregar una nueva
+          addRow()
+          return
+        }
+      } else if (e.key === 'ArrowLeft') {
+        if (currentFieldIndex > 0) {
+          nextFieldIndex = currentFieldIndex - 1
+        } else if (currentIndex > 0) {
+          // Ir al último campo de la fila anterior
+          nextProductIndex = currentIndex - 1
+          nextFieldIndex = fields.length - 1
+        }
+      } else if (e.key === 'ArrowRight') {
+        if (currentFieldIndex < fields.length - 1) {
+          nextFieldIndex = currentFieldIndex + 1
+        } else if (currentIndex < products.length - 1) {
+          // Ir al primer campo de la siguiente fila
+          nextProductIndex = currentIndex + 1
+          nextFieldIndex = 0
+        } else {
+          // Si estamos en la última fila y último campo, agregar una nueva fila
+          addRow()
+          return
+        }
+      }
+      
+      const nextProduct = products[nextProductIndex]
+      const nextField = fields[nextFieldIndex]
+      
+      if (nextProduct && nextField) {
+        const nextInputRef = inputRefs.current[`${nextProduct.id}-${nextField}`]
+        if (nextInputRef) {
+          nextInputRef.focus()
+          // Seleccionar todo el texto para facilitar la edición
+          nextInputRef.select()
+        }
+      }
     }
-    
-    return products
   }
 
   const validateProducts = (products: any[]): string[] => {
     const errors: string[] = []
     
     products.forEach((product, index) => {
-      const rowNumber = index + 2
+      const rowNumber = index + 1
       
-      if (!product.categoria) {
-        errors.push(`Fila ${rowNumber}: Categoría es requerida`)
-      }
-      if (!product.nombre) {
+      if (!product.nombre?.trim()) {
         errors.push(`Fila ${rowNumber}: Nombre es requerido`)
       }
-      if (!product.descripcion) {
-        errors.push(`Fila ${rowNumber}: Descripción es requerida`)
-      }
-      if (!product.urlImagen) {
-        errors.push(`Fila ${rowNumber}: URL de imagen es requerida`)
-      }
-      if (!product.precio || product.precio <= 0) {
+      if (!product.precio || parseFloat(product.precio) <= 0) {
         errors.push(`Fila ${rowNumber}: Precio debe ser mayor a 0`)
       }
     })
@@ -111,88 +171,65 @@ export function BulkUploadProducts({ onProductsUploaded, onClose }: BulkUploadPr
     return errors
   }
 
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (!file) return
-
-    if (!file.name.endsWith('.csv')) {
+  const handleSave = () => {
+    const errors = validateProducts(products)
+    setValidationErrors(errors)
+    
+    if (errors.length > 0) {
       toast({
-        title: 'Error',
-        description: 'Por favor sube un archivo CSV',
+        title: 'Errores de validación',
+        description: `Se encontraron ${errors.length} errores. Revisa los detalles.`,
         variant: 'destructive'
       })
       return
     }
 
     setIsProcessing(true)
-    
-    try {
-      const content = await file.text()
-      const products = parseCSV(content)
-      
-      if (products.length === 0) {
-        toast({
-          title: 'Error',
-          description: 'El archivo CSV no contiene productos válidos',
-          variant: 'destructive'
-        })
-        return
-      }
 
-      const errors = validateProducts(products)
-      setValidationErrors(errors)
-      
-      if (errors.length > 0) {
-        toast({
-          title: 'Errores de validación',
-          description: `Se encontraron ${errors.length} errores. Revisa los detalles.`,
-          variant: 'destructive'
-        })
-        return
-      }
-
-      const formattedProducts = products.map(product => ({
+    const formattedProducts = products
+      .filter(product => product.nombre?.trim()) // Solo productos con nombre
+      .map(product => ({
         id: product.id,
-        name: product.nombre,
-        brand: product.marca || 'Sin marca',
-        price: product.precio,
-        originalPrice: product.precioActual && product.precioActual > product.precio ? product.precioActual : undefined,
-        image: product.urlImagen,
-        rating: product.rating || 4.0,
-        reviews: product.reviews || 0,
-        category: product.categoria.toLowerCase(),
+        name: product.nombre.trim(),
+        brand: product.marca?.trim() || 'Sin marca',
+        price: parseFloat(product.precio) || 0,
+        originalPrice: product.precioActual && parseFloat(product.precioActual) > parseFloat(product.precio) ? parseFloat(product.precioActual) : undefined,
+        image: product.urlImagen?.trim() || '',
+        rating: parseFloat(product.rating) || 4.0,
+        reviews: parseInt(product.reviews) || 0,
+        category: product.categoria?.trim().toLowerCase() || 'general',
         inStock: product.enStock !== false,
-        description: product.descripcion,
-        features: product.caracteristicas ? product.caracteristicas.split(',').map((f: string) => f.trim()) : []
+        description: product.descripcion?.trim() || '',
+        features: product.caracteristicas ? product.caracteristicas.split(',').map((f: string) => f.trim()).filter(Boolean) : []
       }))
 
-      onProductsUploaded(formattedProducts)
-      
-      toast({
-        title: 'Productos cargados',
-        description: `${formattedProducts.length} productos agregados exitosamente`
-      })
-      
-      onClose()
-      
-    } catch (error) {
+    if (formattedProducts.length === 0) {
       toast({
         title: 'Error',
-        description: 'Error al procesar el archivo CSV',
+        description: 'Agrega al menos un producto con nombre',
         variant: 'destructive'
       })
-    } finally {
       setIsProcessing(false)
+      return
     }
+
+    onProductsUploaded(formattedProducts)
+    
+    toast({
+      title: 'Productos cargados',
+      description: `${formattedProducts.length} productos agregados exitosamente`
+    })
+    
+    onClose()
   }
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-lg shadow-xl max-w-7xl w-full max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center p-6 border-b">
           <div>
-            <h2 className="text-2xl font-bold">Carga Masiva de Productos</h2>
-            <p className="text-gray-600">Sube múltiples productos usando un archivo CSV</p>
+            <h2 className="text-2xl font-bold">Agregar Productos Masivamente</h2>
+            <p className="text-gray-600">Escribe múltiples productos en la tabla. Presiona Enter para agregar una nueva fila.</p>
           </div>
           <Button variant="ghost" size="sm" onClick={onClose}>
             <X className="h-5 w-5" />
@@ -202,48 +239,183 @@ export function BulkUploadProducts({ onProductsUploaded, onClose }: BulkUploadPr
         <div className="p-6 space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FileSpreadsheet className="h-5 w-5" />
-                Instrucciones
-              </CardTitle>
+              <div className="flex justify-between items-center">
+                <CardTitle>Tabla de Productos</CardTitle>
+                <div className="flex gap-2">
+                  <Button onClick={addRow} size="sm" variant="outline">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Agregar Fila
+                  </Button>
+                  <Button onClick={handleSave} size="sm" disabled={isProcessing}>
+                    <Save className="h-4 w-4 mr-2" />
+                    {isProcessing ? 'Guardando...' : 'Guardar Productos'}
+                  </Button>
+                </div>
+              </div>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="text-sm text-gray-600 space-y-2">
-                <p>1. Descarga la plantilla CSV con el formato correcto</p>
-                <p>2. Llena los datos de tus productos en el archivo</p>
-                <p>3. Guarda el archivo y súbelo aquí</p>
-                <p className="font-medium">Columnas requeridas: {CSV_HEADERS.join(', ')}</p>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse border border-gray-200">
+                  <thead>
+                    <tr className="bg-gray-50">
+                      <th className="border border-gray-200 p-2 text-left text-sm font-medium">Nombre *</th>
+                      <th className="border border-gray-200 p-2 text-left text-sm font-medium">Descripción</th>
+                      <th className="border border-gray-200 p-2 text-left text-sm font-medium">Categoría</th>
+                      <th className="border border-gray-200 p-2 text-left text-sm font-medium">Precio *</th>
+                      <th className="border border-gray-200 p-2 text-left text-sm font-medium">Marca</th>
+                      <th className="border border-gray-200 p-2 text-left text-sm font-medium">URL Imagen</th>
+                      <th className="border border-gray-200 p-2 text-left text-sm font-medium">Rating</th>
+                      <th className="border border-gray-200 p-2 text-left text-sm font-medium">Reviews</th>
+                      <th className="border border-gray-200 p-2 text-left text-sm font-medium">En Stock</th>
+                      <th className="border border-gray-200 p-2 text-left text-sm font-medium">Características</th>
+                      <th className="border border-gray-200 p-2 text-left text-sm font-medium">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {products.map((product, index) => (
+                      <tr key={product.id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                        <td className="border border-gray-200 p-2">
+                          <Input
+                            ref={(el) => {
+                              inputRefs.current[`${product.id}-nombre`] = el
+                            }}
+                            value={product.nombre}
+                            onChange={(e) => updateProduct(product.id, 'nombre', e.target.value)}
+                            onKeyDown={(e) => handleKeyDown(e, product.id, 'nombre')}
+                            placeholder="iPhone 15, Samsung Galaxy..."
+                            className="border-0 p-0 h-8 text-sm"
+                          />
+                        </td>
+                                                 <td className="border border-gray-200 p-2">
+                           <Input
+                             ref={(el) => {
+                               inputRefs.current[`${product.id}-descripcion`] = el
+                             }}
+                             value={product.descripcion}
+                             onChange={(e) => updateProduct(product.id, 'descripcion', e.target.value)}
+                             onKeyDown={(e) => handleKeyDown(e, product.id, 'descripcion')}
+                             placeholder="Descripción del producto"
+                             className="border-0 p-0 h-8 text-sm"
+                           />
+                         </td>
+                         <td className="border border-gray-200 p-2">
+                           <Input
+                             ref={(el) => {
+                               inputRefs.current[`${product.id}-categoria`] = el
+                             }}
+                             value={product.categoria}
+                             onChange={(e) => updateProduct(product.id, 'categoria', e.target.value)}
+                             onKeyDown={(e) => handleKeyDown(e, product.id, 'categoria')}
+                             placeholder="smartphones, tablets..."
+                             className="border-0 p-0 h-8 text-sm"
+                           />
+                         </td>
+                         <td className="border border-gray-200 p-2">
+                           <Input
+                             ref={(el) => {
+                               inputRefs.current[`${product.id}-precio`] = el
+                             }}
+                             type="number"
+                             step="0.01"
+                             value={product.precio}
+                             onChange={(e) => updateProduct(product.id, 'precio', e.target.value)}
+                             onKeyDown={(e) => handleKeyDown(e, product.id, 'precio')}
+                             placeholder="0.00"
+                             className="border-0 p-0 h-8 text-sm"
+                           />
+                         </td>
+                         <td className="border border-gray-200 p-2">
+                           <Input
+                             ref={(el) => {
+                               inputRefs.current[`${product.id}-marca`] = el
+                             }}
+                             value={product.marca}
+                             onChange={(e) => updateProduct(product.id, 'marca', e.target.value)}
+                             onKeyDown={(e) => handleKeyDown(e, product.id, 'marca')}
+                             placeholder="Apple, Samsung..."
+                             className="border-0 p-0 h-8 text-sm"
+                           />
+                         </td>
+                         <td className="border border-gray-200 p-2">
+                           <Input
+                             ref={(el) => {
+                               inputRefs.current[`${product.id}-urlImagen`] = el
+                             }}
+                             value={product.urlImagen}
+                             onChange={(e) => updateProduct(product.id, 'urlImagen', e.target.value)}
+                             onKeyDown={(e) => handleKeyDown(e, product.id, 'urlImagen')}
+                             placeholder="https://..."
+                             className="border-0 p-0 h-8 text-sm"
+                           />
+                         </td>
+                         <td className="border border-gray-200 p-2">
+                           <Input
+                             ref={(el) => {
+                               inputRefs.current[`${product.id}-rating`] = el
+                             }}
+                             type="number"
+                             step="0.1"
+                             min="0"
+                             max="5"
+                             value={product.rating}
+                             onChange={(e) => updateProduct(product.id, 'rating', e.target.value)}
+                             onKeyDown={(e) => handleKeyDown(e, product.id, 'rating')}
+                             className="border-0 p-0 h-8 text-sm"
+                           />
+                         </td>
+                         <td className="border border-gray-200 p-2">
+                           <Input
+                             ref={(el) => {
+                               inputRefs.current[`${product.id}-reviews`] = el
+                             }}
+                             type="number"
+                             value={product.reviews}
+                             onChange={(e) => updateProduct(product.id, 'reviews', e.target.value)}
+                             onKeyDown={(e) => handleKeyDown(e, product.id, 'reviews')}
+                             className="border-0 p-0 h-8 text-sm"
+                           />
+                         </td>
+                        <td className="border border-gray-200 p-2">
+                          <input
+                            type="checkbox"
+                            checked={product.enStock}
+                            onChange={(e) => updateProduct(product.id, 'enStock', e.target.checked)}
+                            className="h-4 w-4"
+                          />
+                        </td>
+                                                 <td className="border border-gray-200 p-2">
+                           <Input
+                             ref={(el) => {
+                               inputRefs.current[`${product.id}-caracteristicas`] = el
+                             }}
+                             value={product.caracteristicas}
+                             onChange={(e) => updateProduct(product.id, 'caracteristicas', e.target.value)}
+                             onKeyDown={(e) => handleKeyDown(e, product.id, 'caracteristicas')}
+                             placeholder="128GB, 5G, etc..."
+                             className="border-0 p-0 h-8 text-sm"
+                           />
+                         </td>
+                        <td className="border border-gray-200 p-2">
+                          {products.length > 1 && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => removeRow(product.id)}
+                              className="text-red-600 hover:text-red-700 h-6 w-6 p-0"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
               
-              <div className="flex gap-4">
-                <Button onClick={downloadTemplate} className="flex-1">
-                  <Download className="h-4 w-4 mr-2" />
-                  Descargar Plantilla
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Subir Archivo CSV</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".csv"
-                onChange={handleFileUpload}
-                className="hidden"
-              />
-              <Button
-                onClick={() => fileInputRef.current?.click()}
-                disabled={isProcessing}
-                className="w-full"
-              >
-                <Upload className="h-4 w-4 mr-2" />
-                {isProcessing ? 'Procesando...' : 'Seleccionar Archivo CSV'}
-              </Button>
+                             <div className="mt-4 text-sm text-gray-600">
+                 <p>💡 <strong>Consejo:</strong> Usa las flechas del teclado para navegar entre campos. Enter para nueva fila. Puedes editar estos campos en cualquier momento.</p>
+               </div>
             </CardContent>
           </Card>
 
