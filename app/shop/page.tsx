@@ -20,7 +20,8 @@ import { ShopHeader } from '@/components/shop/shop-header'
 import { ShopSidebar } from '@/components/shop/shop-sidebar'
 import { ShopFilters } from '@/components/shop/shop-filters'
 import { ProductGrid } from '@/components/shop/product-grid'
-import { ShopCart } from '@/components/shop/shop-cart'
+import { Cart } from '@/components/shop/cart'
+import { CartButton } from '@/components/shop/cart-button'
 import { useShop } from '@/hooks/use-shop'
 import { sampleProducts } from '@/components/shop/sample-products'
 import { Button } from '@/components/ui/button'
@@ -288,6 +289,7 @@ export default function ShopPage() {
               availableProducts={products}
               showAddButton={false}
               onShowAddModal={() => setShowCategoryModal(true)}
+              onAddToCart={addToCart}
             />
 
             {/* Filtros superiores */}
@@ -331,13 +333,19 @@ export default function ShopPage() {
       </div>
 
       {/* Carrito */}
-      <ShopCart
+      <Cart
+        items={cartItems}
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
-        cartItems={cartItems}
         onUpdateQuantity={updateCartQuantity}
         onRemoveItem={removeFromCart}
         onClearCart={clearCart}
+      />
+
+      {/* Botón flotante del carrito */}
+      <CartButton
+        items={cartItems}
+        onClick={() => setIsCartOpen(true)}
       />
 
       {/* Modal de carga masiva */}

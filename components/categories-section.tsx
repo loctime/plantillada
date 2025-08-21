@@ -39,6 +39,7 @@ interface CategoriesSectionProps {
   availableProducts: Product[]
   showAddButton?: boolean
   onShowAddModal?: () => void
+  onAddToCart?: (product: Product) => void
 }
 
 export function CategoriesSection({ 
@@ -48,7 +49,8 @@ export function CategoriesSection({
   onAddProductToCategory,
   availableProducts,
   showAddButton,
-  onShowAddModal 
+  onShowAddModal,
+  onAddToCart
 }: CategoriesSectionProps) {
   const [showAddModal, setShowAddModal] = useState(false)
   const [showBulkUploadModal, setShowBulkUploadModal] = useState(false)
@@ -337,10 +339,13 @@ export function CategoriesSection({
                                         <Edit3 className="h-4 w-4" />
                                       </button>
                                     )}
-                                    <button className="bg-pink-500 hover:bg-pink-600 text-white px-3 py-1.5 rounded-md text-sm font-medium transition-colors flex items-center space-x-1">
-                                      <ShoppingCart className="h-3 w-3" />
-                                      <span>Agregar</span>
-                                    </button>
+                                                                         <button 
+                                       onClick={() => onAddToCart?.(product)}
+                                       className="bg-pink-500 hover:bg-pink-600 text-white px-3 py-1.5 rounded-md text-sm font-medium transition-colors flex items-center space-x-1"
+                                     >
+                                       <ShoppingCart className="h-3 w-3" />
+                                       <span>Agregar</span>
+                                     </button>
                                   </div>
                                 </div>
                               </div>
