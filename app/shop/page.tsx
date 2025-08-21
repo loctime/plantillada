@@ -750,8 +750,8 @@ export default function ShopPage() {
               <a href="/" className="hover:text-blue-400 transition-colors">
                 Inicio
               </a>
-              <a href="/shop" className="hover:text-blue-400 transition-colors">
-                Tienda
+              <a href="/landing" className="hover:text-blue-400 transition-colors">
+                Landing
               </a>
               <a href="/linkhub" className="hover:text-blue-400 transition-colors">
                 LinkHub
@@ -812,8 +812,8 @@ export default function ShopPage() {
             <a href="/" className="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">
               Inicio
             </a>
-            <a href="/shop" className="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">
-              Tienda
+            <a href="/landing" className="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">
+              Landing
             </a>
             <a href="/linkhub" className="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">
               LinkHub

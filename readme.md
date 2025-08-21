@@ -67,19 +67,21 @@ palntillada/
 
 ## 🚀 Funcionalidades por Plantilla
 
-### 1. Landing Page
-- **Formularios de Contacto**: Integración con Calendly
-- **Secciones Editables**: Contenido dinámico
-- **Testimonios**: Gestión de testimonios de clientes
-- **SEO Optimizado**: Meta tags y estructura semántica
-- **Sistema de precios**: Opcional para bufetes de abogados
-
-### 2. Tienda Online
+### 1. Tienda Online (Página Principal)
 - **Catálogo de Productos**: Gestión completa de inventario
 - **Sistema de Clonación**: Extracción automática desde sitios externos
 - **Carrito de Compras**: Gestión de compras
 - **Estadísticas Avanzadas**: Métricas de rendimiento
 - **Procesamiento de Imágenes**: Optimización automática
+- **Página Principal**: La tienda es ahora la página principal del sitio
+
+### 2. Landing Page (Desactivada)
+- **Formularios de Contacto**: Integración con Calendly
+- **Secciones Editables**: Contenido dinámico
+- **Testimonios**: Gestión de testimonios de clientes
+- **SEO Optimizado**: Meta tags y estructura semántica
+- **Sistema de precios**: Opcional para bufetes de abogados
+- **Estado**: Desactivada como página principal
 
 ### 3. Centro de Psicología
 - **Colores terapéuticos**: Púrpuras y azules
@@ -194,6 +196,28 @@ service cloud.firestore {
 ```bash
 npm run dev
 ```
+
+### Configurar Página Principal
+
+El sistema ahora es inteligente y revisa la configuración del usuario para determinar qué página mostrar en la URL principal (`/`).
+
+#### Configurar Tienda como Página Principal
+```bash
+# Ejecutar el script de configuración
+node scripts/setup-shop-as-main.js
+```
+
+#### Configurar Landing como Página Principal
+```bash
+# Ejecutar el script de configuración
+node scripts/setup-landing-as-main.js
+```
+
+#### Cómo Funciona
+- **Página principal (`/`)**: Revisa `config.currentTemplate` y redirige automáticamente
+- **Plantillas disponibles**: `shop`, `landing`, `linkhub`, `multi`, `psicologos`
+- **Fallback**: Si no hay configuración, usa `landing` por defecto
+- **Navegación dinámica**: Se actualiza automáticamente según la plantilla activa
 
 ## 🎯 Uso del Sistema
 
@@ -319,6 +343,12 @@ vercel env add NEXT_PUBLIC_FIREBASE_API_KEY
 
 ### Configuración
 ```bash
+# Configurar tienda como página principal
+node scripts/setup-shop-as-main.js
+
+# Configurar landing como página principal
+node scripts/setup-landing-as-main.js
+
 # Aplicar diseño específico
 node scripts/apply-psicologos-design.js
 node scripts/apply-fumigaciones-design.js
@@ -454,6 +484,7 @@ Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más det
 - **Autenticación**: Ver `ADMIN_AUTH_README.md`
 - **Diseño de Fumigaciones**: Ver `FUMIGACIONES_EDITABLE_README.md`
 - **Sistema de Upload**: Ver `UPLOAD_SYSTEM_README.md`
+- **Tienda como Página Principal**: Ver `SHOP_AS_MAIN_README.md`
 
 ### Contacto
 - **Issues**: [GitHub Issues](https://github.com/loctime/plantillada/issues)
