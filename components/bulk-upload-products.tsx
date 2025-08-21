@@ -25,7 +25,7 @@ export function BulkUploadProducts({ onProductsUploaded, onClose }: BulkUploadPr
   const [validationErrors, setValidationErrors] = useState<string[]>([])
   const [products, setProducts] = useState<any[]>([
     {
-      id: '1',
+      id: Date.now().toString(),
       nombre: '',
       descripcion: '',
       categoria: '',
@@ -154,6 +154,87 @@ export function BulkUploadProducts({ onProductsUploaded, onClose }: BulkUploadPr
     }
   }
 
+  const handlePaste = (e: React.ClipboardEvent, productId: string, field: string) => {
+    const pastedText = e.clipboardData.getData('text')
+    
+    // Verificar si el texto pegado contiene múltiples líneas
+    if (pastedText.includes('\n')) {
+      e.preventDefault()
+      
+      const lines = pastedText.split('\n').filter(line => line.trim() !== '')
+      const currentIndex = products.findIndex(p => p.id === productId)
+      
+      console.log('📋 Paste detected:', lines.length, 'lines')
+      console.log('📋 Lines:', lines)
+      console.log('📋 Current index:', currentIndex)
+      console.log('📋 Current products count:', products.length)
+      
+      if (lines.length > 1) {
+        let newProducts = [...products]
+        
+        // Si hay suficientes filas existentes desde la posición actual, actualizar las existentes
+        if (currentIndex + lines.length <= products.length) {
+          console.log('📋 Updating existing rows from position', currentIndex)
+          
+          // Actualizar las filas existentes desde la posición actual
+          lines.forEach((line, lineIndex) => {
+            const targetIndex = currentIndex + lineIndex
+            if (newProducts[targetIndex]) {
+              newProducts[targetIndex] = {
+                ...newProducts[targetIndex],
+                [field]: line.trim()
+              }
+            }
+          })
+        } else {
+          console.log('📋 Creating new rows or extending existing ones')
+          
+          // Si necesitamos más filas, crear las que faltan
+          const neededRows = currentIndex + lines.length - products.length
+          if (neededRows > 0) {
+            for (let i = 0; i < neededRows; i++) {
+              const newProduct = {
+                id: Date.now().toString() + '-' + (products.length + i),
+                nombre: '',
+                descripcion: '',
+                categoria: '',
+                precio: '',
+                marca: '',
+                urlImagen: '',
+                rating: '4.0',
+                reviews: '0',
+                enStock: true,
+                caracteristicas: ''
+              }
+              newProducts.push(newProduct)
+            }
+          }
+          
+          // Ahora actualizar las filas desde la posición actual
+          lines.forEach((line, lineIndex) => {
+            const targetIndex = currentIndex + lineIndex
+            if (newProducts[targetIndex]) {
+              newProducts[targetIndex] = {
+                ...newProducts[targetIndex],
+                [field]: line.trim()
+              }
+            }
+          })
+        }
+        
+        console.log('📋 Final products array:', newProducts.length, 'products')
+        
+        setProducts(newProducts)
+        
+        // Mostrar notificación
+        toast({
+          title: 'Datos pegados',
+          description: `${lines.length} líneas pegadas desde la posición ${currentIndex + 1}`
+        })
+      }
+    }
+  }
+
   const validateProducts = (products: any[]): string[] => {
     const errors: string[] = []
     
@@ -213,6 +294,9 @@ export function BulkUploadProducts({ onProductsUploaded, onClose }: BulkUploadPr
       return
     }
 
+    console.log('📤 BulkUploadProducts - Sending formatted products:', formattedProducts.length)
+    console.log('📤 BulkUploadProducts - First product:', formattedProducts[0])
+    
     onProductsUploaded(formattedProducts)
     
     toast({
@@ -282,6 +366,7 @@ export function BulkUploadProducts({ onProductsUploaded, onClose }: BulkUploadPr
                             value={product.nombre}
                             onChange={(e) => updateProduct(product.id, 'nombre', e.target.value)}
                             onKeyDown={(e) => handleKeyDown(e, product.id, 'nombre')}
+                            onPaste={(e) => handlePaste(e, product.id, 'nombre')}
                             placeholder="iPhone 15, Samsung Galaxy..."
                             className="border-0 p-0 h-8 text-sm"
                           />
@@ -294,6 +379,7 @@ export function BulkUploadProducts({ onProductsUploaded, onClose }: BulkUploadPr
                              value={product.descripcion}
                              onChange={(e) => updateProduct(product.id, 'descripcion', e.target.value)}
                              onKeyDown={(e) => handleKeyDown(e, product.id, 'descripcion')}
+                             onPaste={(e) => handlePaste(e, product.id, 'descripcion')}
                              placeholder="Descripción del producto"
                              className="border-0 p-0 h-8 text-sm"
                            />
@@ -306,6 +392,7 @@ export function BulkUploadProducts({ onProductsUploaded, onClose }: BulkUploadPr
                              value={product.categoria}
                              onChange={(e) => updateProduct(product.id, 'categoria', e.target.value)}
                              onKeyDown={(e) => handleKeyDown(e, product.id, 'categoria')}
+                             onPaste={(e) => handlePaste(e, product.id, 'categoria')}
                              placeholder="smartphones, tablets..."
                              className="border-0 p-0 h-8 text-sm"
                            />
@@ -320,6 +407,7 @@ export function BulkUploadProducts({ onProductsUploaded, onClose }: BulkUploadPr
                              value={product.precio}
                              onChange={(e) => updateProduct(product.id, 'precio', e.target.value)}
                              onKeyDown={(e) => handleKeyDown(e, product.id, 'precio')}
+                             onPaste={(e) => handlePaste(e, product.id, 'precio')}
                              placeholder="0.00"
                              className="border-0 p-0 h-8 text-sm"
                            />
@@ -332,6 +420,7 @@ export function BulkUploadProducts({ onProductsUploaded, onClose }: BulkUploadPr
                              value={product.marca}
                              onChange={(e) => updateProduct(product.id, 'marca', e.target.value)}
                              onKeyDown={(e) => handleKeyDown(e, product.id, 'marca')}
+                             onPaste={(e) => handlePaste(e, product.id, 'marca')}
                              placeholder="Apple, Samsung..."
                              className="border-0 p-0 h-8 text-sm"
                            />
@@ -344,6 +433,7 @@ export function BulkUploadProducts({ onProductsUploaded, onClose }: BulkUploadPr
                              value={product.urlImagen}
                              onChange={(e) => updateProduct(product.id, 'urlImagen', e.target.value)}
                              onKeyDown={(e) => handleKeyDown(e, product.id, 'urlImagen')}
+                             onPaste={(e) => handlePaste(e, product.id, 'urlImagen')}
                              placeholder="https://..."
                              className="border-0 p-0 h-8 text-sm"
                            />
@@ -360,6 +450,7 @@ export function BulkUploadProducts({ onProductsUploaded, onClose }: BulkUploadPr
                              value={product.rating}
                              onChange={(e) => updateProduct(product.id, 'rating', e.target.value)}
                              onKeyDown={(e) => handleKeyDown(e, product.id, 'rating')}
+                             onPaste={(e) => handlePaste(e, product.id, 'rating')}
                              className="border-0 p-0 h-8 text-sm"
                            />
                          </td>
@@ -372,6 +463,7 @@ export function BulkUploadProducts({ onProductsUploaded, onClose }: BulkUploadPr
                              value={product.reviews}
                              onChange={(e) => updateProduct(product.id, 'reviews', e.target.value)}
                              onKeyDown={(e) => handleKeyDown(e, product.id, 'reviews')}
+                             onPaste={(e) => handlePaste(e, product.id, 'reviews')}
                              className="border-0 p-0 h-8 text-sm"
                            />
                          </td>
@@ -391,6 +483,7 @@ export function BulkUploadProducts({ onProductsUploaded, onClose }: BulkUploadPr
                              value={product.caracteristicas}
                              onChange={(e) => updateProduct(product.id, 'caracteristicas', e.target.value)}
                              onKeyDown={(e) => handleKeyDown(e, product.id, 'caracteristicas')}
+                             onPaste={(e) => handlePaste(e, product.id, 'caracteristicas')}
                              placeholder="128GB, 5G, etc..."
                              className="border-0 p-0 h-8 text-sm"
                            />
@@ -414,7 +507,7 @@ export function BulkUploadProducts({ onProductsUploaded, onClose }: BulkUploadPr
               </div>
               
                              <div className="mt-4 text-sm text-gray-600">
-                 <p>💡 <strong>Consejo:</strong> Usa las flechas del teclado para navegar entre campos. Enter para nueva fila. Puedes editar estos campos en cualquier momento.</p>
+                 <p>💡 <strong>Consejo:</strong> Usa las flechas del teclado para navegar entre campos. Enter para nueva fila. Pega múltiples líneas para crear filas automáticamente.</p>
                </div>
             </CardContent>
           </Card>
