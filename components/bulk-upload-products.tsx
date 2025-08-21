@@ -99,10 +99,16 @@ export function BulkUploadProducts({ onProductsUploaded, onClose, prefillCategor
     // Filtrar solo las categorías que no existen
     const newCategories: CategoryConfirmation[] = []
     categoriesWithProducts.forEach((data, categoryName) => {
-      const normalizedCategoryName = categoryName.toLowerCase()
+      const normalizedCategoryName = categoryName.toLowerCase().trim()
+      
+      // Comparar con las categorías existentes usando la misma lógica que useShop
       const exists = existingCategories.some(existing => 
-        existing.toLowerCase() === normalizedCategoryName
+        existing.toLowerCase().trim() === normalizedCategoryName
       )
+      
+      console.log(`🔍 Comparando categoría: "${categoryName}" con existentes:`, existingCategories)
+      console.log(`🔍 Normalizada: "${normalizedCategoryName}"`)
+      console.log(`🔍 Existe: ${exists}`)
       
       if (!exists) {
         newCategories.push({
@@ -111,9 +117,13 @@ export function BulkUploadProducts({ onProductsUploaded, onClose, prefillCategor
           productCount: data.count,
           products: data.products
         })
+        console.log(`🆕 Nueva categoría detectada: "${categoryName}"`)
+      } else {
+        console.log(`✅ Categoría existente encontrada: "${categoryName}"`)
       }
     })
     
+    console.log(`📊 Total de categorías nuevas detectadas: ${newCategories.length}`)
     return newCategories
   }
 

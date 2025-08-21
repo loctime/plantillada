@@ -2,7 +2,18 @@
 
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
-import { Plus, ChevronDown, ChevronUp, FolderOpen, Upload } from 'lucide-react'
+import { 
+  FolderOpen, 
+  ChevronUp, 
+  ChevronDown, 
+  Plus, 
+  Upload,
+  Heart,
+  Eye,
+  Edit3,
+  Star,
+  ShoppingCart
+} from 'lucide-react'
 import { Product } from '@/components/shop/types'
 import { useAdmin } from '@/lib/admin-context'
 import { BulkUploadProducts } from '@/components/bulk-upload-products'
@@ -225,41 +236,149 @@ export function CategoriesSection({
               }`}>
                 <div className="p-4 bg-white">
                   {category.products.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div className="space-y-3">
                       {category.products.map((product) => (
-                        <div key={product.id} className="border border-gray-200 rounded-lg p-3">
-                          <div className="flex items-center space-x-3">
-                            <img 
-                              src={product.image || '/placeholder.jpg'} 
-                              alt={product.name}
-                              className="w-12 h-12 rounded-lg object-cover"
-                            />
-                            <div className="flex-1">
-                              <h4 className="font-medium text-gray-900">{product.name}</h4>
-                              <p className="text-sm text-gray-600">${product.price}</p>
+                        <div key={product.id} className="group bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all duration-200">
+                          <div className="flex items-center space-x-4">
+                            {/* Imagen del producto */}
+                            <div className="relative flex-shrink-0">
+                              <img 
+                                src={product.image || '/placeholder.jpg'} 
+                                alt={product.name}
+                                className="w-16 h-16 rounded-lg object-cover"
+                              />
+                              {/* Badge de descuento */}
+                              {product.originalPrice && product.originalPrice > product.price && (
+                                <div className="absolute -top-2 -left-2">
+                                  <span className="bg-blue-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-md">
+                                    -{Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                            
+                            {/* Información del producto */}
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-start justify-between">
+                                <div className="flex-1 min-w-0">
+                                  {/* Nombre y marca */}
+                                  <div className="flex items-center space-x-2 mb-1">
+                                    <h4 className="font-semibold text-gray-900 text-sm truncate">
+                                      {product.name}
+                                    </h4>
+                                    <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded">
+                                      {product.brand || 'Sin marca'}
+                                    </span>
+                                  </div>
+                                  
+                                  {/* Descripción */}
+                                  {product.description && (
+                                    <p className="text-xs text-gray-600 mb-2 line-clamp-1">
+                                      {product.description}
+                                    </p>
+                                  )}
+                                  
+                                  {/* Características */}
+                                  {product.features && product.features.length > 0 && (
+                                    <div className="flex flex-wrap gap-1 mb-2">
+                                      {product.features.slice(0, 2).map((feature, index) => (
+                                        <span
+                                          key={index}
+                                          className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded"
+                                        >
+                                          {feature}
+                                        </span>
+                                      ))}
+                                    </div>
+                                  )}
+                                  
+                                  {/* Rating */}
+                                  <div className="flex items-center space-x-2">
+                                    <div className="flex items-center space-x-1">
+                                      {[1, 2, 3, 4, 5].map((star) => (
+                                        <Star
+                                          key={star}
+                                          className={`h-3 w-3 ${
+                                            star <= product.rating
+                                              ? 'text-yellow-400 fill-current'
+                                              : 'text-gray-300'
+                                          }`}
+                                        />
+                                      ))}
+                                    </div>
+                                    <span className="text-xs text-gray-500">({product.reviews || 0})</span>
+                                  </div>
+                                </div>
+                                
+                                {/* Precio y acciones */}
+                                <div className="flex flex-col items-end space-y-2 ml-4">
+                                  {/* Precio */}
+                                  <div className="text-right">
+                                    <div className="text-lg font-bold text-blue-600">
+                                      ${product.price.toFixed(2)}
+                                    </div>
+                                    {product.originalPrice && product.originalPrice > product.price && (
+                                      <div className="text-sm text-gray-500 line-through">
+                                        ${product.originalPrice.toFixed(2)}
+                                      </div>
+                                    )}
+                                  </div>
+                                  
+                                  {/* Botones de acción */}
+                                  <div className="flex items-center space-x-2">
+                                    <button className="p-2 text-gray-400 hover:text-pink-500 transition-colors">
+                                      <Heart className="h-4 w-4" />
+                                    </button>
+                                    <button className="p-2 text-gray-400 hover:text-blue-500 transition-colors">
+                                      <Eye className="h-4 w-4" />
+                                    </button>
+                                    {isAdminMode && (
+                                      <button className="p-2 text-gray-400 hover:text-green-500 transition-colors">
+                                        <Edit3 className="h-4 w-4" />
+                                      </button>
+                                    )}
+                                    <button className="bg-pink-500 hover:bg-pink-600 text-white px-3 py-1.5 rounded-md text-sm font-medium transition-colors flex items-center space-x-1">
+                                      <ShoppingCart className="h-3 w-3" />
+                                      <span>Agregar</span>
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
                             </div>
                           </div>
                         </div>
                       ))}
+                      
+                      {/* Botón para agregar más productos */}
                       {isAdminMode && (
-                        <div className="border border-dashed border-gray-300 rounded-lg p-4 flex flex-col items-center justify-center space-y-2">
-                          <p className="text-sm text-gray-500">Agregar más productos</p>
+                        <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 flex items-center justify-between hover:border-gray-400 transition-colors">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
+                              <Plus className="h-6 w-6 text-gray-400" />
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium text-gray-500">Agregar más productos</p>
+                              <p className="text-xs text-gray-400">Individual o carga masiva</p>
+                            </div>
+                          </div>
                           <div className="flex space-x-2">
                             <Button 
                               variant="outline" 
                               size="sm" 
                               onClick={() => handleAddProductToCategory(category.id)}
+                              className="flex items-center space-x-1"
                             >
-                              <Plus className="h-4 w-4 mr-1" />
-                              Individual
+                              <Plus className="h-4 w-4" />
+                              <span>Individual</span>
                             </Button>
                             <Button 
                               variant="outline" 
                               size="sm" 
                               onClick={() => handleBulkUploadToCategory(category.id)}
+                              className="flex items-center space-x-1"
                             >
-                              <Upload className="h-4 w-4 mr-1" />
-                              Masiva
+                              <Upload className="h-4 w-4" />
+                              <span>Masiva</span>
                             </Button>
                           </div>
                         </div>
