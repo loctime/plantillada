@@ -17,6 +17,15 @@ interface Promotion {
   isActive: boolean
 }
 
+interface Category {
+  id: string
+  name: string
+  description: string
+  isExpanded: boolean
+  products: Product[]
+  isActive: boolean
+}
+
 export function useShop() {
   const [products, setProducts] = useState<Product[]>(sampleProducts)
   const [filteredProducts, setFilteredProducts] = useState<Product[]>(sampleProducts)
@@ -31,10 +40,20 @@ export function useShop() {
   const [promotions, setPromotions] = useState<Promotion[]>([])
   const [selectedPromotion, setSelectedPromotion] = useState<Promotion | null>(null)
   const [showPromotionSelector, setShowPromotionSelector] = useState(false)
+  const [categories, setCategories] = useState<Category[]>([
+    {
+      id: 'category-1',
+      name: 'Categoría 1',
+      description: 'Primera categoría de productos',
+      isExpanded: true,
+      products: [],
+      isActive: true
+    }
+  ])
   const { toast } = useToast()
 
-  // Obtener categorías únicas
-  const categories = useMemo(() => {
+  // Obtener categorías únicas de productos
+  const productCategories = useMemo(() => {
     const cats = [...new Set(products.map(p => p.category))]
     return cats.sort()
   }, [products])
@@ -162,6 +181,35 @@ export function useShop() {
     setSortBy('name-asc')
   }
 
+  // Funciones de categorías
+  const addCategory = (category: Category) => {
+    setCategories(prev => [...prev, category])
+    toast({
+      title: 'Categoría creada',
+      description: `${category.name} se ha creado exitosamente`
+    })
+  }
+
+  const toggleCategory = (categoryId: string) => {
+    setCategories(prev => 
+      prev.map(cat => 
+        cat.id === categoryId 
+          ? { ...cat, isExpanded: !cat.isExpanded }
+          : cat
+      )
+    )
+  }
+
+  const addProductToCategory = (categoryId: string, product: Product) => {
+    setCategories(prev => 
+      prev.map(cat => 
+        cat.id === categoryId 
+          ? { ...cat, products: [...cat.products, product] }
+          : cat
+      )
+    )
+  }
+
   // Funciones de promociones
   const addPromotion = (promotion: Promotion) => {
     setPromotions(prev => [...prev, promotion])
@@ -227,7 +275,7 @@ export function useShop() {
     setSelectedRating,
     sortBy,
     setSortBy,
-    categories,
+    productCategories,
     cartItems,
     isCartOpen,
     setIsCartOpen,
@@ -237,6 +285,7 @@ export function useShop() {
     selectedPromotion,
     showPromotionSelector,
     setShowPromotionSelector,
+    categories,
     
     // Funciones
     addToCart,
@@ -247,6 +296,9 @@ export function useShop() {
     clearFilters,
     addPromotion,
     handleAddPromotionToCart,
-    handlePromotionSelection
+    handlePromotionSelection,
+    addCategory,
+    toggleCategory,
+    addProductToCategory
   }
 }

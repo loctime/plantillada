@@ -12,6 +12,7 @@ import { useImageModal } from '@/hooks/use-image-modal'
 import { BulkUploadProducts } from '@/components/bulk-upload-products'
 import { PromotionsSection } from '@/components/promotions-section'
 import { PromotionSelectorModal } from '@/components/promotion-selector-modal'
+import { CategoriesSection } from '@/components/categories-section'
 
 // Componentes de la tienda
 import { ShopHeader } from '@/components/shop/shop-header'
@@ -44,7 +45,7 @@ export default function ShopPage() {
     setSelectedRating,
     sortBy,
     setSortBy,
-    categories,
+    productCategories,
     cartItems,
     isCartOpen,
     setIsCartOpen,
@@ -54,6 +55,7 @@ export default function ShopPage() {
     selectedPromotion,
     showPromotionSelector,
     setShowPromotionSelector,
+    categories,
     addToCart,
     updateCartQuantity,
     removeFromCart,
@@ -62,7 +64,10 @@ export default function ShopPage() {
     clearFilters,
     addPromotion,
     handleAddPromotionToCart,
-    handlePromotionSelection
+    handlePromotionSelection,
+    addCategory,
+    toggleCategory,
+    addProductToCategory
   } = useShop()
 
   // Debug logs
@@ -200,7 +205,7 @@ export default function ShopPage() {
             setPriceRange={setPriceRange}
             selectedCategory={selectedCategory}
             setSelectedCategory={setSelectedCategory}
-            categories={categories}
+            categories={productCategories}
             selectedRating={selectedRating}
             setSelectedRating={setSelectedRating}
             onClearFilters={clearFilters}
@@ -216,6 +221,15 @@ export default function ShopPage() {
               availableProducts={products}
             />
 
+            {/* Sección de Categorías */}
+            <CategoriesSection
+              categories={categories}
+              onAddCategory={addCategory}
+              onToggleCategory={toggleCategory}
+              onAddProductToCategory={addProductToCategory}
+              availableProducts={products}
+            />
+
             {/* Filtros superiores */}
             <ShopFilters
               searchTerm={searchTerm}
@@ -224,7 +238,7 @@ export default function ShopPage() {
               setPriceRange={setPriceRange}
               selectedCategory={selectedCategory}
               setSelectedCategory={setSelectedCategory}
-              categories={categories}
+              categories={productCategories}
               sortBy={sortBy}
               setSortBy={setSortBy}
               sortOptions={shopConfig.sortOptions}
