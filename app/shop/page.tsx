@@ -78,8 +78,11 @@ export default function ShopPage() {
     handleAddPromotionToCart,
     handlePromotionSelection,
     addCategory,
+    updateCategory,
     toggleCategory,
-    addProductToCategory
+    addProductToCategory,
+    updateProduct,
+    deleteProduct
   } = useShop()
 
   // Debug logs
@@ -290,6 +293,9 @@ export default function ShopPage() {
               showAddButton={false}
               onShowAddModal={() => setShowCategoryModal(true)}
               onAddToCart={addToCart}
+              onUpdateCategory={updateCategory}
+              onUpdateProduct={updateProduct}
+              onDeleteProduct={deleteProduct}
             />
 
             {/* Filtros superiores */}

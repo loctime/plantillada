@@ -12,7 +12,10 @@ import {
   Eye,
   Edit3,
   Star,
-  ShoppingCart
+  ShoppingCart,
+  Save,
+  X,
+  Trash2
 } from 'lucide-react'
 import { Product } from '@/components/shop/types'
 import { useAdmin } from '@/lib/admin-context'
@@ -21,6 +24,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { EditableText } from '@/components/editable-text'
 
 interface Category {
   id: string
@@ -40,6 +44,9 @@ interface CategoriesSectionProps {
   showAddButton?: boolean
   onShowAddModal?: () => void
   onAddToCart?: (product: Product) => void
+  onUpdateCategory?: (categoryId: string, updates: Partial<Category>) => void
+  onUpdateProduct?: (categoryId: string, productId: string, updates: Partial<Product>) => void
+  onDeleteProduct?: (categoryId: string, productId: string) => void
 }
 
 export function CategoriesSection({ 
@@ -50,7 +57,10 @@ export function CategoriesSection({
   availableProducts,
   showAddButton,
   onShowAddModal,
-  onAddToCart
+  onAddToCart,
+  onUpdateCategory,
+  onUpdateProduct,
+  onDeleteProduct
 }: CategoriesSectionProps) {
   const [showAddModal, setShowAddModal] = useState(false)
   const [showBulkUploadModal, setShowBulkUploadModal] = useState(false)
@@ -69,6 +79,8 @@ export function CategoriesSection({
     inStock: true,
     features: ''
   })
+  const [editingProduct, setEditingProduct] = useState<string | null>(null)
+  const [editingProductData, setEditingProductData] = useState<Partial<Product>>({})
   const { isAdminMode } = useAdmin()
 
   const activeCategories = categories.filter(c => c.isActive)
@@ -184,6 +196,41 @@ export function CategoriesSection({
     setShowBulkUploadModal(false)
   }
 
+  // Funciones de edición inline
+  const handleStartEditProduct = (product: Product) => {
+    setEditingProduct(product.id)
+    setEditingProductData({
+      name: product.name,
+      description: product.description,
+      price: product.price,
+      brand: product.brand,
+      image: product.image,
+      rating: product.rating,
+      reviews: product.reviews,
+      inStock: product.inStock,
+      features: product.features
+    })
+  }
+
+  const handleSaveProductEdit = async (categoryId: string, productId: string) => {
+    if (onUpdateProduct && editingProductData) {
+      await onUpdateProduct(categoryId, productId, editingProductData)
+      setEditingProduct(null)
+      setEditingProductData({})
+    }
+  }
+
+  const handleCancelProductEdit = () => {
+    setEditingProduct(null)
+    setEditingProductData({})
+  }
+
+  const handleDeleteProduct = async (categoryId: string, productId: string) => {
+    if (onDeleteProduct) {
+      await onDeleteProduct(categoryId, productId)
+    }
+  }
+
   return (
     <div className="mb-8">
       {/* Header de la sección */}
@@ -216,9 +263,29 @@ export function CategoriesSection({
                   <div className="flex items-center space-x-3">
                     <FolderOpen className="h-5 w-5 text-gray-600" />
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900">{category.name}</h3>
-                      {category.description && (
-                        <p className="text-sm text-gray-600">{category.description}</p>
+                      {isAdminMode && onUpdateCategory ? (
+                        <div className="space-y-1">
+                          <EditableText
+                            value={category.name}
+                            onSave={(value: string) => onUpdateCategory(category.id, { name: value })}
+                            className="text-lg font-semibold text-gray-900"
+                            placeholder="Nombre de la categoría"
+                          />
+                          <EditableText
+                            value={category.description}
+                            onSave={(value: string) => onUpdateCategory(category.id, { description: value })}
+                            className="text-sm text-gray-600"
+                            placeholder="Descripción de la categoría"
+                            multiline
+                          />
+                        </div>
+                      ) : (
+                        <div>
+                          <h3 className="text-lg font-semibold text-gray-900">{category.name}</h3>
+                          {category.description && (
+                            <p className="text-sm text-gray-600">{category.description}</p>
+                          )}
+                        </div>
                       )}
                     </div>
                   </div>
@@ -241,116 +308,238 @@ export function CategoriesSection({
                     <div className="space-y-3">
                       {category.products.map((product) => (
                         <div key={product.id} className="group bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all duration-200">
-                          <div className="flex items-center space-x-4">
-                            {/* Imagen del producto */}
-                            <div className="relative flex-shrink-0">
-                              <img 
-                                src={product.image || '/placeholder.jpg'} 
-                                alt={product.name}
-                                className="w-16 h-16 rounded-lg object-cover"
-                              />
-                              {/* Badge de descuento */}
-                              {product.originalPrice && product.originalPrice > product.price && (
-                                <div className="absolute -top-2 -left-2">
-                                  <span className="bg-blue-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-md">
-                                    -{Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
-                                  </span>
+                          {editingProduct === product.id ? (
+                            // Modo edición
+                            <div className="space-y-4">
+                              <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                  <Label className="text-sm font-medium">Nombre</Label>
+                                  <Input
+                                    value={editingProductData.name || ''}
+                                    onChange={(e) => setEditingProductData({ ...editingProductData, name: e.target.value })}
+                                    className="mt-1"
+                                  />
                                 </div>
-                              )}
+                                <div>
+                                  <Label className="text-sm font-medium">Precio</Label>
+                                  <Input
+                                    type="number"
+                                    step="0.01"
+                                    value={editingProductData.price || ''}
+                                    onChange={(e) => setEditingProductData({ ...editingProductData, price: parseFloat(e.target.value) || 0 })}
+                                    className="mt-1"
+                                  />
+                                </div>
+                                <div>
+                                  <Label className="text-sm font-medium">Marca</Label>
+                                  <Input
+                                    value={editingProductData.brand || ''}
+                                    onChange={(e) => setEditingProductData({ ...editingProductData, brand: e.target.value })}
+                                    className="mt-1"
+                                  />
+                                </div>
+                                <div>
+                                  <Label className="text-sm font-medium">URL Imagen</Label>
+                                  <Input
+                                    value={editingProductData.image || ''}
+                                    onChange={(e) => setEditingProductData({ ...editingProductData, image: e.target.value })}
+                                    className="mt-1"
+                                  />
+                                </div>
+                                <div>
+                                  <Label className="text-sm font-medium">Rating</Label>
+                                  <Input
+                                    type="number"
+                                    step="0.1"
+                                    min="0"
+                                    max="5"
+                                    value={editingProductData.rating || ''}
+                                    onChange={(e) => setEditingProductData({ ...editingProductData, rating: parseFloat(e.target.value) || 0 })}
+                                    className="mt-1"
+                                  />
+                                </div>
+                                <div>
+                                  <Label className="text-sm font-medium">Reviews</Label>
+                                  <Input
+                                    type="number"
+                                    value={editingProductData.reviews || ''}
+                                    onChange={(e) => setEditingProductData({ ...editingProductData, reviews: parseInt(e.target.value) || 0 })}
+                                    className="mt-1"
+                                  />
+                                </div>
+                              </div>
+                              <div>
+                                <Label className="text-sm font-medium">Descripción</Label>
+                                <Textarea
+                                  value={editingProductData.description || ''}
+                                  onChange={(e) => setEditingProductData({ ...editingProductData, description: e.target.value })}
+                                  className="mt-1"
+                                  rows={2}
+                                />
+                              </div>
+                              <div>
+                                <Label className="text-sm font-medium">Características (separadas por coma)</Label>
+                                <Input
+                                  value={editingProductData.features?.join(', ') || ''}
+                                  onChange={(e) => setEditingProductData({ 
+                                    ...editingProductData, 
+                                    features: e.target.value.split(',').map(f => f.trim()).filter(Boolean) 
+                                  })}
+                                  className="mt-1"
+                                />
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <input
+                                  type="checkbox"
+                                  id={`inStock-${product.id}`}
+                                  checked={editingProductData.inStock || false}
+                                  onChange={(e) => setEditingProductData({ ...editingProductData, inStock: e.target.checked })}
+                                />
+                                <Label htmlFor={`inStock-${product.id}`} className="text-sm">En Stock</Label>
+                              </div>
+                              <div className="flex justify-end space-x-2">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={handleCancelProductEdit}
+                                >
+                                  <X className="h-4 w-4 mr-1" />
+                                  Cancelar
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  onClick={() => handleSaveProductEdit(category.id, product.id)}
+                                  className="bg-green-600 hover:bg-green-700"
+                                >
+                                  <Save className="h-4 w-4 mr-1" />
+                                  Guardar
+                                </Button>
+                              </div>
                             </div>
-                            
-                            {/* Información del producto */}
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-start justify-between">
-                                <div className="flex-1 min-w-0">
-                                  {/* Nombre y marca */}
-                                  <div className="flex items-center space-x-2 mb-1">
-                                    <h4 className="font-semibold text-gray-900 text-sm truncate">
-                                      {product.name}
-                                    </h4>
-                                    <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded">
-                                      {product.brand || 'Sin marca'}
+                          ) : (
+                            // Modo visualización
+                            <div className="flex items-center space-x-4">
+                              {/* Imagen del producto */}
+                              <div className="relative flex-shrink-0">
+                                <img 
+                                  src={product.image || '/placeholder.jpg'} 
+                                  alt={product.name}
+                                  className="w-16 h-16 rounded-lg object-cover"
+                                />
+                                {/* Badge de descuento */}
+                                {product.originalPrice && product.originalPrice > product.price && (
+                                  <div className="absolute -top-2 -left-2">
+                                    <span className="bg-blue-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-md">
+                                      -{Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
                                     </span>
                                   </div>
-                                  
-                                  {/* Descripción */}
-                                  {product.description && (
-                                    <p className="text-xs text-gray-600 mb-2 line-clamp-1">
-                                      {product.description}
-                                    </p>
-                                  )}
-                                  
-                                  {/* Características */}
-                                  {product.features && product.features.length > 0 && (
-                                    <div className="flex flex-wrap gap-1 mb-2">
-                                      {product.features.slice(0, 2).map((feature, index) => (
-                                        <span
-                                          key={index}
-                                          className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded"
-                                        >
-                                          {feature}
-                                        </span>
-                                      ))}
+                                )}
+                              </div>
+                              
+                              {/* Información del producto */}
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-start justify-between">
+                                  <div className="flex-1 min-w-0">
+                                    {/* Nombre y marca */}
+                                    <div className="flex items-center space-x-2 mb-1">
+                                      <h4 className="font-semibold text-gray-900 text-sm truncate">
+                                        {product.name}
+                                      </h4>
+                                      <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded">
+                                        {product.brand || 'Sin marca'}
+                                      </span>
                                     </div>
-                                  )}
-                                  
-                                  {/* Rating */}
-                                  <div className="flex items-center space-x-2">
-                                    <div className="flex items-center space-x-1">
-                                      {[1, 2, 3, 4, 5].map((star) => (
-                                        <Star
-                                          key={star}
-                                          className={`h-3 w-3 ${
-                                            star <= product.rating
-                                              ? 'text-yellow-400 fill-current'
-                                              : 'text-gray-300'
-                                          }`}
-                                        />
-                                      ))}
-                                    </div>
-                                    <span className="text-xs text-gray-500">({product.reviews || 0})</span>
-                                  </div>
-                                </div>
-                                
-                                {/* Precio y acciones */}
-                                <div className="flex flex-col items-end space-y-2 ml-4">
-                                  {/* Precio */}
-                                  <div className="text-right">
-                                    <div className="text-lg font-bold text-blue-600">
-                                      ${product.price.toFixed(2)}
-                                    </div>
-                                    {product.originalPrice && product.originalPrice > product.price && (
-                                      <div className="text-sm text-gray-500 line-through">
-                                        ${product.originalPrice.toFixed(2)}
+                                    
+                                    {/* Descripción */}
+                                    {product.description && (
+                                      <p className="text-xs text-gray-600 mb-2 line-clamp-1">
+                                        {product.description}
+                                      </p>
+                                    )}
+                                    
+                                    {/* Características */}
+                                    {product.features && product.features.length > 0 && (
+                                      <div className="flex flex-wrap gap-1 mb-2">
+                                        {product.features.slice(0, 2).map((feature, index) => (
+                                          <span
+                                            key={index}
+                                            className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded"
+                                          >
+                                            {feature}
+                                          </span>
+                                        ))}
                                       </div>
                                     )}
+                                    
+                                    {/* Rating */}
+                                    <div className="flex items-center space-x-2">
+                                      <div className="flex items-center space-x-1">
+                                        {[1, 2, 3, 4, 5].map((star) => (
+                                          <Star
+                                            key={star}
+                                            className={`h-3 w-3 ${
+                                              star <= product.rating
+                                                ? 'text-yellow-400 fill-current'
+                                                : 'text-gray-300'
+                                            }`}
+                                          />
+                                        ))}
+                                      </div>
+                                      <span className="text-xs text-gray-500">({product.reviews || 0})</span>
+                                    </div>
                                   </div>
                                   
-                                  {/* Botones de acción */}
-                                  <div className="flex items-center space-x-2">
-                                    <button className="p-2 text-gray-400 hover:text-pink-500 transition-colors">
-                                      <Heart className="h-4 w-4" />
-                                    </button>
-                                    <button className="p-2 text-gray-400 hover:text-blue-500 transition-colors">
-                                      <Eye className="h-4 w-4" />
-                                    </button>
-                                    {isAdminMode && (
-                                      <button className="p-2 text-gray-400 hover:text-green-500 transition-colors">
-                                        <Edit3 className="h-4 w-4" />
+                                  {/* Precio y acciones */}
+                                  <div className="flex flex-col items-end space-y-2 ml-4">
+                                    {/* Precio */}
+                                    <div className="text-right">
+                                      <div className="text-lg font-bold text-blue-600">
+                                        ${product.price.toFixed(2)}
+                                      </div>
+                                      {product.originalPrice && product.originalPrice > product.price && (
+                                        <div className="text-sm text-gray-500 line-through">
+                                          ${product.originalPrice.toFixed(2)}
+                                        </div>
+                                      )}
+                                    </div>
+                                    
+                                    {/* Botones de acción */}
+                                    <div className="flex items-center space-x-2">
+                                      <button className="p-2 text-gray-400 hover:text-pink-500 transition-colors">
+                                        <Heart className="h-4 w-4" />
                                       </button>
-                                    )}
-                                                                         <button 
-                                       onClick={() => onAddToCart?.(product)}
-                                       className="bg-pink-500 hover:bg-pink-600 text-white px-3 py-1.5 rounded-md text-sm font-medium transition-colors flex items-center space-x-1"
-                                     >
-                                       <ShoppingCart className="h-3 w-3" />
-                                       <span>Agregar</span>
-                                     </button>
+                                      <button className="p-2 text-gray-400 hover:text-blue-500 transition-colors">
+                                        <Eye className="h-4 w-4" />
+                                      </button>
+                                      {isAdminMode && (
+                                        <>
+                                          <button 
+                                            className="p-2 text-gray-400 hover:text-green-500 transition-colors"
+                                            onClick={() => handleStartEditProduct(product)}
+                                          >
+                                            <Edit3 className="h-4 w-4" />
+                                          </button>
+                                          <button 
+                                            className="p-2 text-gray-400 hover:text-red-500 transition-colors"
+                                            onClick={() => handleDeleteProduct(category.id, product.id)}
+                                          >
+                                            <Trash2 className="h-4 w-4" />
+                                          </button>
+                                        </>
+                                      )}
+                                      <button 
+                                        onClick={() => onAddToCart?.(product)}
+                                        className="bg-pink-500 hover:bg-pink-600 text-white px-3 py-1.5 rounded-md text-sm font-medium transition-colors flex items-center space-x-1"
+                                      >
+                                        <ShoppingCart className="h-3 w-3" />
+                                        <span>Agregar</span>
+                                      </button>
+                                    </div>
                                   </div>
                                 </div>
                               </div>
                             </div>
-                          </div>
+                          )}
                         </div>
                       ))}
                       

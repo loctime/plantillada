@@ -333,6 +333,20 @@ export function useShop() {
     })
   }
 
+  const updateCategory = async (categoryId: string, updates: Partial<Category>) => {
+    const updatedCategories = categories.map(cat => 
+      cat.id === categoryId 
+        ? { ...cat, ...updates }
+        : cat
+    )
+    setCategories(updatedCategories)
+    await persistCategories(updatedCategories)
+    toast({
+      title: 'Categoría actualizada',
+      description: 'Los cambios se han guardado exitosamente'
+    })
+  }
+
   const toggleCategory = async (categoryId: string) => {
     const updatedCategories = categories.map(cat => 
       cat.id === categoryId 
@@ -359,6 +373,54 @@ export function useShop() {
     toast({
       title: 'Producto agregado',
       description: `${product.name} se agregó a la categoría exitosamente`
+    })
+  }
+
+  const updateProduct = async (categoryId: string, productId: string, updates: Partial<Product>) => {
+    // Actualizar el producto en la lista general
+    setProducts(prev => prev.map(p => 
+      p.id === productId ? { ...p, ...updates } : p
+    ))
+    
+    // Actualizar el producto en la categoría específica
+    const updatedCategories = categories.map(cat => 
+      cat.id === categoryId 
+        ? { 
+            ...cat, 
+            products: cat.products.map(p => 
+              p.id === productId ? { ...p, ...updates } : p
+            )
+          }
+        : cat
+    )
+    setCategories(updatedCategories)
+    await persistCategories(updatedCategories)
+    
+    toast({
+      title: 'Producto actualizado',
+      description: 'Los cambios se han guardado exitosamente'
+    })
+  }
+
+  const deleteProduct = async (categoryId: string, productId: string) => {
+    // Eliminar el producto de la lista general
+    setProducts(prev => prev.filter(p => p.id !== productId))
+    
+    // Eliminar el producto de la categoría específica
+    const updatedCategories = categories.map(cat => 
+      cat.id === categoryId 
+        ? { 
+            ...cat, 
+            products: cat.products.filter(p => p.id !== productId)
+          }
+        : cat
+    )
+    setCategories(updatedCategories)
+    await persistCategories(updatedCategories)
+    
+    toast({
+      title: 'Producto eliminado',
+      description: 'El producto se ha eliminado exitosamente'
     })
   }
 
@@ -450,8 +512,11 @@ export function useShop() {
     handleAddPromotionToCart,
     handlePromotionSelection,
     addCategory,
+    updateCategory,
     toggleCategory,
     addProductToCategory,
+    updateProduct,
+    deleteProduct,
     persistCategories
   }
 }
