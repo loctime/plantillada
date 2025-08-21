@@ -2,9 +2,14 @@
 
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
-import { Plus, ChevronDown, ChevronUp, FolderOpen } from 'lucide-react'
+import { Plus, ChevronDown, ChevronUp, FolderOpen, Upload } from 'lucide-react'
 import { Product } from '@/components/shop/types'
 import { useAdmin } from '@/lib/admin-context'
+import { BulkUploadProducts } from '@/components/bulk-upload-products'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
 
 interface Category {
   id: string
@@ -21,6 +26,8 @@ interface CategoriesSectionProps {
   onToggleCategory: (categoryId: string) => void
   onAddProductToCategory: (categoryId: string, product: Product) => void
   availableProducts: Product[]
+  showAddButton?: boolean
+  onShowAddModal?: () => void
 }
 
 export function CategoriesSection({ 
@@ -28,11 +35,27 @@ export function CategoriesSection({
   onAddCategory, 
   onToggleCategory,
   onAddProductToCategory,
-  availableProducts 
+  availableProducts,
+  showAddButton,
+  onShowAddModal 
 }: CategoriesSectionProps) {
   const [showAddModal, setShowAddModal] = useState(false)
+  const [showBulkUploadModal, setShowBulkUploadModal] = useState(false)
+  const [showAddProductModal, setShowAddProductModal] = useState(false)
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string>('')
   const [newCategoryName, setNewCategoryName] = useState('')
   const [newCategoryDescription, setNewCategoryDescription] = useState('')
+  const [newProduct, setNewProduct] = useState({
+    name: '',
+    description: '',
+    price: '',
+    brand: '',
+    image: '/placeholder.jpg',
+    rating: '4.0',
+    reviews: '0',
+    inStock: true,
+    features: ''
+  })
   const { isAdminMode } = useAdmin()
 
   const activeCategories = categories.filter(c => c.isActive)
@@ -65,7 +88,7 @@ export function CategoriesSection({
     }
   }
 
-  const handleAddCategory = () => {
+  const handleAddCategory = async () => {
     if (!newCategoryName.trim()) return
 
     const newCategory: Category = {
@@ -77,10 +100,75 @@ export function CategoriesSection({
       isActive: true
     }
 
-    onAddCategory(newCategory)
+    await onAddCategory(newCategory)
     setNewCategoryName('')
     setNewCategoryDescription('')
     setShowAddModal(false)
+  }
+
+  const handleAddProductToCategory = (categoryId: string) => {
+    setSelectedCategoryId(categoryId)
+    setShowAddProductModal(true)
+  }
+
+  const handleBulkUploadToCategory = (categoryId: string) => {
+    setSelectedCategoryId(categoryId)
+    setShowBulkUploadModal(true)
+  }
+
+  const handleSaveProduct = async () => {
+    if (!newProduct.name.trim() || !newProduct.price) return
+
+    const selectedCategory = categories.find(c => c.id === selectedCategoryId)
+    if (!selectedCategory) return
+
+    const product: Product = {
+      id: `product-${Date.now()}`,
+      name: newProduct.name.trim(),
+      brand: newProduct.brand.trim() || 'Sin marca',
+      price: parseFloat(newProduct.price) || 0,
+      image: newProduct.image.trim() || '/placeholder.jpg',
+      rating: parseFloat(newProduct.rating) || 4.0,
+      reviews: parseInt(newProduct.reviews) || 0,
+      category: selectedCategory.name.toLowerCase(),
+      inStock: newProduct.inStock,
+      description: newProduct.description.trim() || '',
+      features: newProduct.features ? newProduct.features.split(',').map(f => f.trim()).filter(Boolean) : []
+    }
+
+    await onAddProductToCategory(selectedCategoryId, product)
+    
+    // Reset form
+    setNewProduct({
+      name: '',
+      description: '',
+      price: '',
+      brand: '',
+      image: '/placeholder.jpg',
+      rating: '4.0',
+      reviews: '0',
+      inStock: true,
+      features: ''
+    })
+    setShowAddProductModal(false)
+  }
+
+  const handleBulkProductsUploaded = async (products: any[]) => {
+    const selectedCategory = categories.find(c => c.id === selectedCategoryId)
+    if (!selectedCategory) return
+
+    // Agregar la categoría automáticamente a cada producto
+    const productsWithCategory = products.map(product => ({
+      ...product,
+      category: selectedCategory.name.toLowerCase()
+    }))
+
+    // Agregar cada producto a la categoría
+    for (const product of productsWithCategory) {
+      await onAddProductToCategory(selectedCategoryId, product)
+    }
+
+    setShowBulkUploadModal(false)
   }
 
   return (
@@ -88,13 +176,10 @@ export function CategoriesSection({
       {/* Header de la sección */}
       <div className="flex flex-col space-y-4 mb-6">
         <div className="flex justify-between items-center">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900">Categorías de Productos</h2>
-            <p className="text-gray-600">Organiza tus productos por categorías</p>
-          </div>
-          {isAdminMode && (
+          
+          {showAddButton && (
             <Button 
-              onClick={() => setShowAddModal(true)}
+              onClick={() => onShowAddModal ? onShowAddModal() : setShowAddModal(true)}
               className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600"
             >
               <Plus className="h-4 w-4 mr-2" />
@@ -110,7 +195,10 @@ export function CategoriesSection({
           {activeCategories.map((category) => (
             <div key={category.id} className="border border-gray-200 rounded-lg overflow-hidden">
               {/* Header de la categoría */}
-              <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-4">
+              <div 
+                className="bg-gradient-to-r from-gray-50 to-gray-100 p-4 cursor-pointer hover:from-gray-100 hover:to-gray-200 transition-all duration-200"
+                onClick={() => handleToggleCategory(category.id)}
+              >
                 <div className="flex justify-between items-center">
                   <div className="flex items-center space-x-3">
                     <FolderOpen className="h-5 w-5 text-gray-600" />
@@ -121,18 +209,13 @@ export function CategoriesSection({
                       )}
                     </div>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleToggleCategory(category.id)}
-                    className="text-gray-600 hover:text-gray-800 hover:bg-gray-200"
-                  >
+                  <div className="text-gray-600">
                     {category.isExpanded ? (
                       <ChevronUp className="h-5 w-5" />
                     ) : (
                       <ChevronDown className="h-5 w-5" />
                     )}
-                  </Button>
+                  </div>
                 </div>
               </div>
 
@@ -147,7 +230,7 @@ export function CategoriesSection({
                         <div key={product.id} className="border border-gray-200 rounded-lg p-3">
                           <div className="flex items-center space-x-3">
                             <img 
-                              src={product.image} 
+                              src={product.image || '/placeholder.jpg'} 
                               alt={product.name}
                               className="w-12 h-12 rounded-lg object-cover"
                             />
@@ -158,21 +241,53 @@ export function CategoriesSection({
                           </div>
                         </div>
                       ))}
+                      {isAdminMode && (
+                        <div className="border border-dashed border-gray-300 rounded-lg p-4 flex flex-col items-center justify-center space-y-2">
+                          <p className="text-sm text-gray-500">Agregar más productos</p>
+                          <div className="flex space-x-2">
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              onClick={() => handleAddProductToCategory(category.id)}
+                            >
+                              <Plus className="h-4 w-4 mr-1" />
+                              Individual
+                            </Button>
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              onClick={() => handleBulkUploadToCategory(category.id)}
+                            >
+                              <Upload className="h-4 w-4 mr-1" />
+                              Masiva
+                            </Button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   ) : (
                     <div className="text-center py-8 text-gray-500">
                       <FolderOpen className="h-12 w-12 mx-auto mb-2 text-gray-300" />
                       <p>No hay productos en esta categoría</p>
                       {isAdminMode && (
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          className="mt-2"
-                          onClick={() => {/* TODO: Implementar agregar productos */}}
-                        >
-                          <Plus className="h-4 w-4 mr-1" />
-                          Agregar Productos
-                        </Button>
+                        <div className="flex justify-center space-x-2 mt-4">
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            onClick={() => handleAddProductToCategory(category.id)}
+                          >
+                            <Plus className="h-4 w-4 mr-1" />
+                            Agregar Producto
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            onClick={() => handleBulkUploadToCategory(category.id)}
+                          >
+                            <Upload className="h-4 w-4 mr-1" />
+                            Carga Masiva
+                          </Button>
+                        </div>
                       )}
                     </div>
                   )}
@@ -255,6 +370,140 @@ export function CategoriesSection({
             </div>
           </div>
         </div>
+      )}
+
+      {/* Modal para agregar producto individual */}
+      {showAddProductModal && (
+        <Dialog open={showAddProductModal} onOpenChange={setShowAddProductModal}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Agregar Producto a {categories.find(c => c.id === selectedCategoryId)?.name}</DialogTitle>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="name" className="text-right">
+                  Nombre
+                </Label>
+                <Input
+                  id="name"
+                  value={newProduct.name}
+                  onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
+                  className="col-span-3"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="price" className="text-right">
+                  Precio
+                </Label>
+                <Input
+                  id="price"
+                  type="number"
+                  value={newProduct.price}
+                  onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
+                  className="col-span-3"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="brand" className="text-right">
+                  Marca
+                </Label>
+                <Input
+                  id="brand"
+                  value={newProduct.brand}
+                  onChange={(e) => setNewProduct({ ...newProduct, brand: e.target.value })}
+                  className="col-span-3"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="image" className="text-right">
+                  URL de Imagen
+                </Label>
+                <Input
+                  id="image"
+                  value={newProduct.image}
+                  onChange={(e) => setNewProduct({ ...newProduct, image: e.target.value })}
+                  className="col-span-3"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="rating" className="text-right">
+                  Calificación
+                </Label>
+                <Input
+                  id="rating"
+                  type="number"
+                  value={newProduct.rating}
+                  onChange={(e) => setNewProduct({ ...newProduct, rating: e.target.value })}
+                  className="col-span-3"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="reviews" className="text-right">
+                  Reseñas
+                </Label>
+                <Input
+                  id="reviews"
+                  type="number"
+                  value={newProduct.reviews}
+                  onChange={(e) => setNewProduct({ ...newProduct, reviews: e.target.value })}
+                  className="col-span-3"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="inStock" className="text-right">
+                  En Stock
+                </Label>
+                <input
+                  type="checkbox"
+                  id="inStock"
+                  checked={newProduct.inStock}
+                  onChange={(e) => setNewProduct({ ...newProduct, inStock: e.target.checked })}
+                  className="col-span-3"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="description" className="text-right">
+                  Descripción
+                </Label>
+                <Textarea
+                  id="description"
+                  value={newProduct.description}
+                  onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
+                  className="col-span-3"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="features" className="text-right">
+                  Características (separadas por coma)
+                </Label>
+                <Textarea
+                  id="features"
+                  value={newProduct.features}
+                  onChange={(e) => setNewProduct({ ...newProduct, features: e.target.value })}
+                  className="col-span-3"
+                />
+              </div>
+            </div>
+            <div className="flex justify-end space-x-3 mt-6">
+              <Button variant="outline" onClick={() => setShowAddProductModal(false)}>
+                Cancelar
+              </Button>
+              <Button onClick={handleSaveProduct} disabled={!newProduct.name.trim() || !newProduct.price}>
+                Agregar Producto
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* Modal para carga masiva de productos */}
+      {showBulkUploadModal && (
+        <BulkUploadProducts
+          onProductsUploaded={handleBulkProductsUploaded}
+          onClose={() => setShowBulkUploadModal(false)}
+          prefillCategory={categories.find(c => c.id === selectedCategoryId)?.name || ''}
+          existingCategories={categories.map(c => c.name)}
+        />
       )}
     </div>
   )

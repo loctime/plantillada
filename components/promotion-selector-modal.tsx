@@ -142,7 +142,7 @@ export function PromotionSelectorModal({
                     >
                       <div className="flex items-center space-x-3">
                         <img 
-                          src={product.image} 
+                          src={product.image || '/placeholder.jpg'} 
                           alt={product.name}
                           className="w-12 h-12 rounded-lg object-cover"
                         />
@@ -186,7 +186,7 @@ export function PromotionSelectorModal({
                     >
                       <div className="flex items-center space-x-3">
                         <img 
-                          src={beverage.image} 
+                          src={beverage.image || '/placeholder.jpg'} 
                           alt={beverage.name}
                           className="w-12 h-12 rounded-lg object-cover"
                         />

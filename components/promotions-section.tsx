@@ -26,13 +26,17 @@ interface PromotionsSectionProps {
   onAddPromotion: (promotion: Promotion) => void
   onAddToCart: (promotion: Promotion) => void
   availableProducts: Product[]
+  showAddButton?: boolean
+  onShowAddModal?: () => void
 }
 
 export function PromotionsSection({ 
   promotions, 
   onAddPromotion, 
   onAddToCart, 
-  availableProducts 
+  availableProducts,
+  showAddButton = true,
+  onShowAddModal
 }: PromotionsSectionProps) {
   const [showModal, setShowModal] = useState(false)
   const [isExpanded, setIsExpanded] = useState(true)
@@ -69,15 +73,13 @@ export function PromotionsSection({
       {/* Header de la sección */}
       <div className="flex flex-col space-y-4 mb-6">
         <div className="flex justify-between items-center">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900">Promociones Especiales</h2>
-            <p className="text-gray-600">Ofertas únicas y combos especiales</p>
-          </div>
-          {isAdminMode && (
+         
+          {isAdminMode && showAddButton && (
             <Button 
-              onClick={() => setShowModal(true)}
+              onClick={() => onShowAddModal ? onShowAddModal() : setShowModal(true)}
               className="bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600"
             >
+              
               <Plus className="h-4 w-4 mr-2" />
               Agregar Promoción
             </Button>
@@ -90,6 +92,8 @@ export function PromotionsSection({
           onClick={handleToggleExpanded}
           className="w-full py-3 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 border-blue-200 hover:border-blue-300 text-blue-700 hover:text-blue-800 transition-all duration-200 flex items-center justify-center space-x-2"
         >
+                      <h2 className="text-2xl font-bold text-gray-900">Promociones Especiales</h2>
+
           <span className="font-medium">
             {isExpanded ? 'Ocultar Promociones' : 'Mostrar Promociones'}
           </span>
@@ -141,7 +145,7 @@ export function PromotionsSection({
                   {/* Imagen */}
                   <div className="relative h-48 bg-gradient-to-br from-red-50 to-orange-50">
                     <img
-                      src={promotion.image}
+                      src={promotion.image || '/placeholder.jpg'}
                       alt={promotion.name}
                       className="w-full h-full object-cover"
                     />
@@ -222,9 +226,9 @@ export function PromotionsSection({
             <p className="text-gray-500 mb-4">
               Crea tu primera promoción para empezar a ofrecer ofertas especiales
             </p>
-            {isAdminMode && (
+            {isAdminMode && showAddButton && (
               <Button 
-                onClick={() => setShowModal(true)}
+                onClick={() => onShowAddModal ? onShowAddModal() : setShowModal(true)}
                 variant="outline"
               >
                 <Plus className="h-4 w-4 mr-2" />

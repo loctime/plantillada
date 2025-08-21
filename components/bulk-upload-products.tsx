@@ -11,27 +11,42 @@ import {
   AlertCircle,
   Plus,
   Trash2,
-  Save
+  Save,
+  FolderPlus,
+  Edit3
 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Label } from '@/components/ui/label'
 
 interface BulkUploadProductsProps {
   onProductsUploaded: (products: any[]) => void
   onClose: () => void
+  prefillCategory?: string
+  existingCategories?: string[]
 }
 
-export function BulkUploadProducts({ onProductsUploaded, onClose }: BulkUploadProductsProps) {
+interface CategoryConfirmation {
+  originalName: string
+  finalName: string
+  productCount: number
+  products: any[]
+}
+
+export function BulkUploadProducts({ onProductsUploaded, onClose, prefillCategory, existingCategories = [] }: BulkUploadProductsProps) {
   const [isProcessing, setIsProcessing] = useState(false)
   const [validationErrors, setValidationErrors] = useState<string[]>([])
+  const [showCategoryModal, setShowCategoryModal] = useState(false)
+  const [categoryConfirmations, setCategoryConfirmations] = useState<CategoryConfirmation[]>([])
   const [products, setProducts] = useState<any[]>([
     {
       id: Date.now().toString(),
       nombre: '',
       descripcion: '',
-      categoria: '',
+      categoria: prefillCategory || '',
       precio: '',
       marca: '',
-      urlImagen: '',
+      urlImagen: '/placeholder.jpg',
       rating: '4.0',
       reviews: '0',
       enStock: true,
@@ -45,10 +60,10 @@ export function BulkUploadProducts({ onProductsUploaded, onClose }: BulkUploadPr
       id: Date.now().toString(),
       nombre: '',
       descripcion: '',
-      categoria: '',
+      categoria: prefillCategory || '',
       precio: '',
       marca: '',
-      urlImagen: '',
+      urlImagen: '/placeholder.jpg',
       rating: '4.0',
       reviews: '0',
       enStock: true,
@@ -60,15 +75,69 @@ export function BulkUploadProducts({ onProductsUploaded, onClose }: BulkUploadPr
   const { toast } = useToast()
   const inputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({})
 
+  // Función para detectar categorías nuevas
+  const detectNewCategories = (products: any[]) => {
+    const categoriesWithProducts = new Map<string, { count: number, products: any[] }>()
+    
+    products.forEach(product => {
+      if (product.nombre?.trim() && product.categoria?.trim()) {
+        const categoryName = product.categoria.trim().toLowerCase()
+        const existing = categoriesWithProducts.get(categoryName)
+        
+        if (existing) {
+          existing.count++
+          existing.products.push(product)
+        } else {
+          categoriesWithProducts.set(categoryName, {
+            count: 1,
+            products: [product]
+          })
+        }
+      }
+    })
+    
+    // Filtrar solo las categorías que no existen
+    const newCategories: CategoryConfirmation[] = []
+    categoriesWithProducts.forEach((data, categoryName) => {
+      const normalizedCategoryName = categoryName.toLowerCase()
+      const exists = existingCategories.some(existing => 
+        existing.toLowerCase() === normalizedCategoryName
+      )
+      
+      if (!exists) {
+        newCategories.push({
+          originalName: categoryName,
+          finalName: categoryName.charAt(0).toUpperCase() + categoryName.slice(1), // Capitalizar
+          productCount: data.count,
+          products: data.products
+        })
+      }
+    })
+    
+    return newCategories
+  }
+
+  // Función para actualizar el nombre de una categoría en todos los productos relacionados
+  const updateCategoryInProducts = (oldName: string, newName: string) => {
+    const newProducts = products.map(product => {
+      if (product.categoria?.toLowerCase() === oldName.toLowerCase()) {
+        return { ...product, categoria: newName }
+      }
+      return product
+    })
+    setProducts(newProducts)
+    addToHistory(newProducts)
+  }
+
   const addRow = () => {
     const newProduct = {
       id: Date.now().toString(),
       nombre: '',
       descripcion: '',
-      categoria: '',
+      categoria: prefillCategory || '',
       precio: '',
       marca: '',
-      urlImagen: '',
+      urlImagen: '/placeholder.jpg',
       rating: '4.0',
       reviews: '0',
       enStock: true,
@@ -273,7 +342,7 @@ export function BulkUploadProducts({ onProductsUploaded, onClose }: BulkUploadPr
                 categoria: '',
                 precio: '',
                 marca: '',
-                urlImagen: '',
+                urlImagen: '/placeholder.jpg',
                 rating: '4.0',
                 reviews: '0',
                 enStock: true,
@@ -339,6 +408,20 @@ export function BulkUploadProducts({ onProductsUploaded, onClose }: BulkUploadPr
       return
     }
 
+    // Detectar categorías nuevas
+    const newCategories = detectNewCategories(products)
+    
+    if (newCategories.length > 0) {
+      // Mostrar modal de confirmación de categorías
+      setCategoryConfirmations(newCategories)
+      setShowCategoryModal(true)
+    } else {
+      // No hay categorías nuevas, proceder directamente
+      proceedWithSave()
+    }
+  }
+
+  const proceedWithSave = () => {
     setIsProcessing(true)
 
     const formattedProducts = products
@@ -349,7 +432,7 @@ export function BulkUploadProducts({ onProductsUploaded, onClose }: BulkUploadPr
         brand: product.marca?.trim() || 'Sin marca',
         price: parseFloat(product.precio) || 0,
         originalPrice: product.precioActual && parseFloat(product.precioActual) > parseFloat(product.precio) ? parseFloat(product.precioActual) : undefined,
-        image: product.urlImagen?.trim() || '',
+        image: product.urlImagen?.trim() || '/placeholder.jpg',
         rating: parseFloat(product.rating) || 4.0,
         reviews: parseInt(product.reviews) || 0,
         category: product.categoria?.trim().toLowerCase() || 'general',
@@ -381,262 +464,347 @@ export function BulkUploadProducts({ onProductsUploaded, onClose }: BulkUploadPr
     onClose()
   }
 
+  const handleCategoryConfirm = () => {
+    // Actualizar los productos con los nombres finales de las categorías
+    categoryConfirmations.forEach(confirmation => {
+      if (confirmation.originalName !== confirmation.finalName) {
+        updateCategoryInProducts(confirmation.originalName, confirmation.finalName)
+      }
+    })
+    
+    setShowCategoryModal(false)
+    proceedWithSave()
+  }
+
+  const updateCategoryName = (index: number, newName: string) => {
+    const updated = [...categoryConfirmations]
+    updated[index] = { ...updated[index], finalName: newName }
+    setCategoryConfirmations(updated)
+  }
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-7xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="flex justify-between items-center p-6 border-b">
-          <div>
-            <h2 className="text-2xl font-bold">Agregar Productos Masivamente</h2>
-            <p className="text-gray-600">Escribe múltiples productos en la tabla. Presiona Enter para agregar una nueva fila.</p>
+    <>
+      <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-lg shadow-xl max-w-7xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="flex justify-between items-center p-6 border-b">
+            <div>
+              <h2 className="text-2xl font-bold">Agregar Productos Masivamente</h2>
+              <p className="text-gray-600">Escribe múltiples productos en la tabla. Presiona Enter para agregar una nueva fila.</p>
+            </div>
+            <Button variant="ghost" size="sm" onClick={onClose}>
+              <X className="h-5 w-5" />
+            </Button>
           </div>
-          <Button variant="ghost" size="sm" onClick={onClose}>
-            <X className="h-5 w-5" />
-          </Button>
-        </div>
 
-        <div className="p-6 space-y-6">
-          <Card>
-            <CardHeader>
-              <div className="flex justify-between items-center">
-                <CardTitle>Tabla de Productos</CardTitle>
-                                 <div className="flex gap-2">
-                   <Button 
-                     onClick={undo} 
-                     size="sm" 
-                     variant="outline"
-                     disabled={historyIndex === 0}
-                     title="Deshacer (Ctrl+Z)"
-                   >
-                     <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
-                     </svg>
-                     Deshacer
-                   </Button>
-                   <Button 
-                     onClick={redo} 
-                     size="sm" 
-                     variant="outline"
-                     disabled={historyIndex === history.length - 1}
-                     title="Rehacer (Ctrl+Y)"
-                   >
-                     <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 10h-10a8 8 0 00-8 8v2M21 10l-6 6m6-6l-6-6" />
-                     </svg>
-                     Rehacer
-                   </Button>
-                   <Button onClick={addRow} size="sm" variant="outline">
-                     <Plus className="h-4 w-4 mr-2" />
-                     Agregar Fila
-                   </Button>
-                   <Button onClick={handleSave} size="sm" disabled={isProcessing}>
-                     <Save className="h-4 w-4 mr-2" />
-                     {isProcessing ? 'Guardando...' : 'Guardar Productos'}
-                   </Button>
-                 </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse border border-gray-200">
-                  <thead>
-                    <tr className="bg-gray-50">
-                      <th className="border border-gray-200 p-2 text-left text-sm font-medium">Nombre *</th>
-                      <th className="border border-gray-200 p-2 text-left text-sm font-medium">Descripción</th>
-                      <th className="border border-gray-200 p-2 text-left text-sm font-medium">Categoría</th>
-                      <th className="border border-gray-200 p-2 text-left text-sm font-medium">Precio *</th>
-                      <th className="border border-gray-200 p-2 text-left text-sm font-medium">Marca</th>
-                      <th className="border border-gray-200 p-2 text-left text-sm font-medium">URL Imagen</th>
-                      <th className="border border-gray-200 p-2 text-left text-sm font-medium">Rating</th>
-                      <th className="border border-gray-200 p-2 text-left text-sm font-medium">Reviews</th>
-                      <th className="border border-gray-200 p-2 text-left text-sm font-medium">En Stock</th>
-                      <th className="border border-gray-200 p-2 text-left text-sm font-medium">Características</th>
-                      <th className="border border-gray-200 p-2 text-left text-sm font-medium">Acciones</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {products.map((product, index) => (
-                      <tr key={product.id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                        <td className="border border-gray-200 p-2">
-                          <Input
-                            ref={(el) => {
-                              inputRefs.current[`${product.id}-nombre`] = el
-                            }}
-                            value={product.nombre}
-                            onChange={(e) => updateProduct(product.id, 'nombre', e.target.value)}
-                            onKeyDown={(e) => handleKeyDown(e, product.id, 'nombre')}
-                            onPaste={(e) => handlePaste(e, product.id, 'nombre')}
-                            placeholder="iPhone 15, Samsung Galaxy..."
-                            className="border-0 p-0 h-8 text-sm"
-                          />
-                        </td>
-                                                 <td className="border border-gray-200 p-2">
-                           <Input
-                             ref={(el) => {
-                               inputRefs.current[`${product.id}-descripcion`] = el
-                             }}
-                             value={product.descripcion}
-                             onChange={(e) => updateProduct(product.id, 'descripcion', e.target.value)}
-                             onKeyDown={(e) => handleKeyDown(e, product.id, 'descripcion')}
-                             onPaste={(e) => handlePaste(e, product.id, 'descripcion')}
-                             placeholder="Descripción del producto"
-                             className="border-0 p-0 h-8 text-sm"
-                           />
-                         </td>
-                         <td className="border border-gray-200 p-2">
-                           <Input
-                             ref={(el) => {
-                               inputRefs.current[`${product.id}-categoria`] = el
-                             }}
-                             value={product.categoria}
-                             onChange={(e) => updateProduct(product.id, 'categoria', e.target.value)}
-                             onKeyDown={(e) => handleKeyDown(e, product.id, 'categoria')}
-                             onPaste={(e) => handlePaste(e, product.id, 'categoria')}
-                             placeholder="smartphones, tablets..."
-                             className="border-0 p-0 h-8 text-sm"
-                           />
-                         </td>
-                         <td className="border border-gray-200 p-2">
-                           <Input
-                             ref={(el) => {
-                               inputRefs.current[`${product.id}-precio`] = el
-                             }}
-                             type="number"
-                             step="0.01"
-                             value={product.precio}
-                             onChange={(e) => updateProduct(product.id, 'precio', e.target.value)}
-                             onKeyDown={(e) => handleKeyDown(e, product.id, 'precio')}
-                             onPaste={(e) => handlePaste(e, product.id, 'precio')}
-                             placeholder="0.00"
-                             className="border-0 p-0 h-8 text-sm"
-                           />
-                         </td>
-                         <td className="border border-gray-200 p-2">
-                           <Input
-                             ref={(el) => {
-                               inputRefs.current[`${product.id}-marca`] = el
-                             }}
-                             value={product.marca}
-                             onChange={(e) => updateProduct(product.id, 'marca', e.target.value)}
-                             onKeyDown={(e) => handleKeyDown(e, product.id, 'marca')}
-                             onPaste={(e) => handlePaste(e, product.id, 'marca')}
-                             placeholder="Apple, Samsung..."
-                             className="border-0 p-0 h-8 text-sm"
-                           />
-                         </td>
-                         <td className="border border-gray-200 p-2">
-                           <Input
-                             ref={(el) => {
-                               inputRefs.current[`${product.id}-urlImagen`] = el
-                             }}
-                             value={product.urlImagen}
-                             onChange={(e) => updateProduct(product.id, 'urlImagen', e.target.value)}
-                             onKeyDown={(e) => handleKeyDown(e, product.id, 'urlImagen')}
-                             onPaste={(e) => handlePaste(e, product.id, 'urlImagen')}
-                             placeholder="https://..."
-                             className="border-0 p-0 h-8 text-sm"
-                           />
-                         </td>
-                         <td className="border border-gray-200 p-2">
-                           <Input
-                             ref={(el) => {
-                               inputRefs.current[`${product.id}-rating`] = el
-                             }}
-                             type="number"
-                             step="0.1"
-                             min="0"
-                             max="5"
-                             value={product.rating}
-                             onChange={(e) => updateProduct(product.id, 'rating', e.target.value)}
-                             onKeyDown={(e) => handleKeyDown(e, product.id, 'rating')}
-                             onPaste={(e) => handlePaste(e, product.id, 'rating')}
-                             className="border-0 p-0 h-8 text-sm"
-                           />
-                         </td>
-                         <td className="border border-gray-200 p-2">
-                           <Input
-                             ref={(el) => {
-                               inputRefs.current[`${product.id}-reviews`] = el
-                             }}
-                             type="number"
-                             value={product.reviews}
-                             onChange={(e) => updateProduct(product.id, 'reviews', e.target.value)}
-                             onKeyDown={(e) => handleKeyDown(e, product.id, 'reviews')}
-                             onPaste={(e) => handlePaste(e, product.id, 'reviews')}
-                             className="border-0 p-0 h-8 text-sm"
-                           />
-                         </td>
-                        <td className="border border-gray-200 p-2">
-                          <input
-                            type="checkbox"
-                            checked={product.enStock}
-                            onChange={(e) => updateProduct(product.id, 'enStock', e.target.checked)}
-                            className="h-4 w-4"
-                          />
-                        </td>
-                                                 <td className="border border-gray-200 p-2">
-                           <Input
-                             ref={(el) => {
-                               inputRefs.current[`${product.id}-caracteristicas`] = el
-                             }}
-                             value={product.caracteristicas}
-                             onChange={(e) => updateProduct(product.id, 'caracteristicas', e.target.value)}
-                             onKeyDown={(e) => handleKeyDown(e, product.id, 'caracteristicas')}
-                             onPaste={(e) => handlePaste(e, product.id, 'caracteristicas')}
-                             placeholder="128GB, 5G, etc..."
-                             className="border-0 p-0 h-8 text-sm"
-                           />
-                         </td>
-                        <td className="border border-gray-200 p-2">
-                          {products.length > 1 && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => removeRow(product.id)}
-                              className="text-red-600 hover:text-red-700 h-6 w-6 p-0"
-                            >
-                              <Trash2 className="h-3 w-3" />
-                            </Button>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              
-                             <div className="mt-4 text-sm text-gray-600">
-                 <p>💡 <strong>Consejo:</strong> Usa las flechas del teclado para navegar entre campos. Enter para nueva fila. Pega múltiples líneas para crear filas automáticamente. <strong>Ctrl+Z</strong> para deshacer y <strong>Ctrl+Y</strong> para rehacer.</p>
-               </div>
-            </CardContent>
-          </Card>
-
-          {validationErrors.length > 0 && (
-            <Card className="border-red-200 bg-red-50">
+          <div className="p-6 space-y-6">
+            <Card>
               <CardHeader>
-                <CardTitle className="text-red-700 flex items-center gap-2">
-                  <AlertCircle className="h-5 w-5" />
-                  Errores de Validación ({validationErrors.length})
-                </CardTitle>
+                <div className="flex justify-between items-center">
+                  <CardTitle>Tabla de Productos</CardTitle>
+                  <div className="flex gap-2">
+                    <Button 
+                      onClick={undo} 
+                      size="sm" 
+                      variant="outline"
+                      disabled={historyIndex === 0}
+                      title="Deshacer (Ctrl+Z)"
+                    >
+                      <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                      </svg>
+                      Deshacer
+                    </Button>
+                    <Button 
+                      onClick={redo} 
+                      size="sm" 
+                      variant="outline"
+                      disabled={historyIndex === history.length - 1}
+                      title="Rehacer (Ctrl+Y)"
+                    >
+                      <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 10h-10a8 8 0 00-8 8v2M21 10l-6 6m6-6l-6-6" />
+                      </svg>
+                      Rehacer
+                    </Button>
+                    <Button onClick={addRow} size="sm" variant="outline">
+                      <Plus className="h-4 w-4 mr-2" />
+                      Agregar Fila
+                    </Button>
+                    <Button onClick={handleSave} size="sm" disabled={isProcessing}>
+                      <Save className="h-4 w-4 mr-2" />
+                      {isProcessing ? 'Guardando...' : 'Guardar Productos'}
+                    </Button>
+                  </div>
+                </div>
               </CardHeader>
               <CardContent>
-                <div className="space-y-2 max-h-40 overflow-y-auto">
-                  {validationErrors.map((error, index) => (
-                    <div key={index} className="text-sm text-red-600 bg-red-100 p-2 rounded">
-                      {error}
-                    </div>
-                  ))}
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse border border-gray-200">
+                    <thead>
+                      <tr className="bg-gray-50">
+                        <th className="border border-gray-200 p-2 text-left text-sm font-medium">Nombre *</th>
+                        <th className="border border-gray-200 p-2 text-left text-sm font-medium">Descripción</th>
+                        <th className="border border-gray-200 p-2 text-left text-sm font-medium">Categoría</th>
+                        <th className="border border-gray-200 p-2 text-left text-sm font-medium">Precio *</th>
+                        <th className="border border-gray-200 p-2 text-left text-sm font-medium">Marca</th>
+                        <th className="border border-gray-200 p-2 text-left text-sm font-medium">URL Imagen</th>
+                        <th className="border border-gray-200 p-2 text-left text-sm font-medium">Rating</th>
+                        <th className="border border-gray-200 p-2 text-left text-sm font-medium">Reviews</th>
+                        <th className="border border-gray-200 p-2 text-left text-sm font-medium">En Stock</th>
+                        <th className="border border-gray-200 p-2 text-left text-sm font-medium">Características</th>
+                        <th className="border border-gray-200 p-2 text-left text-sm font-medium">Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {products.map((product, index) => (
+                        <tr key={product.id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                          <td className="border border-gray-200 p-2">
+                            <Input
+                              ref={(el) => {
+                                inputRefs.current[`${product.id}-nombre`] = el
+                              }}
+                              value={product.nombre}
+                              onChange={(e) => updateProduct(product.id, 'nombre', e.target.value)}
+                              onKeyDown={(e) => handleKeyDown(e, product.id, 'nombre')}
+                              onPaste={(e) => handlePaste(e, product.id, 'nombre')}
+                              placeholder="iPhone 15, Samsung Galaxy..."
+                              className="border-0 p-0 h-8 text-sm"
+                            />
+                          </td>
+                          <td className="border border-gray-200 p-2">
+                            <Input
+                              ref={(el) => {
+                                inputRefs.current[`${product.id}-descripcion`] = el
+                              }}
+                              value={product.descripcion}
+                              onChange={(e) => updateProduct(product.id, 'descripcion', e.target.value)}
+                              onKeyDown={(e) => handleKeyDown(e, product.id, 'descripcion')}
+                              onPaste={(e) => handlePaste(e, product.id, 'descripcion')}
+                              placeholder="Descripción del producto"
+                              className="border-0 p-0 h-8 text-sm"
+                            />
+                          </td>
+                          <td className="border border-gray-200 p-2">
+                            <Input
+                              ref={(el) => {
+                                inputRefs.current[`${product.id}-categoria`] = el
+                              }}
+                              value={product.categoria}
+                              onChange={(e) => updateProduct(product.id, 'categoria', e.target.value)}
+                              onKeyDown={(e) => handleKeyDown(e, product.id, 'categoria')}
+                              onPaste={(e) => handlePaste(e, product.id, 'categoria')}
+                              placeholder="smartphones, tablets..."
+                              className="border-0 p-0 h-8 text-sm"
+                            />
+                          </td>
+                          <td className="border border-gray-200 p-2">
+                            <Input
+                              ref={(el) => {
+                                inputRefs.current[`${product.id}-precio`] = el
+                              }}
+                              type="number"
+                              step="0.01"
+                              value={product.precio}
+                              onChange={(e) => updateProduct(product.id, 'precio', e.target.value)}
+                              onKeyDown={(e) => handleKeyDown(e, product.id, 'precio')}
+                              onPaste={(e) => handlePaste(e, product.id, 'precio')}
+                              placeholder="0.00"
+                              className="border-0 p-0 h-8 text-sm"
+                            />
+                          </td>
+                          <td className="border border-gray-200 p-2">
+                            <Input
+                              ref={(el) => {
+                                inputRefs.current[`${product.id}-marca`] = el
+                              }}
+                              value={product.marca}
+                              onChange={(e) => updateProduct(product.id, 'marca', e.target.value)}
+                              onKeyDown={(e) => handleKeyDown(e, product.id, 'marca')}
+                              onPaste={(e) => handlePaste(e, product.id, 'marca')}
+                              placeholder="Apple, Samsung..."
+                              className="border-0 p-0 h-8 text-sm"
+                            />
+                          </td>
+                          <td className="border border-gray-200 p-2">
+                            <Input
+                              ref={(el) => {
+                                inputRefs.current[`${product.id}-urlImagen`] = el
+                              }}
+                              value={product.urlImagen}
+                              onChange={(e) => updateProduct(product.id, 'urlImagen', e.target.value)}
+                              onKeyDown={(e) => handleKeyDown(e, product.id, 'urlImagen')}
+                              onPaste={(e) => handlePaste(e, product.id, 'urlImagen')}
+                              placeholder="https://..."
+                              className="border-0 p-0 h-8 text-sm"
+                            />
+                          </td>
+                          <td className="border border-gray-200 p-2">
+                            <Input
+                              ref={(el) => {
+                                inputRefs.current[`${product.id}-rating`] = el
+                              }}
+                              type="number"
+                              step="0.1"
+                              min="0"
+                              max="5"
+                              value={product.rating}
+                              onChange={(e) => updateProduct(product.id, 'rating', e.target.value)}
+                              onKeyDown={(e) => handleKeyDown(e, product.id, 'rating')}
+                              onPaste={(e) => handlePaste(e, product.id, 'rating')}
+                              className="border-0 p-0 h-8 text-sm"
+                            />
+                          </td>
+                          <td className="border border-gray-200 p-2">
+                            <Input
+                              ref={(el) => {
+                                inputRefs.current[`${product.id}-reviews`] = el
+                              }}
+                              type="number"
+                              value={product.reviews}
+                              onChange={(e) => updateProduct(product.id, 'reviews', e.target.value)}
+                              onKeyDown={(e) => handleKeyDown(e, product.id, 'reviews')}
+                              onPaste={(e) => handlePaste(e, product.id, 'reviews')}
+                              className="border-0 p-0 h-8 text-sm"
+                            />
+                          </td>
+                          <td className="border border-gray-200 p-2">
+                            <input
+                              type="checkbox"
+                              checked={product.enStock}
+                              onChange={(e) => updateProduct(product.id, 'enStock', e.target.checked)}
+                              className="h-4 w-4"
+                            />
+                          </td>
+                          <td className="border border-gray-200 p-2">
+                            <Input
+                              ref={(el) => {
+                                inputRefs.current[`${product.id}-caracteristicas`] = el
+                              }}
+                              value={product.caracteristicas}
+                              onChange={(e) => updateProduct(product.id, 'caracteristicas', e.target.value)}
+                              onKeyDown={(e) => handleKeyDown(e, product.id, 'caracteristicas')}
+                              onPaste={(e) => handlePaste(e, product.id, 'caracteristicas')}
+                              placeholder="128GB, 5G, etc..."
+                              className="border-0 p-0 h-8 text-sm"
+                            />
+                          </td>
+                          <td className="border border-gray-200 p-2">
+                            {products.length > 1 && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => removeRow(product.id)}
+                                className="text-red-600 hover:text-red-700 h-6 w-6 p-0"
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </Button>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                
+                <div className="mt-4 text-sm text-gray-600">
+                  <p>💡 <strong>Consejo:</strong> Usa las flechas del teclado para navegar entre campos. Enter para nueva fila. Pega múltiples líneas para crear filas automáticamente. <strong>Ctrl+Z</strong> para deshacer y <strong>Ctrl+Y</strong> para rehacer.</p>
                 </div>
               </CardContent>
             </Card>
-          )}
 
-          <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={onClose}>
-              Cancelar
-            </Button>
+            {validationErrors.length > 0 && (
+              <Card className="border-red-200 bg-red-50">
+                <CardHeader>
+                  <CardTitle className="text-red-700 flex items-center gap-2">
+                    <AlertCircle className="h-5 w-5" />
+                    Errores de Validación ({validationErrors.length})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2 max-h-40 overflow-y-auto">
+                    {validationErrors.map((error, index) => (
+                      <div key={index} className="text-sm text-red-600 bg-red-100 p-2 rounded">
+                        {error}
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={onClose}>
+                Cancelar
+              </Button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+
+      {/* Modal de confirmación de categorías */}
+      <Dialog open={showCategoryModal} onOpenChange={setShowCategoryModal}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <FolderPlus className="h-5 w-5 text-blue-600" />
+              Confirmar Nuevas Categorías
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <p className="text-blue-800 text-sm">
+                <strong>Se detectaron {categoryConfirmations.length} categoría(s) nueva(s)</strong> en los productos que vas a cargar. 
+                Revisa y edita los nombres si es necesario antes de proceder.
+              </p>
+            </div>
+
+            {categoryConfirmations.map((category, index) => (
+              <Card key={index} className="border-blue-200">
+                <CardContent className="p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Edit3 className="h-4 w-4 text-blue-600" />
+                        <Label htmlFor={`category-${index}`} className="text-sm font-medium">
+                          Nombre de la categoría:
+                        </Label>
+                      </div>
+                      <Input
+                        id={`category-${index}`}
+                        value={category.finalName}
+                        onChange={(e) => updateCategoryName(index, e.target.value)}
+                        className="mb-2"
+                        placeholder="Nombre de la categoría"
+                      />
+                      <div className="text-sm text-gray-600">
+                        <p><strong>Productos en esta categoría:</strong> {category.productCount}</p>
+                        <p><strong>Productos:</strong> {category.products.map(p => p.nombre).join(', ')}</p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+
+            <div className="flex justify-end gap-3 pt-4">
+              <Button 
+                variant="outline" 
+                onClick={() => setShowCategoryModal(false)}
+              >
+                Cancelar
+              </Button>
+              <Button 
+                onClick={handleCategoryConfirm}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                <CheckCircle className="h-4 w-4 mr-2" />
+                Confirmar y Guardar
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   )
 }

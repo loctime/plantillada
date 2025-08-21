@@ -127,7 +127,7 @@ export function ShopSection() {
             >
               <div className="relative aspect-square overflow-hidden">
                 <img
-                  src={product.image}
+                  src={product.image || '/placeholder.jpg'}
                   alt={product.name}
                   className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                 />

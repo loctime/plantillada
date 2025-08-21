@@ -12,6 +12,7 @@ import { useImageModal } from '@/hooks/use-image-modal'
 import { BulkUploadProducts } from '@/components/bulk-upload-products'
 import { PromotionsSection } from '@/components/promotions-section'
 import { PromotionSelectorModal } from '@/components/promotion-selector-modal'
+import { PromotionModal } from '@/components/promotion-modal'
 import { CategoriesSection } from '@/components/categories-section'
 
 // Componentes de la tienda
@@ -22,6 +23,12 @@ import { ProductGrid } from '@/components/shop/product-grid'
 import { ShopCart } from '@/components/shop/shop-cart'
 import { useShop } from '@/hooks/use-shop'
 import { sampleProducts } from '@/components/shop/sample-products'
+import { Button } from '@/components/ui/button'
+import { Plus } from 'lucide-react'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
 
 export default function ShopPage() {
   const { isAdminMode } = useAdmin()
@@ -30,6 +37,10 @@ export default function ShopPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [selectedDesign, setSelectedDesign] = useState<string>('')
   const { isOpen: imageModalOpen, closeModal: closeImageModal, modalConfig } = useImageModal()
+  const [showPromotionModal, setShowPromotionModal] = useState(false)
+  const [showCategoryModal, setShowCategoryModal] = useState(false)
+  const [newCategoryName, setNewCategoryName] = useState('')
+  const [newCategoryDescription, setNewCategoryDescription] = useState('')
 
   // Usar el hook personalizado para toda la lógica de la tienda
   const {
@@ -172,6 +183,25 @@ export default function ShopPage() {
     }
   }
 
+  // Manejar creación de categoría
+  const handleCreateCategory = async () => {
+    if (!newCategoryName.trim()) return
+
+    const newCategory = {
+      id: `category-${Date.now()}`,
+      name: newCategoryName.trim(),
+      description: newCategoryDescription.trim(),
+      isExpanded: true,
+      products: [],
+      isActive: true
+    }
+
+    await addCategory(newCategory)
+    setNewCategoryName('')
+    setNewCategoryDescription('')
+    setShowCategoryModal(false)
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -213,12 +243,40 @@ export default function ShopPage() {
 
           {/* Contenido principal */}
           <div className="flex-1">
+            {/* Header compartido para Promociones y Categorías */}
+            {isAdminMode && (
+              <div className="flex justify-between items-center mb-6">
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900">Gestión de Contenido</h2>
+                  <p className="text-gray-600">Administra promociones y categorías</p>
+                </div>
+                <div className="flex space-x-3">
+                  <Button 
+                    onClick={() => setShowPromotionModal(true)}
+                    className="bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Agregar Promoción
+                  </Button>
+                  <Button 
+                    onClick={() => setShowCategoryModal(true)}
+                    className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Agregar Categoría
+                  </Button>
+                </div>
+              </div>
+            )}
+
             {/* Sección de Promociones */}
             <PromotionsSection
               promotions={promotions}
               onAddPromotion={addPromotion}
               onAddToCart={handleAddPromotionToCart}
               availableProducts={products}
+              showAddButton={false}
+              onShowAddModal={() => setShowPromotionModal(true)}
             />
 
             {/* Sección de Categorías */}
@@ -228,6 +286,8 @@ export default function ShopPage() {
               onToggleCategory={toggleCategory}
               onAddProductToCategory={addProductToCategory}
               availableProducts={products}
+              showAddButton={false}
+              onShowAddModal={() => setShowCategoryModal(true)}
             />
 
             {/* Filtros superiores */}
@@ -285,6 +345,7 @@ export default function ShopPage() {
         <BulkUploadProducts
           onProductsUploaded={handleBulkProductsUploaded}
           onClose={() => setShowBulkUploadModal(false)}
+          existingCategories={productCategories}
         />
       )}
 
@@ -296,6 +357,62 @@ export default function ShopPage() {
         promotion={selectedPromotion}
         availableProducts={products}
       />
+
+      {/* Modal de promociones desde header compartido */}
+      <PromotionModal
+        isOpen={showPromotionModal}
+        onClose={() => setShowPromotionModal(false)}
+        onSave={addPromotion}
+        availableProducts={products}
+      />
+
+      {/* Modal de categorías desde header compartido */}
+      <Dialog open={showCategoryModal} onOpenChange={setShowCategoryModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Crear Nueva Categoría</DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="category-name">Nombre de la Categoría *</Label>
+              <Input
+                id="category-name"
+                value={newCategoryName}
+                onChange={(e) => setNewCategoryName(e.target.value)}
+                placeholder="Ej: Electrónicos, Ropa, etc."
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="category-description">Descripción</Label>
+              <Textarea
+                id="category-description"
+                value={newCategoryDescription}
+                onChange={(e) => setNewCategoryDescription(e.target.value)}
+                placeholder="Describe la categoría..."
+                rows={3}
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-end space-x-3 mt-6">
+            <Button 
+              variant="outline" 
+              onClick={() => setShowCategoryModal(false)}
+            >
+              Cancelar
+            </Button>
+            <Button 
+              onClick={handleCreateCategory}
+              disabled={!newCategoryName.trim()}
+              className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600"
+            >
+              Crear Categoría
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Modal de imagen */}
       <ImageModal 

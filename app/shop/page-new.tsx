@@ -187,6 +187,7 @@ export default function ShopPage() {
         <BulkUploadProducts
           onProductsUploaded={handleBulkProductsUploaded}
           onClose={() => setShowBulkUploadModal(false)}
+          existingCategories={productCategories}
         />
       )}
 

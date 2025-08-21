@@ -34,7 +34,7 @@ export function ProductCard({ product, layoutConfig, onAddToCart }: ProductCardP
       <CardContent className="p-4">
         <div className="relative group">
           <img
-            src={product.image}
+            src={product.image || '/placeholder.jpg'}
             alt={product.name}
             className="product-image w-full h-48 object-cover rounded-lg mb-4"
           />
