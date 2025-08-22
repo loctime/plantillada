@@ -23,6 +23,7 @@ import { ProductGrid } from '@/components/shop/product-grid'
 import { ProductEditModal } from '@/components/shop/product-edit-modal'
 import { Cart } from '@/components/shop/cart'
 import { CartButton } from '@/components/shop/cart-button'
+import { ShopBanner } from '@/components/shop/shop-banner'
 import { useShop } from '@/hooks/use-shop'
 import { sampleProducts } from '@/components/shop/sample-products'
 import { Button } from '@/components/ui/button'
@@ -47,6 +48,35 @@ export default function ShopPage() {
   const [showBulkEditModal, setShowBulkEditModal] = useState(false)
   const [showProductEditModal, setShowProductEditModal] = useState(false)
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
+  const [shopBanners, setShopBanners] = useState([
+    {
+      id: 'banner-1',
+      title: '¡Ofertas Especiales!',
+      subtitle: 'Descuentos de hasta 50% en productos seleccionados',
+      backgroundColor: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      ctaText: 'Ver Ofertas',
+      ctaUrl: '#ofertas',
+      isActive: true
+    },
+    {
+      id: 'banner-2',
+      title: 'Envío Gratis',
+      subtitle: 'En pedidos superiores a $50',
+      backgroundColor: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+      ctaText: 'Comprar Ahora',
+      ctaUrl: '#productos',
+      isActive: true
+    },
+    {
+      id: 'banner-3',
+      title: 'Nuevos Productos',
+      subtitle: 'Descubre nuestra última colección',
+      backgroundColor: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+      ctaText: 'Explorar',
+      ctaUrl: '#nuevos',
+      isActive: true
+    }
+  ])
 
   // Usar el hook personalizado para toda la lógica de la tienda
   const {
@@ -258,6 +288,11 @@ export default function ShopPage() {
     }
   }
 
+  const handleBannersUpdate = (updatedBanners: any[]) => {
+    setShopBanners(updatedBanners)
+    console.log('🎨 Banners actualizados:', updatedBanners)
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -281,6 +316,16 @@ export default function ShopPage() {
         onToggleMobileMenu={() => setMobileMenuOpen(!mobileMenuOpen)}
         selectedDesign={selectedDesign}
         onDesignSelect={handleDesignSelect}
+      />
+
+      {/* Banner de la tienda */}
+      <ShopBanner 
+        banners={shopBanners}
+        autoPlay={true}
+        interval={4000}
+        showControls={true}
+        showIndicators={true}
+        onBannersUpdate={handleBannersUpdate}
       />
 
       {/* Contenido principal */}
