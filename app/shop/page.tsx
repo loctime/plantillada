@@ -57,7 +57,16 @@ export default function ShopPage() {
       ctaText: 'Ver Ofertas',
       ctaUrl: '#ofertas',
       image: '',
-      isActive: true
+      isActive: true,
+      displayTime: 4,
+      transitionEffect: 'fade',
+      textPosition: 'center',
+      textAnimation: 'fadeIn',
+      overlayOpacity: 30,
+      borderRadius: 0,
+      shadow: false,
+      blur: false,
+      scale: false
     },
     {
       id: 'banner-2',
@@ -67,7 +76,16 @@ export default function ShopPage() {
       ctaText: 'Comprar Ahora',
       ctaUrl: '#productos',
       image: '',
-      isActive: true
+      isActive: true,
+      displayTime: 4,
+      transitionEffect: 'slide',
+      textPosition: 'center',
+      textAnimation: 'slideIn',
+      overlayOpacity: 25,
+      borderRadius: 8,
+      shadow: true,
+      blur: false,
+      scale: true
     },
     {
       id: 'banner-3',
@@ -77,7 +95,16 @@ export default function ShopPage() {
       ctaText: 'Explorar',
       ctaUrl: '#nuevos',
       image: '',
-      isActive: true
+      isActive: true,
+      displayTime: 5,
+      transitionEffect: 'zoom',
+      textPosition: 'right',
+      textAnimation: 'bounce',
+      overlayOpacity: 20,
+      borderRadius: 12,
+      shadow: true,
+      blur: true,
+      scale: false
     }
   ])
 

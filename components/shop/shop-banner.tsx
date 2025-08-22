@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from 'react'
-import { ChevronLeft, ChevronRight, X, Edit, Settings, Image as ImageIcon, Upload } from 'lucide-react'
+import { ChevronLeft, ChevronRight, X, Edit, Settings, Image as ImageIcon, Upload, Clock, Palette, Type, Zap, Layers } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useAdmin } from '@/lib/admin-context'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -9,6 +9,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Switch } from '@/components/ui/switch'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Slider } from '@/components/ui/slider'
 import { ImageUpload } from '@/components/image-upload'
 
 interface ShopBannerProps {
@@ -22,6 +24,16 @@ interface ShopBannerProps {
     ctaText?: string
     ctaUrl?: string
     isActive?: boolean
+    // Nuevas propiedades
+    displayTime?: number
+    transitionEffect?: string
+    textPosition?: string
+    textAnimation?: string
+    overlayOpacity?: number
+    borderRadius?: number
+    shadow?: boolean
+    blur?: boolean
+    scale?: boolean
   }>
   autoPlay?: boolean
   interval?: number
@@ -43,6 +55,7 @@ export function ShopBanner({
   const [isVisible, setIsVisible] = useState(true)
   const [showEditModal, setShowEditModal] = useState(false)
   const [editingBanners, setEditingBanners] = useState<any[]>([])
+  const [activeTab, setActiveTab] = useState('general')
 
   // Banners por defecto si no hay ninguno configurado
   const defaultBanners = [
@@ -55,7 +68,16 @@ export function ShopBanner({
       ctaText: 'Ver Ofertas',
       ctaUrl: '#',
       image: '',
-      isActive: true
+      isActive: true,
+      displayTime: 4,
+      transitionEffect: 'fade',
+      textPosition: 'center',
+      textAnimation: 'fadeIn',
+      overlayOpacity: 30,
+      borderRadius: 0,
+      shadow: false,
+      blur: false,
+      scale: false
     },
     {
       id: 'default-2',
@@ -66,7 +88,16 @@ export function ShopBanner({
       ctaText: 'Comprar Ahora',
       ctaUrl: '#',
       image: '',
-      isActive: true
+      isActive: true,
+      displayTime: 4,
+      transitionEffect: 'slide',
+      textPosition: 'center',
+      textAnimation: 'slideIn',
+      overlayOpacity: 25,
+      borderRadius: 8,
+      shadow: true,
+      blur: false,
+      scale: true
     }
   ]
 
@@ -115,7 +146,16 @@ export function ShopBanner({
       textColor: '#ffffff',
       ctaText: 'Acción',
       ctaUrl: '#',
-      isActive: true
+      isActive: true,
+      displayTime: 4,
+      transitionEffect: 'fade',
+      textPosition: 'center',
+      textAnimation: 'fadeIn',
+      overlayOpacity: 30,
+      borderRadius: 0,
+      shadow: false,
+      blur: false,
+      scale: false
     }
     setEditingBanners([...editingBanners, newBanner])
   }
@@ -138,6 +178,43 @@ export function ShopBanner({
   // Función para manejar la subida de imagen
   const handleImageUploaded = (index: number) => (url: string) => {
     handleUpdateBanner(index, 'image', url)
+  }
+
+  // Obtener clases CSS para efectos
+  const getBannerClasses = (banner: any) => {
+    const classes = ['relative h-32 md:h-40 flex items-center justify-center px-4 overflow-hidden transition-all duration-500']
+    
+    // Posición del texto
+    switch (banner.textPosition) {
+      case 'left':
+        classes.push('justify-start text-left')
+        break
+      case 'right':
+        classes.push('justify-end text-right')
+        break
+      default:
+        classes.push('justify-center text-center')
+    }
+
+    // Efectos visuales
+    if (banner.shadow) classes.push('shadow-2xl')
+    if (banner.blur) classes.push('backdrop-blur-sm')
+    if (banner.scale) classes.push('hover:scale-105')
+
+    return classes.join(' ')
+  }
+
+  // Obtener estilos CSS para efectos
+  const getBannerStyles = (banner: any) => {
+    const styles: any = {
+      background: banner.backgroundColor || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+    }
+
+    if (banner.borderRadius > 0) {
+      styles.borderRadius = `${banner.borderRadius}px`
+    }
+
+    return styles
   }
 
   if (!isVisible || activeBanners.length === 0) {
@@ -172,10 +249,8 @@ export function ShopBanner({
         <div className="relative">
           {/* Banner principal */}
           <div 
-            className="relative h-32 md:h-40 flex items-center justify-center px-4 overflow-hidden"
-            style={{
-              background: currentBanner.backgroundColor || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-            }}
+            className={getBannerClasses(currentBanner)}
+            style={getBannerStyles(currentBanner)}
           >
             {/* Imagen de fondo si existe */}
             {currentBanner.image && (
@@ -185,16 +260,25 @@ export function ShopBanner({
                   alt={currentBanner.title}
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-black/30"></div>
+                <div 
+                  className="absolute inset-0"
+                  style={{ backgroundColor: `rgba(0, 0, 0, ${(currentBanner.overlayOpacity || 30) / 100})` }}
+                ></div>
               </div>
             )}
 
-            <div className="text-center max-w-4xl mx-auto relative z-10">
-              <h2 className="text-xl md:text-2xl font-bold mb-2">
+            <div className={`max-w-4xl mx-auto relative z-10 ${currentBanner.textPosition === 'left' ? 'ml-8' : currentBanner.textPosition === 'right' ? 'mr-8' : ''}`}>
+              <h2 
+                className={`text-xl md:text-2xl font-bold mb-2 ${currentBanner.textAnimation === 'slideIn' ? 'animate-slide-in' : currentBanner.textAnimation === 'bounce' ? 'animate-bounce' : 'animate-fade-in'}`}
+                style={{ color: currentBanner.textColor || '#ffffff' }}
+              >
                 {currentBanner.title}
               </h2>
               {currentBanner.subtitle && (
-                <p className="text-sm md:text-base opacity-90 mb-4">
+                <p 
+                  className={`text-sm md:text-base opacity-90 mb-4 ${currentBanner.textAnimation === 'slideIn' ? 'animate-slide-in-delay' : 'animate-fade-in-delay'}`}
+                  style={{ color: currentBanner.textColor || '#ffffff' }}
+                >
                   {currentBanner.subtitle}
                 </p>
               )}
@@ -202,7 +286,7 @@ export function ShopBanner({
                 <Button
                   variant="secondary"
                   size="sm"
-                  className="bg-white text-gray-900 hover:bg-gray-100"
+                  className={`bg-white text-gray-900 hover:bg-gray-100 ${currentBanner.textAnimation === 'slideIn' ? 'animate-slide-in-delay-2' : 'animate-fade-in-delay-2'}`}
                   onClick={() => {
                     if (currentBanner.ctaUrl && currentBanner.ctaUrl !== '#') {
                       window.location.href = currentBanner.ctaUrl
@@ -252,7 +336,7 @@ export function ShopBanner({
 
       {/* Modal de edición */}
       <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Settings className="h-5 w-5" />
@@ -283,112 +367,290 @@ export function ShopBanner({
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor={`title-${index}`}>Título *</Label>
-                    <Input
-                      id={`title-${index}`}
-                      value={banner.title}
-                      onChange={(e) => handleUpdateBanner(index, 'title', e.target.value)}
-                      placeholder="Título del banner"
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor={`subtitle-${index}`}>Subtítulo</Label>
-                    <Input
-                      id={`subtitle-${index}`}
-                      value={banner.subtitle || ''}
-                      onChange={(e) => handleUpdateBanner(index, 'subtitle', e.target.value)}
-                      placeholder="Subtítulo del banner"
-                    />
-                  </div>
+                {/* Pestañas de configuración */}
+                <div className="flex space-x-1 border-b">
+                  {[
+                    { id: 'general', label: 'General', icon: Type },
+                    { id: 'timing', label: 'Tiempo', icon: Clock },
+                    { id: 'effects', label: 'Efectos', icon: Zap },
+                    { id: 'style', label: 'Estilo', icon: Palette },
+                    { id: 'image', label: 'Imagen', icon: ImageIcon }
+                  ].map((tab) => {
+                    const Icon = tab.icon
+                    return (
+                      <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
+                        className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-t-lg transition-colors ${
+                          activeTab === tab.id
+                            ? 'bg-blue-500 text-white'
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        }`}
+                      >
+                        <Icon className="h-4 w-4" />
+                        {tab.label}
+                      </button>
+                    )
+                  })}
+                </div>
 
-                  <div>
-                    <Label htmlFor={`ctaText-${index}`}>Texto del Botón</Label>
-                    <Input
-                      id={`ctaText-${index}`}
-                      value={banner.ctaText || ''}
-                      onChange={(e) => handleUpdateBanner(index, 'ctaText', e.target.value)}
-                      placeholder="Ej: Ver Ofertas"
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor={`ctaUrl-${index}`}>URL del Botón</Label>
-                    <Input
-                      id={`ctaUrl-${index}`}
-                      value={banner.ctaUrl || ''}
-                      onChange={(e) => handleUpdateBanner(index, 'ctaUrl', e.target.value)}
-                      placeholder="Ej: #ofertas o https://..."
-                    />
-                  </div>
-
-                  <div className="md:col-span-2">
-                    <Label htmlFor={`backgroundColor-${index}`}>Color de Fondo (CSS)</Label>
-                    <Input
-                      id={`backgroundColor-${index}`}
-                      value={banner.backgroundColor || ''}
-                      onChange={(e) => handleUpdateBanner(index, 'backgroundColor', e.target.value)}
-                      placeholder="Ej: linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
-                    />
-                  </div>
-
-                  {/* Sección de imagen */}
-                  <div className="md:col-span-2">
-                    <Label className="flex items-center gap-2 mb-2">
-                      <ImageIcon className="h-4 w-4" />
-                      Imagen de Fondo (Opcional)
-                    </Label>
-                    
-                    {banner.image ? (
-                      <div className="space-y-2">
-                        <div className="relative">
-                          <img
-                            src={banner.image}
-                            alt="Vista previa"
-                            className="w-full h-32 object-cover rounded-lg border"
-                          />
-                          <Button
-                            variant="destructive"
-                            size="sm"
-                            className="absolute top-2 right-2"
-                            onClick={() => handleUpdateBanner(index, 'image', '')}
-                          >
-                            <X className="h-3 w-3" />
-                          </Button>
-                        </div>
-                        <p className="text-sm text-gray-500">
-                          URL actual: {banner.image}
-                        </p>
+                {/* Contenido de pestañas */}
+                <div className="min-h-[400px]">
+                  {/* Pestaña General */}
+                  {activeTab === 'general' && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor={`title-${index}`}>Título *</Label>
+                        <Input
+                          id={`title-${index}`}
+                          value={banner.title}
+                          onChange={(e) => handleUpdateBanner(index, 'title', e.target.value)}
+                          placeholder="Título del banner"
+                        />
                       </div>
-                                         ) : (
-                       <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
-                         <div className="flex flex-col items-center space-y-2">
-                           <Upload className="h-8 w-8 text-gray-400" />
-                           <p className="text-sm text-gray-500">
-                             Haz clic para subir una imagen
-                           </p>
-                           <p className="text-xs text-gray-400">
-                             PNG, JPG hasta 5MB
-                           </p>
-                         </div>
-                         <ImageUpload
-                           onUpload={(url: string) => handleImageUpload(index, url)}
-                           className="w-full mt-2"
-                         />
-                       </div>
-                     )}
-                  </div>
+                      
+                      <div>
+                        <Label htmlFor={`subtitle-${index}`}>Subtítulo</Label>
+                        <Input
+                          id={`subtitle-${index}`}
+                          value={banner.subtitle || ''}
+                          onChange={(e) => handleUpdateBanner(index, 'subtitle', e.target.value)}
+                          placeholder="Subtítulo del banner"
+                        />
+                      </div>
+
+                      <div>
+                        <Label htmlFor={`ctaText-${index}`}>Texto del Botón</Label>
+                        <Input
+                          id={`ctaText-${index}`}
+                          value={banner.ctaText || ''}
+                          onChange={(e) => handleUpdateBanner(index, 'ctaText', e.target.value)}
+                          placeholder="Ej: Ver Ofertas"
+                        />
+                      </div>
+
+                      <div>
+                        <Label htmlFor={`ctaUrl-${index}`}>URL del Botón</Label>
+                        <Input
+                          id={`ctaUrl-${index}`}
+                          value={banner.ctaUrl || ''}
+                          onChange={(e) => handleUpdateBanner(index, 'ctaUrl', e.target.value)}
+                          placeholder="Ej: #ofertas o https://..."
+                        />
+                      </div>
+
+                      <div>
+                        <Label htmlFor={`textColor-${index}`}>Color del Texto</Label>
+                        <Input
+                          id={`textColor-${index}`}
+                          type="color"
+                          value={banner.textColor || '#ffffff'}
+                          onChange={(e) => handleUpdateBanner(index, 'textColor', e.target.value)}
+                        />
+                      </div>
+
+                      <div>
+                        <Label htmlFor={`backgroundColor-${index}`}>Color de Fondo (CSS)</Label>
+                        <Input
+                          id={`backgroundColor-${index}`}
+                          value={banner.backgroundColor || ''}
+                          onChange={(e) => handleUpdateBanner(index, 'backgroundColor', e.target.value)}
+                          placeholder="Ej: linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Pestaña Tiempo */}
+                  {activeTab === 'timing' && (
+                    <div className="space-y-6">
+                      <div>
+                        <Label>Tiempo de Visualización: {banner.displayTime || 4} segundos</Label>
+                        <Slider
+                          value={[banner.displayTime || 4]}
+                          onValueChange={(value) => handleUpdateBanner(index, 'displayTime', value[0])}
+                          max={10}
+                          min={1}
+                          step={1}
+                          className="mt-2"
+                        />
+                      </div>
+
+                      <div>
+                        <Label>Efecto de Transición</Label>
+                        <Select
+                          value={banner.transitionEffect || 'fade'}
+                          onValueChange={(value) => handleUpdateBanner(index, 'transitionEffect', value)}
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="fade">Desvanecer</SelectItem>
+                            <SelectItem value="slide">Deslizar</SelectItem>
+                            <SelectItem value="zoom">Zoom</SelectItem>
+                            <SelectItem value="flip">Voltear</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div>
+                        <Label>Animación del Texto</Label>
+                        <Select
+                          value={banner.textAnimation || 'fadeIn'}
+                          onValueChange={(value) => handleUpdateBanner(index, 'textAnimation', value)}
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="fadeIn">Aparecer</SelectItem>
+                            <SelectItem value="slideIn">Deslizar</SelectItem>
+                            <SelectItem value="bounce">Rebotar</SelectItem>
+                            <SelectItem value="none">Sin animación</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Pestaña Efectos */}
+                  {activeTab === 'effects' && (
+                    <div className="space-y-6">
+                      <div>
+                        <Label>Posición del Texto</Label>
+                        <Select
+                          value={banner.textPosition || 'center'}
+                          onValueChange={(value) => handleUpdateBanner(index, 'textPosition', value)}
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="left">Izquierda</SelectItem>
+                            <SelectItem value="center">Centro</SelectItem>
+                            <SelectItem value="right">Derecha</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-4">
+                        <div className="flex items-center space-x-2">
+                          <Switch
+                            checked={banner.shadow || false}
+                            onCheckedChange={(checked) => handleUpdateBanner(index, 'shadow', checked)}
+                          />
+                          <Label>Sombra</Label>
+                        </div>
+
+                        <div className="flex items-center space-x-2">
+                          <Switch
+                            checked={banner.blur || false}
+                            onCheckedChange={(checked) => handleUpdateBanner(index, 'blur', checked)}
+                          />
+                          <Label>Efecto Blur</Label>
+                        </div>
+
+                        <div className="flex items-center space-x-2">
+                          <Switch
+                            checked={banner.scale || false}
+                            onCheckedChange={(checked) => handleUpdateBanner(index, 'scale', checked)}
+                          />
+                          <Label>Efecto Hover Scale</Label>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Pestaña Estilo */}
+                  {activeTab === 'style' && (
+                    <div className="space-y-6">
+                      <div>
+                        <Label>Opacidad del Overlay: {banner.overlayOpacity || 30}%</Label>
+                        <Slider
+                          value={[banner.overlayOpacity || 30]}
+                          onValueChange={(value) => handleUpdateBanner(index, 'overlayOpacity', value[0])}
+                          max={80}
+                          min={0}
+                          step={5}
+                          className="mt-2"
+                        />
+                      </div>
+
+                      <div>
+                        <Label>Radio de Borde: {banner.borderRadius || 0}px</Label>
+                        <Slider
+                          value={[banner.borderRadius || 0]}
+                          onValueChange={(value) => handleUpdateBanner(index, 'borderRadius', value[0])}
+                          max={20}
+                          min={0}
+                          step={2}
+                          className="mt-2"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Pestaña Imagen */}
+                  {activeTab === 'image' && (
+                    <div>
+                      <Label className="flex items-center gap-2 mb-2">
+                        <ImageIcon className="h-4 w-4" />
+                        Imagen de Fondo (Opcional)
+                      </Label>
+                      
+                      {banner.image ? (
+                        <div className="space-y-2">
+                          <div className="relative">
+                            <img
+                              src={banner.image}
+                              alt="Vista previa"
+                              className="w-full h-32 object-cover rounded-lg border"
+                            />
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              className="absolute top-2 right-2"
+                              onClick={() => handleUpdateBanner(index, 'image', '')}
+                            >
+                              <X className="h-3 w-3" />
+                            </Button>
+                          </div>
+                          <p className="text-sm text-gray-500">
+                            URL actual: {banner.image}
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
+                          <div className="flex flex-col items-center space-y-2">
+                            <Upload className="h-8 w-8 text-gray-400" />
+                            <p className="text-sm text-gray-500">
+                              Haz clic para subir una imagen
+                            </p>
+                            <p className="text-xs text-gray-400">
+                              PNG, JPG hasta 5MB
+                            </p>
+                          </div>
+                          <ImageUpload
+                            onUpload={(url: string) => handleImageUpload(index, url)}
+                            className="w-full mt-2"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 {/* Vista previa del banner */}
                 <div className="border-t pt-4">
                   <Label className="text-sm font-medium">Vista Previa:</Label>
                   <div 
-                    className="mt-2 h-24 rounded-lg flex items-center justify-center px-4 relative overflow-hidden"
+                    className={`mt-2 h-24 rounded-lg flex items-center justify-center px-4 relative overflow-hidden transition-all duration-500 ${
+                      banner.shadow ? 'shadow-2xl' : ''
+                    } ${banner.blur ? 'backdrop-blur-sm' : ''}`}
                     style={{
-                      background: banner.backgroundColor || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+                      background: banner.backgroundColor || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                      borderRadius: banner.borderRadius ? `${banner.borderRadius}px` : '0px'
                     }}
                   >
                     {/* Imagen de fondo en vista previa */}
@@ -399,14 +661,27 @@ export function ShopBanner({
                           alt="Vista previa"
                           className="absolute inset-0 w-full h-full object-cover"
                         />
-                        <div className="absolute inset-0 bg-black/30"></div>
+                        <div 
+                          className="absolute inset-0"
+                          style={{ backgroundColor: `rgba(0, 0, 0, ${(banner.overlayOpacity || 30) / 100})` }}
+                        ></div>
                       </>
                     )}
                     
-                    <div className="text-center text-white relative z-10">
-                      <h4 className="font-bold text-sm">{banner.title}</h4>
+                    <div className={`text-center relative z-10 ${banner.textPosition === 'left' ? 'text-left' : banner.textPosition === 'right' ? 'text-right' : 'text-center'}`}>
+                      <h4 
+                        className="font-bold text-sm"
+                        style={{ color: banner.textColor || '#ffffff' }}
+                      >
+                        {banner.title}
+                      </h4>
                       {banner.subtitle && (
-                        <p className="text-xs opacity-90">{banner.subtitle}</p>
+                        <p 
+                          className="text-xs opacity-90"
+                          style={{ color: banner.textColor || '#ffffff' }}
+                        >
+                          {banner.subtitle}
+                        </p>
                       )}
                     </div>
                   </div>
@@ -435,6 +710,35 @@ export function ShopBanner({
           </div>
         </DialogContent>
       </Dialog>
+
+      <style jsx>{`
+        @keyframes fade-in {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes slide-in {
+          from { transform: translateX(-100%); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+        .animate-fade-in {
+          animation: fade-in 0.5s ease-in-out;
+        }
+        .animate-fade-in-delay {
+          animation: fade-in 0.5s ease-in-out 0.2s both;
+        }
+        .animate-fade-in-delay-2 {
+          animation: fade-in 0.5s ease-in-out 0.4s both;
+        }
+        .animate-slide-in {
+          animation: slide-in 0.6s ease-out;
+        }
+        .animate-slide-in-delay {
+          animation: slide-in 0.6s ease-out 0.2s both;
+        }
+        .animate-slide-in-delay-2 {
+          animation: slide-in 0.6s ease-out 0.4s both;
+        }
+      `}</style>
     </>
   )
 }
