@@ -14,6 +14,7 @@ import {
 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { getWhatsAppUrl, createWhatsAppMessage } from '@/lib/whatsapp-config'
+import { useAdmin } from '@/lib/admin-context'
 
 interface CartProps {
   items: CartItem[]
@@ -33,6 +34,7 @@ export function Cart({
   onClearCart 
 }: CartProps) {
   const { toast } = useToast()
+  const { config } = useAdmin()
   const [isSending, setIsSending] = useState(false)
 
   const total = items.reduce((sum, item) => sum + (item.price * item.quantity), 0)
@@ -55,7 +57,7 @@ export function Cart({
       const message = createWhatsAppMessage(items, total)
       
       // Crear URL de WhatsApp
-      const whatsappUrl = getWhatsAppUrl(message)
+      const whatsappUrl = getWhatsAppUrl(message, config)
       
       // Abrir WhatsApp en nueva pestaña
       window.open(whatsappUrl, '_blank')

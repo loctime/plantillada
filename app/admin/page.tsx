@@ -75,6 +75,82 @@ export default function AdminPage() {
   const [showTemplateSelector, setShowTemplateSelector] = useState(false)
   const [showDesignSelector, setShowDesignSelector] = useState(false)
   const [selectedDesigns, setSelectedDesigns] = useState<{[key: string]: string}>({})
+
+  // Función helper para validar y completar configuración con valores por defecto
+  const validateAndCompleteConfig = (config: any): AdminFormData => {
+    return {
+      site: {
+        title: "Tu Marca Personal",
+        tagline: "Acompañamiento 1:1 y formación práctica para cambios reales.",
+        ...config.site
+      },
+      integrations: {
+        calendlyUrl: "https://calendly.com/tu-usuario/sesion",
+        hotmartBaseUrl: "https://pay.hotmart.com",
+        ...config.integrations
+      },
+      sessions: config.sessions || [
+        {
+          id: "sesion-claridad",
+          name: "Sesión de Claridad",
+          summary: "Define tu objetivo y el plan inmediato de 30 días.",
+          duration: "60 min",
+          price: "€99",
+          features: [
+            "Diagnóstico inicial y mapa de objetivos",
+            "Prioridades y plan de acción",
+            "Seguimiento por email 7 días"
+          ],
+          hotmartUrl: "https://pay.hotmart.com/TU_CHECKOUT_1"
+        }
+      ],
+      course: {
+        title: "Curso Online: Sistema de Productividad Sencilla",
+        blurb: "Aprende a construir un sistema ligero para enfocarte, priorizar con calma y avanzar cada semana sin fricción.",
+        price: "€179",
+        hotmartUrl: "https://pay.hotmart.com/TU_CHECKOUT_CURSO",
+        videoUrl: "",
+        bullets: [
+          "Estructura de planificación semanal en 30 minutos",
+          "Métricas simples para medir progreso",
+          "Plantillas reutilizables y ejemplos",
+          "Casos prácticos y ejercicios guiados"
+        ],
+        ...config.course
+      },
+      about: {
+        photoUrl: "/placeholder.svg?height=520&width=420",
+        videoUrl: "",
+        story: "Soy [Tu Nombre], consultor y coach con X años ayudando a profesionales a ganar claridad, enfocarse y ejecutar con calma.",
+        whyMe: "He acompañado a +300 clientes en sectores diversos.",
+        ...config.about
+      },
+      testimonials: config.testimonials || [
+        {
+          quote: "En dos sesiones definimos un plan claro y recuperé la motivación.",
+          author: "María G.",
+          role: "Marketing Specialist"
+        }
+      ],
+      contact: {
+        email: "hola@tumarca.com",
+        emails: [],
+        phones: [],
+        addresses: [],
+        cbus: [],
+        cuits: [],
+        urls: [],
+        ...config.contact
+      },
+      legal: {
+        termsUrl: "",
+        privacyUrl: "",
+        ...config.legal
+      },
+      linkHub: config.linkHub,
+      ...config
+    }
+  }
   const [formData, setFormData] = useState<AdminFormData>({
     site: {
       title: "Tu Marca Personal",
@@ -125,15 +201,16 @@ export default function AdminPage() {
         role: "Marketing Specialist"
       }
     ],
-    contact: {
-      email: "hola@tumarca.com",
-      emails: [],
-      phones: [],
-      addresses: [],
-      cbus: [],
-      cuits: [],
-      urls: []
-    },
+          contact: {
+        email: "hola@tumarca.com",
+        emails: [],
+        phones: [],
+        whatsappPhone: "",
+        addresses: [],
+        cbus: [],
+        cuits: [],
+        urls: []
+      },
     legal: {
       termsUrl: "",
       privacyUrl: ""
@@ -204,9 +281,13 @@ export default function AdminPage() {
       const response = await fetch('/api/config')
       if (response.ok) {
         const config = await response.json()
-        setFormData(config)
+        
+        // Validar y completar propiedades faltantes con valores por defecto
+        const validatedConfig = validateAndCompleteConfig(config)
+        
+        setFormData(validatedConfig)
         if (config.activeTemplates) setActiveTemplates(config.activeTemplates)
-      else if (config.selectedTemplates) setActiveTemplates(config.selectedTemplates)
+        else if (config.selectedTemplates) setActiveTemplates(config.selectedTemplates)
         if (config.selectedDesigns) setSelectedDesigns(config.selectedDesigns)
       }
     } catch (error) {
@@ -226,10 +307,15 @@ export default function AdminPage() {
   useEffect(() => {
     try {
       if (adminCtxConfig) {
-        setFormData(adminCtxConfig as any)
+        // Validar y completar propiedades faltantes con valores por defecto
+        const validatedConfig = validateAndCompleteConfig(adminCtxConfig)
+        
+        setFormData(validatedConfig)
         if (adminCtxConfig.selectedDesigns) setSelectedDesigns(adminCtxConfig.selectedDesigns)
       }
-    } catch {}
+    } catch (error) {
+      console.error('Error syncing with admin context:', error)
+    }
   }, [adminCtxConfig])
 
   const handleTemplateSelect = async (templates: any[]) => {
@@ -322,10 +408,9 @@ export default function AdminPage() {
     setMessage("")
     
     try {
-      // Preferir guardar la config actual del contexto si existe para no
-      // sobreescribir selecciones recientes del selector rápido
-      const payload = (adminCtxConfig as any) || formData
-      console.log('Enviando configuración:', payload)
+      // Usar formData para guardar los cambios del formulario
+      const payload = formData
+      console.log('Enviando configuración del formulario:', payload)
       
       const response = await fetch('/api/config', {
         method: 'POST',
@@ -647,6 +732,50 @@ export default function AdminPage() {
                          ))}
                        </div>
                      </div>
+                     <Separator />
+                     <div className="space-y-2">
+                       <div className="flex items-center justify-between">
+                         <Label>WhatsApp para Carrito</Label>
+                       </div>
+                       <div className="space-y-2">
+                         <Label className="text-sm text-gray-600">
+                           Selecciona qué número de teléfono usar para el carrito de compras
+                         </Label>
+                         <select
+                           value={formData.contact.whatsappPhone || ""}
+                           onChange={(e) => {
+                             setFormData({
+                               ...formData,
+                               contact: { ...formData.contact, whatsappPhone: e.target.value }
+                             })
+                           }}
+                           className="w-full p-2 border border-gray-300 rounded-md"
+                         >
+                           <option value="">-- Seleccionar número para WhatsApp --</option>
+                           {(formData.contact.phones || []).map((phone, index) => (
+                             <option key={index} value={phone}>
+                               {phone || `Teléfono ${index + 1}`}
+                             </option>
+                           ))}
+                         </select>
+                         {formData.contact.whatsappPhone && (
+                           <p className="text-xs text-green-600">
+                             ✅ WhatsApp configurado: {formData.contact.whatsappPhone}
+                           </p>
+                         )}
+                         {!formData.contact.whatsappPhone && (formData.contact.phones || []).length > 0 && (
+                           <p className="text-xs text-orange-600">
+                             ⚠️ Selecciona un número para que funcione el carrito de WhatsApp
+                           </p>
+                         )}
+                         {(formData.contact.phones || []).length === 0 && (
+                           <p className="text-xs text-red-600">
+                             ❌ Agrega al menos un número de teléfono arriba
+                           </p>
+                         )}
+                       </div>
+                     </div>
+                     <Separator />
                      <div className="space-y-2">
                        <div className="flex items-center justify-between">
                          <Label>Direcciones</Label>

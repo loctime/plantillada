@@ -6,13 +6,16 @@ export const whatsappConfig = {
   // México: 5215512345678 (52 1 55 1234-5678)
   // España: 34612345678 (34 612 345 678)
   // Estados Unidos: 15551234567 (1 555 123-4567)
-  phoneNumber: '5491112345678', // Cambia este número por el tuyo
+  // Colombia: 573001234567 (57 300 123-4567)
+  // Chile: 56912345678 (56 9 1234-5678)
+  // Perú: 51912345678 (51 9 1234-5678)
+  phoneNumber: '5491112345678', // ⚠️ DEPRECATED: Ahora se usa desde config.contact.whatsappPhone
   
   // Mensaje personalizado que se envía al final del pedido
   customMessage: '¡Hola! Quisiera realizar este pedido. ¿Podrías confirmarme la disponibilidad y el tiempo de entrega?',
   
   // Nombre de la tienda que aparece en el mensaje
-  storeName: 'Mi Tienda',
+  storeName: 'Mi Tienda', // ⚠️ CAMBIA ESTE NOMBRE POR EL DE TU TIENDA
   
   // Configuración adicional
   settings: {
@@ -26,19 +29,32 @@ export const whatsappConfig = {
     dateFormat: {
       locale: 'es-ES',
       options: {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
+        year: 'numeric' as const,
+        month: 'long' as const,
+        day: 'numeric' as const,
+        hour: '2-digit' as const,
+        minute: '2-digit' as const
       }
     }
   }
 }
 
+// Función para obtener el número de WhatsApp desde la configuración
+export function getWhatsAppPhoneNumber(config?: any): string {
+  // Si hay configuración y un número de WhatsApp seleccionado, usarlo
+  if (config?.contact?.whatsappPhone) {
+    // Convertir formato +54 9 11 1234 5678 a 5491112345678
+    return config.contact.whatsappPhone.replace(/\D/g, '')
+  }
+  
+  // Fallback al número hardcodeado (deprecated)
+  return whatsappConfig.phoneNumber
+}
+
 // Función para obtener la URL de WhatsApp con el mensaje
-export function getWhatsAppUrl(message: string): string {
-  return `https://wa.me/${whatsappConfig.phoneNumber}?text=${encodeURIComponent(message)}`
+export function getWhatsAppUrl(message: string, config?: any): string {
+  const phoneNumber = getWhatsAppPhoneNumber(config)
+  return `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`
 }
 
 // Función para crear el mensaje de WhatsApp
@@ -70,3 +86,4 @@ export function createWhatsAppMessage(items: any[], total: number): string {
 
   return message
 }
+

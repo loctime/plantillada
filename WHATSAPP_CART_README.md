@@ -12,15 +12,20 @@ Este sistema permite a los clientes agregar productos al carrito y enviar sus pe
 
 ## 🚀 Configuración
 
-### 1. Configurar el número de WhatsApp
+### 1. Configurar números de teléfono
 
-Edita el archivo `lib/whatsapp-config.ts`:
+Ve al panel de administración `/admin` → pestaña "General" → sección "Contacto":
+
+1. **Agrega tus números de teléfono** en la sección "Teléfonos"
+2. **Selecciona qué número usar para WhatsApp** en "WhatsApp para Carrito"
+3. **Guarda la configuración**
+
+### 2. Configuración avanzada (opcional)
+
+Si necesitas personalizar el mensaje o nombre de la tienda, edita `lib/whatsapp-config.ts`:
 
 ```typescript
 export const whatsappConfig = {
-  // Cambia este número por el tuyo
-  phoneNumber: '5491112345678', // Formato internacional sin +
-  
   // Personaliza el mensaje
   customMessage: '¡Hola! Quisiera realizar este pedido...',
   
@@ -35,14 +40,21 @@ export const whatsappConfig = {
 }
 ```
 
-### 2. Formato del número de teléfono
+**Nota**: El número de WhatsApp ahora se configura desde el panel de administración, no desde este archivo.
 
-El número debe estar en formato internacional **sin el símbolo +**:
+### 3. Formato del número de teléfono
 
-- **Argentina**: `5491112345678` (54 9 11 1234-5678)
-- **México**: `5215512345678` (52 1 55 1234-5678)
-- **España**: `34612345678` (34 612 345 678)
-- **Estados Unidos**: `15551234567` (1 555 123-4567)
+Los números se ingresan en formato internacional **con el símbolo +**:
+
+- **Argentina**: `+54 9 11 1234 5678`
+- **México**: `+52 1 55 1234 5678`
+- **España**: `+34 612 345 678`
+- **Estados Unidos**: `+1 555 123-4567`
+- **Colombia**: `+57 300 123-4567`
+- **Chile**: `+56 9 1234-5678`
+- **Perú**: `+51 9 1234-5678`
+
+El sistema automáticamente convierte el formato para WhatsApp.
 
 ### 3. Personalizar el mensaje
 
@@ -140,8 +152,9 @@ El carrito funciona perfectamente en:
 ## 🚨 Solución de problemas
 
 ### El botón de WhatsApp no funciona
-- Verifica que el número esté en formato internacional sin +
+- Verifica que hayas seleccionado un número en "WhatsApp para Carrito"
 - Asegúrate de que el número sea válido
+- Revisa que hayas guardado la configuración en el admin
 
 ### El mensaje no se formatea correctamente
 - Revisa la configuración en `whatsapp-config.ts`
@@ -163,7 +176,7 @@ Posibles mejoras:
 ## 📞 Soporte
 
 Si tienes problemas con la configuración:
-1. Verifica el formato del número de teléfono
+1. Verifica que hayas seleccionado un número en "WhatsApp para Carrito"
 2. Revisa la consola del navegador
 3. Asegúrate de que todos los componentes estén importados
-4. Verifica que el archivo `whatsapp-config.ts` esté configurado correctamente
+4. Ejecuta el script de prueba: `node scripts/test-whatsapp-integration.js`

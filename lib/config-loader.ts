@@ -306,6 +306,7 @@ export interface Config {
     email: string
     emails?: string[]
     phones?: string[]
+    whatsappPhone?: string // Número seleccionado para WhatsApp
     addresses?: string[]
     cbus?: string[]
     cuits?: string[]
@@ -625,15 +626,16 @@ export function getDefaultConfig(tenantId: string): Config {
         role: "Marketing Specialist"
       }
     ],
-    contact: {
-      email: "hola@tumarca.com",
-      emails: [],
-      phones: [],
-      addresses: [],
-      cbus: [],
-      cuits: [],
-      urls: []
-    },
+          contact: {
+        email: "hola@tumarca.com",
+        emails: [],
+        phones: [],
+        whatsappPhone: "", // Número seleccionado para WhatsApp
+        addresses: [],
+        cbus: [],
+        cuits: [],
+        urls: []
+      },
     legal: {
       termsUrl: "",
       privacyUrl: ""
