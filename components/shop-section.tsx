@@ -42,37 +42,8 @@ export function ShopSection() {
         if (siteConfig.products && siteConfig.products.length > 0) {
           setProducts(siteConfig.products)
         } else {
-          // Productos de ejemplo si no hay configuración
-          setProducts([
-            {
-              id: '1',
-              name: 'iPad 11th (A16)',
-              brand: 'iPad',
-              price: 899.00,
-              originalPrice: 999.00,
-              image: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400&h=400&fit=crop',
-              rating: 4.5,
-              reviews: 128,
-              category: 'tablets',
-              inStock: true,
-              description: 'iPad de 11 pulgadas con chip A16, perfecto para productividad y creatividad.',
-              features: ['Chip A16 Bionic', '11 pulgadas', '128GB', 'WiFi + Cellular']
-            },
-            {
-              id: '2',
-              name: 'iPad Mini (A17)',
-              brand: 'iPad',
-              price: 599.00,
-              originalPrice: 699.00,
-              image: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400&h=400&fit=crop',
-              rating: 4.3,
-              reviews: 89,
-              category: 'tablets',
-              inStock: true,
-              description: 'iPad Mini compacto con chip A17, ideal para uso portátil.',
-              features: ['Chip A17 Pro', '8.3 pulgadas', '64GB', 'WiFi']
-            }
-          ])
+          // No hay productos predefinidos - array vacío
+          setProducts([])
         }
       } catch (error) {
         console.log("Usando configuración por defecto de la tienda")

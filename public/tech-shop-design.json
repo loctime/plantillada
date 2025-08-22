@@ -39,50 +39,7 @@
       "headerStyle": "dark",
       "sidebarStyle": "white-shadow"
     },
-    "products": [
-      {
-        "id": "1",
-        "name": "iPad 11th (A16)",
-        "brand": "Apple",
-        "price": 899.00,
-        "originalPrice": 999.00,
-        "image": "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400&h=400&fit=crop",
-        "rating": 4.5,
-        "reviews": 128,
-        "category": "tablets",
-        "inStock": true,
-        "description": "iPad de 11 pulgadas con chip A16, perfecto para productividad y creatividad.",
-        "features": ["Chip A16 Bionic", "11 pulgadas", "128GB", "WiFi + Cellular"]
-      },
-      {
-        "id": "2",
-        "name": "MacBook Pro M3",
-        "brand": "Apple",
-        "price": 1999.00,
-        "originalPrice": 2199.00,
-        "image": "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=400&fit=crop",
-        "rating": 4.8,
-        "reviews": 256,
-        "category": "laptops",
-        "inStock": true,
-        "description": "MacBook Pro con chip M3, potencia profesional para creativos y desarrolladores.",
-        "features": ["Chip M3", "14 pulgadas", "512GB SSD", "16GB RAM"]
-      },
-      {
-        "id": "3",
-        "name": "iPhone 15 Pro",
-        "brand": "Apple",
-        "price": 1199.00,
-        "originalPrice": 1299.00,
-        "image": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&h=400&fit=crop",
-        "rating": 4.7,
-        "reviews": 189,
-        "category": "smartphones",
-        "inStock": true,
-        "description": "iPhone 15 Pro con cámara profesional y chip A17 Pro.",
-        "features": ["Chip A17 Pro", "6.1 pulgadas", "256GB", "Cámara Pro"]
-      }
-    ]
+    "products": []
   },
   "theme": {
     "light": {

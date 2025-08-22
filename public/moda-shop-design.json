@@ -39,50 +39,7 @@
       "headerStyle": "pink-gradient",
       "sidebarStyle": "glass-morphism"
     },
-    "products": [
-      {
-        "id": "1",
-        "name": "Vestido Elegante",
-        "brand": "Elegance",
-        "price": 89.99,
-        "originalPrice": 129.99,
-        "image": "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=400&h=400&fit=crop",
-        "rating": 4.6,
-        "reviews": 89,
-        "category": "mujer",
-        "inStock": true,
-        "description": "Vestido elegante perfecto para ocasiones especiales.",
-        "features": ["100% Poliéster", "Talla S-XL", "Lavable en seco", "Cierre trasero"]
-      },
-      {
-        "id": "2",
-        "name": "Camisa Formal",
-        "brand": "Classic",
-        "price": 45.99,
-        "originalPrice": 59.99,
-        "image": "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=400&h=400&fit=crop",
-        "rating": 4.4,
-        "reviews": 156,
-        "category": "hombre",
-        "inStock": true,
-        "description": "Camisa formal de algodón premium para el trabajo.",
-        "features": ["100% Algodón", "Talla S-XXL", "Planchado fácil", "Cuello clásico"]
-      },
-      {
-        "id": "3",
-        "name": "Bolso de Mano",
-        "brand": "Luxury",
-        "price": 199.99,
-        "originalPrice": 249.99,
-        "image": "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400&h=400&fit=crop",
-        "rating": 4.8,
-        "reviews": 234,
-        "category": "bolsos",
-        "inStock": true,
-        "description": "Bolso de mano elegante con acabados premium.",
-        "features": ["Cuero genuino", "Interior forrado", "Asa ajustable", "Múltiples compartimentos"]
-      }
-    ]
+    "products": []
   },
   "theme": {
     "light": {

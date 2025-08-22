@@ -39,50 +39,7 @@
       "headerStyle": "green-minimal",
       "sidebarStyle": "floating"
     },
-    "products": [
-      {
-        "id": "1",
-        "name": "Vela Aromática",
-        "brand": "ZenLife",
-        "price": 24.99,
-        "originalPrice": 34.99,
-        "image": "https://images.unsplash.com/photo-1603006905005-6a2d4e5f0e8f?w=400&h=400&fit=crop",
-        "rating": 4.8,
-        "reviews": 67,
-        "category": "hogar",
-        "inStock": true,
-        "description": "Vela aromática de lavanda, perfecta para relajación.",
-        "features": ["Lavanda natural", "50 horas de duración", "Cera de soja", "Sin parafina"]
-      },
-      {
-        "id": "2",
-        "name": "Botella de Agua Reutilizable",
-        "brand": "EcoFlow",
-        "price": 19.99,
-        "originalPrice": 29.99,
-        "image": "https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=400&h=400&fit=crop",
-        "rating": 4.6,
-        "reviews": 189,
-        "category": "eco",
-        "inStock": true,
-        "description": "Botella de agua reutilizable de acero inoxidable.",
-        "features": ["500ml", "Acero inoxidable", "Mantiene temperatura", "Libre de BPA"]
-      },
-      {
-        "id": "3",
-        "name": "Cojín Decorativo",
-        "brand": "HomeStyle",
-        "price": 39.99,
-        "originalPrice": 49.99,
-        "image": "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=400&fit=crop",
-        "rating": 4.5,
-        "reviews": 123,
-        "category": "decoracion",
-        "inStock": true,
-        "description": "Cojín decorativo con diseño minimalista.",
-        "features": ["Algodón orgánico", "45x45cm", "Diseño geométrico", "Lavable"]
-      }
-    ]
+    "products": []
   },
   "theme": {
     "light": {

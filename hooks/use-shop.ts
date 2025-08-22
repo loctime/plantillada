@@ -28,8 +28,8 @@ interface Category {
 }
 
 export function useShop() {
-  const [products, setProducts] = useState<Product[]>(sampleProducts)
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>(sampleProducts)
+  const [products, setProducts] = useState<Product[]>([])
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
   const [searchTerm, setSearchTerm] = useState('')
   const [priceRange, setPriceRange] = useState([0, 1500])
   const [selectedCategory, setSelectedCategory] = useState('all')
