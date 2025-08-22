@@ -56,6 +56,7 @@ export default function ShopPage() {
       backgroundColor: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
       ctaText: 'Ver Ofertas',
       ctaUrl: '#ofertas',
+      image: '',
       isActive: true
     },
     {
@@ -65,6 +66,7 @@ export default function ShopPage() {
       backgroundColor: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
       ctaText: 'Comprar Ahora',
       ctaUrl: '#productos',
+      image: '',
       isActive: true
     },
     {
@@ -74,6 +76,7 @@ export default function ShopPage() {
       backgroundColor: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
       ctaText: 'Explorar',
       ctaUrl: '#nuevos',
+      image: '',
       isActive: true
     }
   ])

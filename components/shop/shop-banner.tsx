@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from 'react'
-import { ChevronLeft, ChevronRight, X, Edit, Settings } from 'lucide-react'
+import { ChevronLeft, ChevronRight, X, Edit, Settings, Image as ImageIcon, Upload } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useAdmin } from '@/lib/admin-context'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Switch } from '@/components/ui/switch'
+import { ImageUpload } from '@/components/image-upload'
 
 interface ShopBannerProps {
   banners?: Array<{
@@ -53,6 +54,7 @@ export function ShopBanner({
       textColor: '#ffffff',
       ctaText: 'Ver Ofertas',
       ctaUrl: '#',
+      image: '',
       isActive: true
     },
     {
@@ -63,6 +65,7 @@ export function ShopBanner({
       textColor: '#ffffff',
       ctaText: 'Comprar Ahora',
       ctaUrl: '#',
+      image: '',
       isActive: true
     }
   ]
@@ -128,6 +131,15 @@ export function ShopBanner({
     setEditingBanners(updatedBanners)
   }
 
+  const handleImageUpload = (index: number, imageUrl: string) => {
+    handleUpdateBanner(index, 'image', imageUrl)
+  }
+
+  // Función para manejar la subida de imagen
+  const handleImageUploaded = (index: number) => (url: string) => {
+    handleUpdateBanner(index, 'image', url)
+  }
+
   if (!isVisible || activeBanners.length === 0) {
     return null
   }
@@ -160,12 +172,24 @@ export function ShopBanner({
         <div className="relative">
           {/* Banner principal */}
           <div 
-            className="relative h-32 md:h-40 flex items-center justify-center px-4"
+            className="relative h-32 md:h-40 flex items-center justify-center px-4 overflow-hidden"
             style={{
               background: currentBanner.backgroundColor || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
             }}
           >
-            <div className="text-center max-w-4xl mx-auto">
+            {/* Imagen de fondo si existe */}
+            {currentBanner.image && (
+              <div className="absolute inset-0 z-0">
+                <img
+                  src={currentBanner.image}
+                  alt={currentBanner.title}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-black/30"></div>
+              </div>
+            )}
+
+            <div className="text-center max-w-4xl mx-auto relative z-10">
               <h2 className="text-xl md:text-2xl font-bold mb-2">
                 {currentBanner.title}
               </h2>
@@ -196,13 +220,13 @@ export function ShopBanner({
             <>
               <button
                 onClick={goToPrevious}
-                className="absolute left-2 top-1/2 transform -translate-y-1/2 p-2 rounded-full bg-black/20 hover:bg-black/40 transition-colors"
+                className="absolute left-2 top-1/2 transform -translate-y-1/2 p-2 rounded-full bg-black/20 hover:bg-black/40 transition-colors z-20"
               >
                 <ChevronLeft className="h-5 w-5" />
               </button>
               <button
                 onClick={goToNext}
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 p-2 rounded-full bg-black/20 hover:bg-black/40 transition-colors"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 p-2 rounded-full bg-black/20 hover:bg-black/40 transition-colors z-20"
               >
                 <ChevronRight className="h-5 w-5" />
               </button>
@@ -211,7 +235,7 @@ export function ShopBanner({
 
           {/* Indicadores */}
           {showIndicators && activeBanners.length > 1 && (
-            <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2">
+            <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2 z-20">
               {activeBanners.map((_, index) => (
                 <button
                   key={index}
@@ -309,18 +333,77 @@ export function ShopBanner({
                       placeholder="Ej: linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
                     />
                   </div>
+
+                  {/* Sección de imagen */}
+                  <div className="md:col-span-2">
+                    <Label className="flex items-center gap-2 mb-2">
+                      <ImageIcon className="h-4 w-4" />
+                      Imagen de Fondo (Opcional)
+                    </Label>
+                    
+                    {banner.image ? (
+                      <div className="space-y-2">
+                        <div className="relative">
+                          <img
+                            src={banner.image}
+                            alt="Vista previa"
+                            className="w-full h-32 object-cover rounded-lg border"
+                          />
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            className="absolute top-2 right-2"
+                            onClick={() => handleUpdateBanner(index, 'image', '')}
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                        </div>
+                        <p className="text-sm text-gray-500">
+                          URL actual: {banner.image}
+                        </p>
+                      </div>
+                                         ) : (
+                       <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
+                         <div className="flex flex-col items-center space-y-2">
+                           <Upload className="h-8 w-8 text-gray-400" />
+                           <p className="text-sm text-gray-500">
+                             Haz clic para subir una imagen
+                           </p>
+                           <p className="text-xs text-gray-400">
+                             PNG, JPG hasta 5MB
+                           </p>
+                         </div>
+                         <ImageUpload
+                           onUpload={(url: string) => handleImageUpload(index, url)}
+                           className="w-full mt-2"
+                         />
+                       </div>
+                     )}
+                  </div>
                 </div>
 
                 {/* Vista previa del banner */}
                 <div className="border-t pt-4">
                   <Label className="text-sm font-medium">Vista Previa:</Label>
                   <div 
-                    className="mt-2 h-20 rounded-lg flex items-center justify-center px-4"
+                    className="mt-2 h-24 rounded-lg flex items-center justify-center px-4 relative overflow-hidden"
                     style={{
                       background: banner.backgroundColor || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
                     }}
                   >
-                    <div className="text-center text-white">
+                    {/* Imagen de fondo en vista previa */}
+                    {banner.image && (
+                      <>
+                        <img
+                          src={banner.image}
+                          alt="Vista previa"
+                          className="absolute inset-0 w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-black/30"></div>
+                      </>
+                    )}
+                    
+                    <div className="text-center text-white relative z-10">
                       <h4 className="font-bold text-sm">{banner.title}</h4>
                       {banner.subtitle && (
                         <p className="text-xs opacity-90">{banner.subtitle}</p>
