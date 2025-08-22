@@ -21,6 +21,7 @@ import {
 import { useToast } from '@/hooks/use-toast'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
+import { ImageUpload } from '@/components/image-upload'
 
 interface BulkUploadProductsProps {
   onProductsUploaded: (products: any[]) => void
@@ -61,6 +62,8 @@ export function BulkUploadProducts({ onProductsUploaded, onClose, prefillCategor
   const [showResizeIndicator, setShowResizeIndicator] = useState(false)
   const [resizeIndicatorPosition, setResizeIndicatorPosition] = useState({ x: 0, y: 0 })
   const [initialColumnWidth, setInitialColumnWidth] = useState(0)
+  const [showImageUploadModal, setShowImageUploadModal] = useState(false)
+  const [currentImageUploadProduct, setCurrentImageUploadProduct] = useState<string | null>(null)
   
   // Configuración de columnas con anchos iniciales
   const [columns, setColumns] = useState<ColumnConfig[]>([
@@ -624,6 +627,20 @@ export function BulkUploadProducts({ onProductsUploaded, onClose, prefillCategor
     document.body.style.userSelect = ''
   }, [])
 
+  // Manejar subida de imagen
+  const handleImageUpload = (url: string) => {
+    if (currentImageUploadProduct) {
+      updateProduct(currentImageUploadProduct, 'urlImagen', url)
+    }
+    setShowImageUploadModal(false)
+    setCurrentImageUploadProduct(null)
+  }
+
+  const openImageUpload = (productId: string) => {
+    setCurrentImageUploadProduct(productId)
+    setShowImageUploadModal(true)
+  }
+
   // Event listeners para redimensionamiento
   React.useEffect(() => {
     if (isResizing) {
@@ -809,6 +826,31 @@ export function BulkUploadProducts({ onProductsUploaded, onClose, prefillCategor
                                      onChange={(e) => updateProduct(product.id, 'enStock', e.target.checked)}
                                      className="h-4 w-4"
                                    />
+                                 ) : column.key === 'urlImagen' ? (
+                                   <div className="flex items-center gap-1">
+                                     <Input
+                                       ref={(el) => {
+                                         inputRefs.current[inputRefKey] = el
+                                       }}
+                                       value={value}
+                                       onChange={(e) => updateProduct(product.id, field, e.target.value)}
+                                       onKeyDown={(e) => handleKeyDown(e, product.id, field)}
+                                       onPaste={(e) => handlePaste(e, product.id, field)}
+                                       placeholder={`${column.label}...`}
+                                       className="border-0 p-0 h-8 text-sm flex-1"
+                                     />
+                                     <Button
+                                       size="sm"
+                                       variant="outline"
+                                       onClick={() => openImageUpload(product.id)}
+                                       className="h-6 w-6 p-0"
+                                       title="Subir imagen"
+                                     >
+                                       <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                       </svg>
+                                     </Button>
+                                   </div>
                                  ) : (
                                    <Input
                                      ref={(el) => {
@@ -945,6 +987,34 @@ export function BulkUploadProducts({ onProductsUploaded, onClose, prefillCategor
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Modal de subida de imagen */}
+      {showImageUploadModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold">Subir Imagen</h3>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setShowImageUploadModal(false)
+                  setCurrentImageUploadProduct(null)
+                }}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+            <ImageUpload
+              onUpload={handleImageUpload}
+              onCancel={() => {
+                setShowImageUploadModal(false)
+                setCurrentImageUploadProduct(null)
+              }}
+            />
+          </div>
+        </div>
+      )}
     </>
   )
 }

@@ -18,9 +18,9 @@ import { CategoriesSection } from '@/components/categories-section'
 
 // Componentes de la tienda
 import { ShopHeader } from '@/components/shop/shop-header'
-import { ShopSidebar } from '@/components/shop/shop-sidebar'
 import { ShopFilters } from '@/components/shop/shop-filters'
 import { ProductGrid } from '@/components/shop/product-grid'
+import { ProductEditModal } from '@/components/shop/product-edit-modal'
 import { Cart } from '@/components/shop/cart'
 import { CartButton } from '@/components/shop/cart-button'
 import { useShop } from '@/hooks/use-shop'
@@ -31,6 +31,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { Product } from '@/components/shop/types'
 
 export default function ShopPage() {
   const { isAdminMode } = useAdmin()
@@ -44,6 +45,8 @@ export default function ShopPage() {
   const [newCategoryName, setNewCategoryName] = useState('')
   const [newCategoryDescription, setNewCategoryDescription] = useState('')
   const [showBulkEditModal, setShowBulkEditModal] = useState(false)
+  const [showProductEditModal, setShowProductEditModal] = useState(false)
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null)
 
   // Usar el hook personalizado para toda la lógica de la tienda
   const {
@@ -211,6 +214,50 @@ export default function ShopPage() {
     setShowCategoryModal(false)
   }
 
+  // Manejar edición de productos
+  const handleEditProduct = (product: Product) => {
+    setEditingProduct(product)
+    setShowProductEditModal(true)
+  }
+
+  const handleSaveProduct = async (product: Product) => {
+    try {
+      // Buscar la categoría del producto
+      const productCategory = categories.find(cat => 
+        cat.products.some(p => p.id === product.id)
+      )
+      
+      if (productCategory) {
+        await updateProduct(productCategory.id, product.id, product)
+      } else {
+        // Si no está en una categoría específica, actualizar solo en la lista general
+        console.log('Producto actualizado en lista general:', product)
+      }
+      
+      setShowProductEditModal(false)
+      setEditingProduct(null)
+    } catch (error) {
+      console.error('Error guardando producto:', error)
+    }
+  }
+
+  const handleCreateNewProduct = () => {
+    setEditingProduct(null)
+    setShowProductEditModal(true)
+  }
+
+  const handleSaveNewProduct = async (product: Product) => {
+    try {
+      // Agregar el nuevo producto a la lista
+      const updatedProducts = [...products, product]
+      // Aquí deberías llamar a una función para guardar en la configuración
+      console.log('Nuevo producto creado:', product)
+      setShowProductEditModal(false)
+    } catch (error) {
+      console.error('Error creando producto:', error)
+    }
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -238,9 +285,11 @@ export default function ShopPage() {
 
       {/* Contenido principal */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex gap-8">
-          {/* Sidebar con filtros */}
-          <ShopSidebar
+        <div className="w-full">
+          {/* Filtros superiores - Ahora justo debajo del navbar */}
+          <ShopFilters
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
             priceRange={priceRange}
             setPriceRange={setPriceRange}
             selectedCategory={selectedCategory}
@@ -248,19 +297,32 @@ export default function ShopPage() {
             categories={productCategories}
             selectedRating={selectedRating}
             setSelectedRating={setSelectedRating}
+            sortBy={sortBy}
+            setSortBy={setSortBy}
+            sortOptions={shopConfig.sortOptions}
+            resultsText={shopConfig.resultsText}
+            filteredProductsCount={filteredProducts.length}
+            totalProductsCount={products.length}
             onClearFilters={clearFilters}
           />
 
           {/* Contenido principal */}
-          <div className="flex-1">
+          <div className="w-full mt-8">
             {/* Header compartido para Promociones y Categorías */}
             {isAdminMode && (
               <div className="flex justify-between items-center mb-6">
                 <div>
                   <h2 className="text-2xl font-bold text-gray-900">Gestión de Contenido</h2>
-                  <p className="text-gray-600">Administra promociones y categorías</p>
+                  <p className="text-gray-600">Administra promociones, categorías y productos</p>
                 </div>
                 <div className="flex space-x-3">
+                  <Button 
+                    onClick={handleCreateNewProduct}
+                    className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Nuevo Producto
+                  </Button>
                   <Button 
                     onClick={() => setShowPromotionModal(true)}
                     className="bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600"
@@ -304,28 +366,12 @@ export default function ShopPage() {
               onDeleteProduct={deleteProduct}
             />
 
-            {/* Filtros superiores */}
-            <ShopFilters
-              searchTerm={searchTerm}
-              setSearchTerm={setSearchTerm}
-              priceRange={priceRange}
-              setPriceRange={setPriceRange}
-              selectedCategory={selectedCategory}
-              setSelectedCategory={setSelectedCategory}
-              categories={productCategories}
-              sortBy={sortBy}
-              setSortBy={setSortBy}
-              sortOptions={shopConfig.sortOptions}
-              resultsText={shopConfig.resultsText}
-              filteredProductsCount={filteredProducts.length}
-              totalProductsCount={products.length}
-            />
-
             {/* Grid de productos */}
             <ProductGrid
               products={filteredProducts}
               layoutConfig={layoutConfig}
               onAddToCart={addToCart}
+              onEditProduct={handleEditProduct}
             />
 
             {/* Mensaje si no hay productos */}
@@ -443,6 +489,18 @@ export default function ShopPage() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Modal de edición de productos */}
+      <ProductEditModal
+        isOpen={showProductEditModal}
+        onClose={() => {
+          setShowProductEditModal(false)
+          setEditingProduct(null)
+        }}
+        onSave={editingProduct ? handleSaveProduct : handleSaveNewProduct}
+        product={editingProduct}
+        categories={productCategories}
+      />
 
       {/* Modal de imagen */}
       <ImageModal 

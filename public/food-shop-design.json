@@ -32,12 +32,12 @@
       "totalText": "Total:"
     },
     "layout": {
-      "type": "food-layout",
+      "type": "no-sidebar",
       "productStyle": "food-cards",
       "backgroundColor": "#fef3c7",
       "cardStyle": "food-modern",
       "headerStyle": "food-header",
-      "sidebarStyle": "food-sidebar"
+      "sidebarStyle": "none"
     },
     "products": []
   },

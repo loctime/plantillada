@@ -32,12 +32,12 @@
       "totalText": "Total:"
     },
     "layout": {
-      "type": "sidebar-left",
+      "type": "no-sidebar",
       "productStyle": "cards-square",
       "backgroundColor": "#f8fafc",
       "cardStyle": "modern",
       "headerStyle": "dark",
-      "sidebarStyle": "white-shadow"
+      "sidebarStyle": "none"
     },
     "products": []
   },

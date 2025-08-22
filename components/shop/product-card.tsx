@@ -12,9 +12,10 @@ interface ProductCardProps {
   product: Product
   layoutConfig: any
   onAddToCart?: (product: Product) => void
+  onEditProduct?: (product: Product) => void
 }
 
-export function ProductCard({ product, layoutConfig, onAddToCart }: ProductCardProps) {
+export function ProductCard({ product, layoutConfig, onAddToCart, onEditProduct }: ProductCardProps) {
   const { isAdminMode } = useAdmin()
   const { openImageModal } = useImageModal()
 
@@ -56,16 +57,28 @@ export function ProductCard({ product, layoutConfig, onAddToCart }: ProductCardP
               {product.category}
             </div>
           )}
-          {/* Botón para editar imagen (solo en modo admin) */}
+          {/* Botones de edición (solo en modo admin) */}
           {isAdminMode && (
-            <Button
-              size="sm"
-              variant="secondary"
-              className="absolute bottom-2 right-2 h-8 w-8 p-0 bg-blue-600 hover:bg-blue-700 opacity-0 group-hover:opacity-100 transition-opacity"
-              onClick={() => openImageModal(product)}
-            >
-              <Edit3 className="h-4 w-4" />
-            </Button>
+            <div className="absolute bottom-2 right-2 space-y-2 opacity-0 group-hover:opacity-100 transition-opacity">
+              <Button
+                size="sm"
+                variant="secondary"
+                className="h-8 w-8 p-0 bg-blue-600 hover:bg-blue-700"
+                onClick={() => onEditProduct?.(product)}
+                title="Editar producto"
+              >
+                <Edit3 className="h-4 w-4" />
+              </Button>
+              <Button
+                size="sm"
+                variant="secondary"
+                className="h-8 w-8 p-0 bg-green-600 hover:bg-green-700"
+                onClick={() => openImageModal(product)}
+                title="Editar imagen"
+              >
+                <Eye className="h-4 w-4" />
+              </Button>
+            </div>
           )}
         </div>
 

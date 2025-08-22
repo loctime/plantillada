@@ -892,3 +892,53 @@
     font-size: 1.25rem;
   }
 }
+
+/* Estilos para el header de filtros compacto */
+.filters-header {
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.filters-header .main-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.filters-header .advanced-filters {
+  border-top: 1px solid #e5e7eb;
+  background: #f9fafb;
+  padding: 1rem;
+}
+
+.filters-header .advanced-filters .filters-grid {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+/* Responsive para filtros */
+@media (max-width: 768px) {
+  .filters-header .main-filters {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+  
+  .filters-header .main-filters > div {
+    width: 100%;
+  }
+  
+  .filters-header .advanced-filters .filters-grid {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

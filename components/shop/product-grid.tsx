@@ -7,9 +7,10 @@ interface ProductGridProps {
   products: Product[]
   layoutConfig: any
   onAddToCart?: (product: Product) => void
+  onEditProduct?: (product: Product) => void
 }
 
-export function ProductGrid({ products, layoutConfig, onAddToCart }: ProductGridProps) {
+export function ProductGrid({ products, layoutConfig, onAddToCart, onEditProduct }: ProductGridProps) {
   console.log('📦 ProductGrid render - Products count:', products.length)
   
   return (
@@ -20,6 +21,7 @@ export function ProductGrid({ products, layoutConfig, onAddToCart }: ProductGrid
           product={product}
           layoutConfig={layoutConfig}
           onAddToCart={onAddToCart}
+          onEditProduct={onEditProduct}
         />
       ))}
     </div>
