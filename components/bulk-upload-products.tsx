@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -13,7 +13,10 @@ import {
   Trash2,
   Save,
   FolderPlus,
-  Edit3
+  Edit3,
+  ChevronUp,
+  ChevronDown,
+  GripVertical
 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -33,11 +36,47 @@ interface CategoryConfirmation {
   products: any[]
 }
 
+interface SortConfig {
+  key: string
+  direction: 'asc' | 'desc'
+}
+
+interface ColumnConfig {
+  key: string
+  label: string
+  width: number
+  minWidth: number
+  sortable: boolean
+}
+
 export function BulkUploadProducts({ onProductsUploaded, onClose, prefillCategory, existingCategories = [] }: BulkUploadProductsProps) {
   const [isProcessing, setIsProcessing] = useState(false)
   const [validationErrors, setValidationErrors] = useState<string[]>([])
   const [showCategoryModal, setShowCategoryModal] = useState(false)
   const [categoryConfirmations, setCategoryConfirmations] = useState<CategoryConfirmation[]>([])
+  const [sortConfig, setSortConfig] = useState<SortConfig | null>(null)
+  const [isResizing, setIsResizing] = useState(false)
+  const [resizeStartX, setResizeStartX] = useState(0)
+  const [resizeColumnIndex, setResizeColumnIndex] = useState<number | null>(null)
+  const [showResizeIndicator, setShowResizeIndicator] = useState(false)
+  const [resizeIndicatorPosition, setResizeIndicatorPosition] = useState({ x: 0, y: 0 })
+  const [initialColumnWidth, setInitialColumnWidth] = useState(0)
+  
+  // Configuración de columnas con anchos iniciales
+  const [columns, setColumns] = useState<ColumnConfig[]>([
+    { key: 'nombre', label: 'Nombre *', width: 200, minWidth: 120, sortable: true },
+    { key: 'descripcion', label: 'Descripción', width: 250, minWidth: 150, sortable: true },
+    { key: 'categoria', label: 'Categoría', width: 150, minWidth: 100, sortable: true },
+    { key: 'precio', label: 'Precio *', width: 100, minWidth: 80, sortable: true },
+    { key: 'marca', label: 'Marca', width: 120, minWidth: 80, sortable: true },
+    { key: 'urlImagen', label: 'URL Imagen', width: 200, minWidth: 150, sortable: false },
+    { key: 'rating', label: 'Rating', width: 80, minWidth: 60, sortable: true },
+    { key: 'reviews', label: 'Reviews', width: 80, minWidth: 60, sortable: true },
+    { key: 'enStock', label: 'En Stock', width: 80, minWidth: 60, sortable: true },
+    { key: 'caracteristicas', label: 'Características', width: 200, minWidth: 150, sortable: false },
+    { key: 'acciones', label: 'Acciones', width: 80, minWidth: 60, sortable: false }
+  ])
+
   const [products, setProducts] = useState<any[]>([
     {
       id: Date.now().toString(),
@@ -74,6 +113,7 @@ export function BulkUploadProducts({ onProductsUploaded, onClose, prefillCategor
   
   const { toast } = useToast()
   const inputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({})
+  const tableRef = useRef<HTMLTableElement>(null)
 
   // Función para detectar categorías nuevas
   const detectNewCategories = (products: any[]) => {
@@ -492,6 +532,135 @@ export function BulkUploadProducts({ onProductsUploaded, onClose, prefillCategor
     setCategoryConfirmations(updated)
   }
 
+  // Función para ordenar productos
+  const sortProducts = useCallback((products: any[], config: SortConfig | null) => {
+    if (!config) return products
+
+    return [...products].sort((a, b) => {
+      let aValue = a[config.key]
+      let bValue = b[config.key]
+
+      // Manejar valores especiales
+      if (config.key === 'precio' || config.key === 'rating' || config.key === 'reviews') {
+        aValue = parseFloat(aValue) || 0
+        bValue = parseFloat(bValue) || 0
+      } else if (config.key === 'enStock') {
+        aValue = aValue ? 1 : 0
+        bValue = bValue ? 1 : 0
+      } else {
+        aValue = String(aValue || '').toLowerCase()
+        bValue = String(bValue || '').toLowerCase()
+      }
+
+      if (aValue < bValue) {
+        return config.direction === 'asc' ? -1 : 1
+      }
+      if (aValue > bValue) {
+        return config.direction === 'asc' ? 1 : -1
+      }
+      return 0
+    })
+  }, [])
+
+  // Función para manejar el ordenamiento
+  const handleSort = (key: string) => {
+    const column = columns.find(col => col.key === key)
+    if (!column?.sortable) return
+
+    setSortConfig(prev => {
+      if (prev?.key === key) {
+        return prev.direction === 'asc' 
+          ? { key, direction: 'desc' as const }
+          : null
+      }
+      return { key, direction: 'asc' as const }
+    })
+  }
+
+  // Función para obtener el icono de ordenamiento
+  const getSortIcon = (key: string) => {
+    if (sortConfig?.key !== key) {
+      return <ChevronUp className="h-4 w-4 opacity-30" />
+    }
+    return sortConfig.direction === 'asc' 
+      ? <ChevronUp className="h-4 w-4" />
+      : <ChevronDown className="h-4 w-4" />
+  }
+
+  // Funciones para redimensionamiento de columnas
+  const handleResizeStart = (e: React.MouseEvent, columnIndex: number) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsResizing(true)
+    setResizeStartX(e.clientX)
+    setResizeColumnIndex(columnIndex)
+    setInitialColumnWidth(columns[columnIndex].width)
+    document.body.style.cursor = 'col-resize'
+    document.body.style.userSelect = 'none'
+  }
+
+  const handleResizeMove = useCallback((e: globalThis.MouseEvent) => {
+    if (!isResizing || resizeColumnIndex === null) return
+
+    const deltaX = e.clientX - resizeStartX
+    const newWidth = Math.max(columns[resizeColumnIndex].minWidth, initialColumnWidth + deltaX)
+    
+    setColumns(prevColumns => {
+      const newColumns = [...prevColumns]
+      newColumns[resizeColumnIndex] = { ...newColumns[resizeColumnIndex], width: newWidth }
+      return newColumns
+    })
+    
+    // Mostrar indicador de redimensionamiento
+    setShowResizeIndicator(true)
+    setResizeIndicatorPosition({ x: e.clientX, y: e.clientY })
+  }, [isResizing, resizeColumnIndex, resizeStartX, initialColumnWidth, columns])
+
+  const handleResizeEnd = useCallback(() => {
+    setIsResizing(false)
+    setResizeColumnIndex(null)
+    setShowResizeIndicator(false)
+    document.body.style.cursor = ''
+    document.body.style.userSelect = ''
+  }, [])
+
+  // Event listeners para redimensionamiento
+  React.useEffect(() => {
+    if (isResizing) {
+      document.addEventListener('mousemove', handleResizeMove)
+      document.addEventListener('mouseup', handleResizeEnd)
+      return () => {
+        document.removeEventListener('mousemove', handleResizeMove)
+        document.removeEventListener('mouseup', handleResizeEnd)
+      }
+    }
+  }, [isResizing, handleResizeMove, handleResizeEnd])
+
+  // Productos ordenados
+  const sortedProducts = sortProducts(products, sortConfig)
+
+  // Función para resetear anchos de columnas
+  const resetColumnWidths = () => {
+    const defaultColumns: ColumnConfig[] = [
+      { key: 'nombre', label: 'Nombre *', width: 200, minWidth: 120, sortable: true },
+      { key: 'descripcion', label: 'Descripción', width: 250, minWidth: 150, sortable: true },
+      { key: 'categoria', label: 'Categoría', width: 150, minWidth: 100, sortable: true },
+      { key: 'precio', label: 'Precio *', width: 100, minWidth: 80, sortable: true },
+      { key: 'marca', label: 'Marca', width: 120, minWidth: 80, sortable: true },
+      { key: 'urlImagen', label: 'URL Imagen', width: 200, minWidth: 150, sortable: false },
+      { key: 'rating', label: 'Rating', width: 80, minWidth: 60, sortable: true },
+      { key: 'reviews', label: 'Reviews', width: 80, minWidth: 60, sortable: true },
+      { key: 'enStock', label: 'En Stock', width: 80, minWidth: 60, sortable: true },
+      { key: 'caracteristicas', label: 'Características', width: 200, minWidth: 150, sortable: false },
+      { key: 'acciones', label: 'Acciones', width: 80, minWidth: 60, sortable: false }
+    ]
+    setColumns(defaultColumns)
+    toast({
+      title: 'Anchos reseteados',
+      description: 'Los anchos de las columnas han sido restaurados a sus valores por defecto'
+    })
+  }
+
   return (
     <>
       <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
@@ -540,6 +709,12 @@ export function BulkUploadProducts({ onProductsUploaded, onClose, prefillCategor
                       <Plus className="h-4 w-4 mr-2" />
                       Agregar Fila
                     </Button>
+                    <Button onClick={resetColumnWidths} size="sm" variant="outline" title="Resetear anchos de columnas">
+                      <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                      </svg>
+                      Reset Columnas
+                    </Button>
                     <Button onClick={handleSave} size="sm" disabled={isProcessing}>
                       <Save className="h-4 w-4 mr-2" />
                       {isProcessing ? 'Guardando...' : 'Guardar Productos'}
@@ -548,176 +723,118 @@ export function BulkUploadProducts({ onProductsUploaded, onClose, prefillCategor
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="overflow-x-auto">
-                  <table className="w-full border-collapse border border-gray-200">
+                <div className="overflow-x-auto" style={{ minWidth: '100%' }}>
+                  <div 
+                    className="inline-block min-w-full"
+                    style={{ 
+                      cursor: isResizing ? 'col-resize' : 'default',
+                      userSelect: isResizing ? 'none' : 'auto'
+                    }}
+                  >
+                    <table 
+                      ref={tableRef}
+                      className="border-collapse border border-gray-200"
+                      style={{ 
+                        width: 'max-content',
+                        minWidth: '100%'
+                      }}
+                    >
                     <thead>
                       <tr className="bg-gray-50">
-                        <th className="border border-gray-200 p-2 text-left text-sm font-medium">Nombre *</th>
-                        <th className="border border-gray-200 p-2 text-left text-sm font-medium">Descripción</th>
-                        <th className="border border-gray-200 p-2 text-left text-sm font-medium">Categoría</th>
-                        <th className="border border-gray-200 p-2 text-left text-sm font-medium">Precio *</th>
-                        <th className="border border-gray-200 p-2 text-left text-sm font-medium">Marca</th>
-                        <th className="border border-gray-200 p-2 text-left text-sm font-medium">URL Imagen</th>
-                        <th className="border border-gray-200 p-2 text-left text-sm font-medium">Rating</th>
-                        <th className="border border-gray-200 p-2 text-left text-sm font-medium">Reviews</th>
-                        <th className="border border-gray-200 p-2 text-left text-sm font-medium">En Stock</th>
-                        <th className="border border-gray-200 p-2 text-left text-sm font-medium">Características</th>
-                        <th className="border border-gray-200 p-2 text-left text-sm font-medium">Acciones</th>
+                                                 {columns.map((column, index) => (
+                           <th
+                             key={column.key}
+                             className="border border-gray-200 p-2 text-left text-sm font-medium relative"
+                             style={{
+                               width: column.width,
+                               minWidth: column.minWidth,
+                               cursor: column.sortable ? 'pointer' : 'default',
+                               userSelect: column.sortable ? 'none' : 'auto'
+                             }}
+                             onClick={() => handleSort(column.key)}
+                           >
+                             <div className="flex items-center gap-1">
+                               {column.label}
+                               {column.sortable && getSortIcon(column.key)}
+                             </div>
+                             {/* Handle de redimensionamiento */}
+                             <div
+                               className={`absolute right-0 top-0 bottom-0 w-3 cursor-col-resize transition-colors ${
+                                 isResizing && resizeColumnIndex === index 
+                                   ? 'bg-blue-500' 
+                                   : 'hover:bg-blue-300'
+                               }`}
+                               onMouseDown={(e) => handleResizeStart(e, index)}
+                               title="Arrastra para redimensionar la columna"
+                               style={{ zIndex: 10 }}
+                             />
+                           </th>
+                         ))}
                       </tr>
                     </thead>
                     <tbody>
-                      {products.map((product, index) => (
+                      {sortedProducts.map((product, index) => (
                         <tr key={product.id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                          <td className="border border-gray-200 p-2">
-                            <Input
-                              ref={(el) => {
-                                inputRefs.current[`${product.id}-nombre`] = el
-                              }}
-                              value={product.nombre}
-                              onChange={(e) => updateProduct(product.id, 'nombre', e.target.value)}
-                              onKeyDown={(e) => handleKeyDown(e, product.id, 'nombre')}
-                              onPaste={(e) => handlePaste(e, product.id, 'nombre')}
-                              placeholder="iPhone 15, Samsung Galaxy..."
-                              className="border-0 p-0 h-8 text-sm"
-                            />
-                          </td>
-                          <td className="border border-gray-200 p-2">
-                            <Input
-                              ref={(el) => {
-                                inputRefs.current[`${product.id}-descripcion`] = el
-                              }}
-                              value={product.descripcion}
-                              onChange={(e) => updateProduct(product.id, 'descripcion', e.target.value)}
-                              onKeyDown={(e) => handleKeyDown(e, product.id, 'descripcion')}
-                              onPaste={(e) => handlePaste(e, product.id, 'descripcion')}
-                              placeholder="Descripción del producto"
-                              className="border-0 p-0 h-8 text-sm"
-                            />
-                          </td>
-                          <td className="border border-gray-200 p-2">
-                            <Input
-                              ref={(el) => {
-                                inputRefs.current[`${product.id}-categoria`] = el
-                              }}
-                              value={product.categoria}
-                              onChange={(e) => updateProduct(product.id, 'categoria', e.target.value)}
-                              onKeyDown={(e) => handleKeyDown(e, product.id, 'categoria')}
-                              onPaste={(e) => handlePaste(e, product.id, 'categoria')}
-                              placeholder="smartphones, tablets..."
-                              className="border-0 p-0 h-8 text-sm"
-                            />
-                          </td>
-                          <td className="border border-gray-200 p-2">
-                            <Input
-                              ref={(el) => {
-                                inputRefs.current[`${product.id}-precio`] = el
-                              }}
-                              type="number"
-                              step="0.01"
-                              value={product.precio}
-                              onChange={(e) => updateProduct(product.id, 'precio', e.target.value)}
-                              onKeyDown={(e) => handleKeyDown(e, product.id, 'precio')}
-                              onPaste={(e) => handlePaste(e, product.id, 'precio')}
-                              placeholder="0.00"
-                              className="border-0 p-0 h-8 text-sm"
-                            />
-                          </td>
-                          <td className="border border-gray-200 p-2">
-                            <Input
-                              ref={(el) => {
-                                inputRefs.current[`${product.id}-marca`] = el
-                              }}
-                              value={product.marca}
-                              onChange={(e) => updateProduct(product.id, 'marca', e.target.value)}
-                              onKeyDown={(e) => handleKeyDown(e, product.id, 'marca')}
-                              onPaste={(e) => handlePaste(e, product.id, 'marca')}
-                              placeholder="Apple, Samsung..."
-                              className="border-0 p-0 h-8 text-sm"
-                            />
-                          </td>
-                          <td className="border border-gray-200 p-2">
-                            <Input
-                              ref={(el) => {
-                                inputRefs.current[`${product.id}-urlImagen`] = el
-                              }}
-                              value={product.urlImagen}
-                              onChange={(e) => updateProduct(product.id, 'urlImagen', e.target.value)}
-                              onKeyDown={(e) => handleKeyDown(e, product.id, 'urlImagen')}
-                              onPaste={(e) => handlePaste(e, product.id, 'urlImagen')}
-                              placeholder="https://..."
-                              className="border-0 p-0 h-8 text-sm"
-                            />
-                          </td>
-                          <td className="border border-gray-200 p-2">
-                            <Input
-                              ref={(el) => {
-                                inputRefs.current[`${product.id}-rating`] = el
-                              }}
-                              type="number"
-                              step="0.1"
-                              min="0"
-                              max="5"
-                              value={product.rating}
-                              onChange={(e) => updateProduct(product.id, 'rating', e.target.value)}
-                              onKeyDown={(e) => handleKeyDown(e, product.id, 'rating')}
-                              onPaste={(e) => handlePaste(e, product.id, 'rating')}
-                              className="border-0 p-0 h-8 text-sm"
-                            />
-                          </td>
-                          <td className="border border-gray-200 p-2">
-                            <Input
-                              ref={(el) => {
-                                inputRefs.current[`${product.id}-reviews`] = el
-                              }}
-                              type="number"
-                              value={product.reviews}
-                              onChange={(e) => updateProduct(product.id, 'reviews', e.target.value)}
-                              onKeyDown={(e) => handleKeyDown(e, product.id, 'reviews')}
-                              onPaste={(e) => handlePaste(e, product.id, 'reviews')}
-                              className="border-0 p-0 h-8 text-sm"
-                            />
-                          </td>
-                          <td className="border border-gray-200 p-2">
-                            <input
-                              type="checkbox"
-                              checked={product.enStock}
-                              onChange={(e) => updateProduct(product.id, 'enStock', e.target.checked)}
-                              className="h-4 w-4"
-                            />
-                          </td>
-                          <td className="border border-gray-200 p-2">
-                            <Input
-                              ref={(el) => {
-                                inputRefs.current[`${product.id}-caracteristicas`] = el
-                              }}
-                              value={product.caracteristicas}
-                              onChange={(e) => updateProduct(product.id, 'caracteristicas', e.target.value)}
-                              onKeyDown={(e) => handleKeyDown(e, product.id, 'caracteristicas')}
-                              onPaste={(e) => handlePaste(e, product.id, 'caracteristicas')}
-                              placeholder="128GB, 5G, etc..."
-                              className="border-0 p-0 h-8 text-sm"
-                            />
-                          </td>
-                          <td className="border border-gray-200 p-2">
-                            {products.length > 1 && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => removeRow(product.id)}
-                                className="text-red-600 hover:text-red-700 h-6 w-6 p-0"
-                              >
-                                <Trash2 className="h-3 w-3" />
-                              </Button>
-                            )}
-                          </td>
+                                                     {columns.map((column) => {
+                             const field = column.key;
+                             const value = product[field];
+                             const inputRefKey = `${product.id}-${field}`;
+
+                             return (
+                               <td
+                                 key={field}
+                                 className="border border-gray-200 p-2"
+                                 style={{
+                                   width: column.width,
+                                   minWidth: column.minWidth
+                                 }}
+                               >
+                                 {column.key === 'acciones' ? (
+                                   <div className="flex items-center gap-1">
+                                     {products.length > 1 && (
+                                       <Button
+                                         variant="ghost"
+                                         size="sm"
+                                         onClick={() => removeRow(product.id)}
+                                         className="text-red-600 hover:text-red-700 h-6 w-6 p-0"
+                                       >
+                                         <Trash2 className="h-3 w-3" />
+                                       </Button>
+                                     )}
+                                   </div>
+                                 ) : column.key === 'enStock' ? (
+                                   <input
+                                     type="checkbox"
+                                     checked={product.enStock}
+                                     onChange={(e) => updateProduct(product.id, 'enStock', e.target.checked)}
+                                     className="h-4 w-4"
+                                   />
+                                 ) : (
+                                   <Input
+                                     ref={(el) => {
+                                       inputRefs.current[inputRefKey] = el
+                                     }}
+                                     value={value}
+                                     onChange={(e) => updateProduct(product.id, field, e.target.value)}
+                                     onKeyDown={(e) => handleKeyDown(e, product.id, field)}
+                                     onPaste={(e) => handlePaste(e, product.id, field)}
+                                     placeholder={`${column.label}...`}
+                                     className="border-0 p-0 h-8 text-sm"
+                                   />
+                                 )}
+                               </td>
+                             );
+                           })}
                         </tr>
                       ))}
                     </tbody>
                   </table>
+                  </div>
                 </div>
                 
                 <div className="mt-4 text-sm text-gray-600">
                   <p>💡 <strong>Consejo:</strong> Usa las flechas del teclado para navegar entre campos. Enter para nueva fila. Pega múltiples líneas para crear filas automáticamente. <strong>Ctrl+Z</strong> para deshacer y <strong>Ctrl+Y</strong> para rehacer.</p>
+                  <p>📊 <strong>Ordenamiento:</strong> Haz clic en los encabezados de las columnas para ordenar. <strong>Redimensionamiento:</strong> Arrastra el borde derecho de los encabezados para ajustar el ancho de las columnas.</p>
                 </div>
               </CardContent>
             </Card>
@@ -749,6 +866,19 @@ export function BulkUploadProducts({ onProductsUploaded, onClose, prefillCategor
             </div>
           </div>
         </div>
+        
+                 {/* Indicador de redimensionamiento */}
+         {showResizeIndicator && (
+           <div
+             className="fixed z-[9999] bg-blue-500 text-white px-3 py-2 rounded-md text-sm font-medium pointer-events-none shadow-lg"
+             style={{
+               left: resizeIndicatorPosition.x + 15,
+               top: resizeIndicatorPosition.y - 40
+             }}
+           >
+             {resizeColumnIndex !== null && columns[resizeColumnIndex]?.width}px
+           </div>
+         )}
       </div>
 
       {/* Modal de confirmación de categorías */}
