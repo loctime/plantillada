@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from '@/components/ui/button'
-import { ShoppingCart, Menu, Upload } from 'lucide-react'
+import { ShoppingCart, Menu, Upload, Edit3 } from 'lucide-react'
 import { useAdmin } from '@/lib/admin-context'
 import { ShopDesignSelector } from '@/components/shop-design-selector'
 import { Design } from '@/lib/designs'
@@ -11,6 +11,7 @@ interface ShopHeaderProps {
   cartItemCount: number
   onOpenCart: () => void
   onOpenBulkUpload: () => void
+  onOpenBulkEdit: () => void
   onToggleMobileMenu: () => void
   selectedDesign?: string
   onDesignSelect?: (design: Design) => void
@@ -21,6 +22,7 @@ export function ShopHeader({
   cartItemCount,
   onOpenCart,
   onOpenBulkUpload,
+  onOpenBulkEdit,
   onToggleMobileMenu,
   selectedDesign,
   onDesignSelect
@@ -65,17 +67,28 @@ export function ShopHeader({
               />
             )}
 
-            {/* Botón de carga masiva (solo en modo admin) */}
+            {/* Botones de gestión masiva (solo en modo admin) */}
             {isAdminMode && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={onOpenBulkUpload}
-                className="hidden md:flex"
-              >
-                <Upload className="h-4 w-4 mr-2" />
-                Carga Masiva
-              </Button>
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={onOpenBulkUpload}
+                  className="hidden md:flex"
+                >
+                  <Upload className="h-4 w-4 mr-2" />
+                  Carga Masiva
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={onOpenBulkEdit}
+                  className="hidden md:flex"
+                >
+                  <Edit3 className="h-4 w-4 mr-2" />
+                  Editar Masivo
+                </Button>
+              </>
             )}
 
             {/* Carrito */}

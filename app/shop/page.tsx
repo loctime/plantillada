@@ -10,6 +10,7 @@ import './layout-styles.css'
 import { ImageModal } from '@/components/image-modal'
 import { useImageModal } from '@/hooks/use-image-modal'
 import { BulkUploadProducts } from '@/components/bulk-upload-products'
+import { BulkEditProducts } from '@/components/bulk-edit-products'
 import { PromotionsSection } from '@/components/promotions-section'
 import { PromotionSelectorModal } from '@/components/promotion-selector-modal'
 import { PromotionModal } from '@/components/promotion-modal'
@@ -42,6 +43,7 @@ export default function ShopPage() {
   const [showCategoryModal, setShowCategoryModal] = useState(false)
   const [newCategoryName, setNewCategoryName] = useState('')
   const [newCategoryDescription, setNewCategoryDescription] = useState('')
+  const [showBulkEditModal, setShowBulkEditModal] = useState(false)
 
   // Usar el hook personalizado para toda la lógica de la tienda
   const {
@@ -73,6 +75,7 @@ export default function ShopPage() {
     removeFromCart,
     clearCart,
     handleBulkProductsUploaded,
+    handleBulkEditProducts,
     clearFilters,
     addPromotion,
     handleAddPromotionToCart,
@@ -187,6 +190,8 @@ export default function ShopPage() {
     }
   }
 
+
+
   // Manejar creación de categoría
   const handleCreateCategory = async () => {
     if (!newCategoryName.trim()) return
@@ -225,6 +230,7 @@ export default function ShopPage() {
         cartItemCount={cartItems.length}
         onOpenCart={() => setIsCartOpen(true)}
         onOpenBulkUpload={() => setShowBulkUploadModal(true)}
+        onOpenBulkEdit={() => setShowBulkEditModal(true)}
         onToggleMobileMenu={() => setMobileMenuOpen(!mobileMenuOpen)}
         selectedDesign={selectedDesign}
         onDesignSelect={handleDesignSelect}
@@ -360,6 +366,16 @@ export default function ShopPage() {
           onProductsUploaded={handleBulkProductsUploaded}
           onClose={() => setShowBulkUploadModal(false)}
           existingCategories={productCategories}
+        />
+      )}
+
+      {/* Modal de edición masiva */}
+      {showBulkEditModal && (
+        <BulkEditProducts
+          onProductsUpdated={handleBulkEditProducts}
+          onClose={() => setShowBulkEditModal(false)}
+          existingProducts={products}
+          existingCategories={categories}
         />
       )}
 

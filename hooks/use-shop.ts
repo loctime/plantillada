@@ -475,6 +475,53 @@ export function useShop() {
     setShowPromotionSelector(false)
   }
 
+  // Función para actualizar productos y categorías masivamente
+  const handleBulkEditProducts = async (updatedProducts: Product[], updatedCategories: Category[]) => {
+    console.log('🔄 handleBulkEditProducts called with:', updatedProducts.length, 'products and', updatedCategories.length, 'categories')
+    
+    // Actualizar productos
+    setProducts(updatedProducts)
+    setFilteredProducts(updatedProducts)
+    
+    // Actualizar categorías
+    setCategories(updatedCategories)
+    
+    // Persistir categorías
+    await persistCategories(updatedCategories)
+    
+    // Guardar productos en localStorage como respaldo
+    try {
+      localStorage.setItem('shop-products', JSON.stringify(updatedProducts))
+      console.log('✅ Productos guardados en localStorage')
+    } catch (error) {
+      console.error('Error guardando productos en localStorage:', error)
+    }
+    
+    // Guardar en configuración global si está disponible
+    if (updateConfig) {
+      try {
+        const response = await fetch('/api/config')
+        if (response.ok) {
+          const currentConfig = await response.json()
+          const updatedConfig = {
+            ...currentConfig,
+            products: updatedProducts,
+            shopCategories: updatedCategories
+          }
+          await updateConfig(updatedConfig)
+          console.log('✅ Productos y categorías guardados en configuración global')
+        }
+      } catch (error) {
+        console.warn('No se pudo guardar en configuración global:', error)
+      }
+    }
+    
+    toast({
+      title: 'Edición masiva completada',
+      description: `${updatedProducts.length} productos y ${updatedCategories.length} categorías actualizados exitosamente`
+    })
+  }
+
   return {
     // Estado
     products,
@@ -517,6 +564,7 @@ export function useShop() {
     addProductToCategory,
     updateProduct,
     deleteProduct,
-    persistCategories
+    persistCategories,
+    handleBulkEditProducts
   }
 }
