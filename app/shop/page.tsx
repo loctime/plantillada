@@ -27,7 +27,7 @@ import { ShopBanner } from '@/components/shop/shop-banner'
 import { useShop } from '@/hooks/use-shop'
 import { sampleProducts } from '@/components/shop/sample-products'
 import { Button } from '@/components/ui/button'
-import { Plus } from 'lucide-react'
+import { Plus, Trash2 } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -149,12 +149,16 @@ export default function ShopPage() {
     addProduct,
     addProductToCategory,
     updateProduct,
-    deleteProduct
+    deleteProduct,
+    forceReloadData,
+    cleanDuplicateProducts,
+    isInitialized
   } = useShop()
 
   // Debug logs
   console.log('🏪 ShopPage render - Products count:', products.length)
   console.log('🏪 ShopPage render - Filtered products count:', filteredProducts.length)
+  console.log('🏪 ShopPage render - Is initialized:', isInitialized)
 
   // Obtener nombres de categorías para componentes que los necesiten
   const categoryNames = categories
@@ -428,6 +432,18 @@ export default function ShopPage() {
                   >
                     <Plus className="h-4 w-4 mr-2" />
                     Agregar Categoría
+                  </Button>
+                  <Button 
+                    onClick={() => {
+                      if (confirm('¿Estás seguro de que quieres limpiar productos duplicados? Esta acción no se puede deshacer.')) {
+                        cleanDuplicateProducts()
+                      }
+                    }}
+                    className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600"
+                    title="Limpiar productos duplicados"
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Limpiar Duplicados
                   </Button>
                 </div>
               </div>

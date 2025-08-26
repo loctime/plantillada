@@ -3,6 +3,7 @@ import { Product, CartItem } from '@/components/shop/types'
 import { sampleProducts } from '@/components/shop/sample-products'
 import { useToast } from '@/hooks/use-toast'
 import { useAdmin } from '@/lib/admin-context'
+import { generateUniqueId } from '@/lib/utils'
 
 interface Promotion {
   id: string
@@ -42,22 +43,58 @@ export function useShop() {
   const [selectedPromotion, setSelectedPromotion] = useState<Promotion | null>(null)
   const [showPromotionSelector, setShowPromotionSelector] = useState(false)
   const [categories, setCategories] = useState<Category[]>([])
+  const [isInitialized, setIsInitialized] = useState(false)
   const { toast } = useToast()
   const { updateConfig } = useAdmin()
 
-  // Cargar categorías desde localStorage al inicializar
+  // Cargar productos y categorías desde localStorage al inicializar
   useEffect(() => {
+    // Evitar reinicialización si ya se ha cargado
+    if (isInitialized) {
+      console.log('🔄 useShop: Ya inicializado, saltando carga...')
+      return
+    }
+
+    console.log('🔄 useShop: Iniciando carga de datos desde localStorage...')
     try {
+      // Cargar productos guardados
+      const savedProducts = localStorage.getItem('shop-products')
+      console.log('🔍 useShop: Buscando productos en localStorage...')
+      
+      if (savedProducts && savedProducts !== '[]') {
+        const parsedProducts = JSON.parse(savedProducts)
+        if (parsedProducts.length > 0) {
+          setProducts(parsedProducts)
+          console.log('📦 useShop: Productos cargados desde localStorage:', parsedProducts.length)
+        } else {
+          // Array vacío, cargar productos de muestra
+          console.log('📦 useShop: Array vacío encontrado, cargando productos de muestra...')
+          setProducts(sampleProducts)
+          localStorage.setItem('shop-products', JSON.stringify(sampleProducts))
+          console.log('📦 useShop: Productos de muestra cargados y guardados:', sampleProducts.length)
+        }
+      } else {
+        // Si no hay productos guardados, usar productos de muestra
+        console.log('📦 useShop: No hay productos guardados, cargando productos de muestra...')
+        setProducts(sampleProducts)
+        localStorage.setItem('shop-products', JSON.stringify(sampleProducts))
+        console.log('📦 useShop: Productos de muestra cargados y guardados:', sampleProducts.length)
+      }
+
+      // Cargar categorías guardadas
       const savedCategories = localStorage.getItem('shop-categories')
+      console.log('🔍 useShop: Buscando categorías en localStorage...')
+      
       if (savedCategories) {
         const parsedCategories = JSON.parse(savedCategories)
         setCategories(parsedCategories)
-        console.log('📦 Categorías cargadas desde localStorage:', parsedCategories.length)
+        console.log('📁 useShop: Categorías cargadas desde localStorage:', parsedCategories.length)
       } else {
         // Categoría por defecto si no hay ninguna guardada
+        console.log('📁 useShop: No hay categorías guardadas, creando categoría por defecto...')
         const defaultCategories: Category[] = [
           {
-            id: 'category-1',
+            id: generateUniqueId('category'),
             name: 'General',
             description: 'Categoría general de productos',
             isExpanded: true,
@@ -67,13 +104,25 @@ export function useShop() {
         ]
         setCategories(defaultCategories)
         localStorage.setItem('shop-categories', JSON.stringify(defaultCategories))
+        console.log('📁 useShop: Categoría por defecto creada y guardada')
       }
+
+      // Marcar como inicializado
+      setIsInitialized(true)
+      console.log('✅ useShop: Inicialización completada')
+      
+      // Limpiar productos duplicados después de la inicialización
+      setTimeout(() => {
+        cleanDuplicateProducts()
+      }, 100)
     } catch (error) {
-      console.error('Error cargando categorías:', error)
-      // Fallback a categoría por defecto
+      console.error('❌ useShop: Error cargando datos desde localStorage:', error)
+      // Fallback a datos por defecto
+      console.log('🔄 useShop: Usando datos por defecto como fallback...')
+      setProducts(sampleProducts)
       const defaultCategories: Category[] = [
         {
-          id: 'category-1',
+          id: generateUniqueId('category'),
           name: 'General',
           description: 'Categoría general de productos',
           isExpanded: true,
@@ -82,8 +131,14 @@ export function useShop() {
         }
       ]
       setCategories(defaultCategories)
+      setIsInitialized(true)
+      
+      // Limpiar productos duplicados después del fallback
+      setTimeout(() => {
+        cleanDuplicateProducts()
+      }, 100)
     }
-  }, [])
+  }, [isInitialized])
 
   // Función para persistir categorías
   const persistCategories = async (updatedCategories: Category[]) => {
@@ -99,10 +154,62 @@ export function useShop() {
     }
   }
 
+  // Función para persistir productos
+  const persistProducts = async (updatedProducts: Product[]) => {
+    try {
+      // Guardar en localStorage
+      localStorage.setItem('shop-products', JSON.stringify(updatedProducts))
+      console.log('✅ Productos guardados en localStorage:', updatedProducts.length)
+    } catch (error) {
+      console.error('Error persistiendo productos:', error)
+    }
+  }
+
+  // Función para forzar recarga de datos
+  const forceReloadData = () => {
+    console.log('🔄 useShop: Forzando recarga de datos...')
+    setIsInitialized(false)
+  }
+
+  // Función para limpiar productos duplicados
+  const cleanDuplicateProducts = () => {
+    console.log('🧹 useShop: Limpiando productos duplicados...')
+    setProducts(prev => {
+      const seen = new Set<string>()
+      const cleaned = prev.filter(product => {
+        if (seen.has(product.id)) {
+          console.log('🗑️ useShop: Eliminando producto duplicado:', product.id, product.name)
+          return false
+        }
+        seen.add(product.id)
+        return true
+      })
+      
+      if (cleaned.length !== prev.length) {
+        console.log(`🧹 useShop: Limpieza completada. ${prev.length - cleaned.length} productos duplicados eliminados`)
+        // Persistir productos limpios
+        setTimeout(async () => {
+          try {
+            await persistProducts(cleaned)
+          } catch (error) {
+            console.error('Error persistiendo productos limpios:', error)
+          }
+        }, 0)
+      }
+      
+      return cleaned
+    })
+  }
+
   // Obtener categorías únicas de productos
   const productCategories = useMemo(() => {
     const cats = [...new Set(products.map(p => p.category))]
     return cats.sort()
+  }, [products])
+
+  // Debug: Log cuando cambia el estado de productos
+  useEffect(() => {
+    console.log('📊 useShop: Estado de productos actualizado:', products.length, 'productos')
   }, [products])
 
   // Filtrar y ordenar productos
@@ -251,7 +358,7 @@ export function useShop() {
         // Crear nueva categoría
         const productsInCategory = newProducts.filter(p => p.category === categoryName)
         categoriesToAdd.push({
-          id: `category-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          id: generateUniqueId('category'),
           name: categoryName.charAt(0).toUpperCase() + categoryName.slice(1), // Capitalizar
           description: `Categoría creada automáticamente con ${productsInCategory.length} productos`,
           isExpanded: true,
@@ -300,6 +407,15 @@ export function useShop() {
     
     setProducts(updatedProducts)
     setFilteredProducts(updatedProducts)
+    
+    // Persistir productos de forma asíncrona
+    setTimeout(async () => {
+      try {
+        await persistProducts(updatedProducts)
+      } catch (error) {
+        console.error('Error persistiendo productos en carga masiva:', error)
+      }
+    }, 0)
     
     // Mostrar notificación con información sobre categorías
     let categoryMessage = ''
@@ -366,13 +482,14 @@ export function useShop() {
     setProducts(prev => {
       const newProducts = [...prev, product]
       
-      // Guardar productos en localStorage como respaldo
-      try {
-        localStorage.setItem('shop-products', JSON.stringify(newProducts))
-        console.log('✅ Producto guardado en localStorage')
-      } catch (error) {
-        console.error('Error guardando producto en localStorage:', error)
-      }
+      // Persistir productos de forma asíncrona
+      setTimeout(async () => {
+        try {
+          await persistProducts(newProducts)
+        } catch (error) {
+          console.error('Error persistiendo productos:', error)
+        }
+      }, 0)
       
       return newProducts
     })
@@ -385,7 +502,20 @@ export function useShop() {
 
   const addProductToCategory = async (categoryId: string, product: Product) => {
     // Agregar el producto a la lista general de productos
-    setProducts(prev => [...prev, product])
+    setProducts(prev => {
+      const newProducts = [...prev, product]
+      
+      // Persistir productos de forma asíncrona
+      setTimeout(async () => {
+        try {
+          await persistProducts(newProducts)
+        } catch (error) {
+          console.error('Error persistiendo productos:', error)
+        }
+      }, 0)
+      
+      return newProducts
+    })
     
     // Agregar el producto a la categoría específica y persistir
     setCategories(prev => {
@@ -415,9 +545,22 @@ export function useShop() {
 
   const updateProduct = async (categoryId: string, productId: string, updates: Partial<Product>) => {
     // Actualizar el producto en la lista general
-    setProducts(prev => prev.map(p => 
-      p.id === productId ? { ...p, ...updates } : p
-    ))
+    setProducts(prev => {
+      const updatedProducts = prev.map(p => 
+        p.id === productId ? { ...p, ...updates } : p
+      )
+      
+      // Persistir productos de forma asíncrona
+      setTimeout(async () => {
+        try {
+          await persistProducts(updatedProducts)
+        } catch (error) {
+          console.error('Error persistiendo productos:', error)
+        }
+      }, 0)
+      
+      return updatedProducts
+    })
     
     // Actualizar el producto en la categoría específica
     const updatedCategories = categories.map(cat => 
@@ -441,7 +584,20 @@ export function useShop() {
 
   const deleteProduct = async (categoryId: string, productId: string) => {
     // Eliminar el producto de la lista general
-    setProducts(prev => prev.filter(p => p.id !== productId))
+    setProducts(prev => {
+      const updatedProducts = prev.filter(p => p.id !== productId)
+      
+      // Persistir productos de forma asíncrona
+      setTimeout(async () => {
+        try {
+          await persistProducts(updatedProducts)
+        } catch (error) {
+          console.error('Error persistiendo productos:', error)
+        }
+      }, 0)
+      
+      return updatedProducts
+    })
     
     // Eliminar el producto de la categoría específica
     const updatedCategories = categories.map(cat => 
@@ -568,6 +724,7 @@ export function useShop() {
     showPromotionSelector,
     setShowPromotionSelector,
     categories,
+    isInitialized,
     
     // Funciones
     addToCart,
@@ -587,6 +744,8 @@ export function useShop() {
     updateProduct,
     deleteProduct,
     persistCategories,
-    handleBulkEditProducts
+    handleBulkEditProducts,
+    forceReloadData,
+    cleanDuplicateProducts
   }
 }

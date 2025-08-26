@@ -1,5 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+// Función para generar IDs únicos
+function generateUniqueId(prefix: string = 'item'): string {
+  const timestamp = Date.now()
+  const randomPart = Math.random().toString(36).substr(2, 9)
+  const counter = Math.floor(Math.random() * 10000)
+  return `${prefix}-${timestamp}-${randomPart}-${counter}`
+}
+
 interface ProductData {
   name: string
   description: string
@@ -66,7 +74,7 @@ export async function POST(request: NextRequest) {
     
     // Crear producto clonado
     const clonedProduct = {
-      id: Date.now().toString(),
+      id: generateUniqueId('product'),
       ...productData,
       images: processedImages,
       status: 'active',

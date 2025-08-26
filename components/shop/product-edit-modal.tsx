@@ -11,6 +11,7 @@ import { Switch } from '@/components/ui/switch'
 import { ImageUpload } from '@/components/image-upload'
 import { Product } from './types'
 import { X, Save, Upload, Link } from 'lucide-react'
+import { generateUniqueId } from '@/lib/utils'
 
 interface Category {
   id: string
@@ -72,9 +73,9 @@ export function ProductEditModal({
       })
       setFeatures(product.features.join(', '))
     } else {
-      // Nuevo producto
+      // Nuevo producto - Usar función utilitaria para ID único
       setFormData({
-        id: `product-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        id: generateUniqueId('product'),
         name: '',
         brand: '',
         price: 0,
