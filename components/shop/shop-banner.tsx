@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from 'react'
-import { ChevronLeft, ChevronRight, X, Edit, Settings, Image as ImageIcon, Upload, Clock, Palette, Type, Zap, Layers, ChevronDown, ChevronUp } from 'lucide-react'
+import { ChevronLeft, ChevronRight, X, Edit, Settings, Image as ImageIcon, Upload, Clock, Palette, Type, Zap, Layers, ChevronDown, ChevronUp, Star, ShoppingCart, Tag } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useAdmin } from '@/lib/admin-context'
 import { Input } from '@/components/ui/input'
@@ -11,6 +11,22 @@ import { Switch } from '@/components/ui/switch'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Slider } from '@/components/ui/slider'
 import { ImageUpload } from '@/components/image-upload'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent } from '@/components/ui/card'
+
+interface Promotion {
+  id: string
+  name: string
+  productType: 'choice' | 'fixed'
+  selectedProducts: string[]
+  beverageType: 'choice' | 'fixed'
+  selectedBeverages: string[]
+  description: string
+  price: number
+  originalPrice: number
+  image: string
+  isActive: boolean
+}
 
 interface ShopBannerProps {
   banners?: Array<{
@@ -33,12 +49,20 @@ interface ShopBannerProps {
     shadow?: boolean
     blur?: boolean
     scale?: boolean
+    // Propiedades de promociones
+    showPromotions?: boolean
+    selectedPromotions?: string[]
+    promotionLayout?: 'grid' | 'carousel' | 'featured'
+    promotionStyle?: 'cards' | 'minimal' | 'highlight'
   }>
   autoPlay?: boolean
   interval?: number
   showControls?: boolean
   showIndicators?: boolean
   onBannersUpdate?: (banners: any[]) => void
+  // Props para promociones
+  availablePromotions?: Promotion[]
+  onPromotionClick?: (promotion: Promotion) => void
 }
 
 export function ShopBanner({ 
@@ -47,7 +71,9 @@ export function ShopBanner({
   interval = 5000, 
   showControls = true,
   showIndicators = true,
-  onBannersUpdate
+  onBannersUpdate,
+  availablePromotions = [],
+  onPromotionClick
 }: ShopBannerProps) {
   const { isAdminMode } = useAdmin()
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -76,7 +102,11 @@ export function ShopBanner({
       borderRadius: 0,
       shadow: false,
       blur: false,
-      scale: false
+      scale: false,
+      showPromotions: false,
+      selectedPromotions: [],
+      promotionLayout: 'grid',
+      promotionStyle: 'cards'
     },
     {
       id: 'default-2',
@@ -96,7 +126,11 @@ export function ShopBanner({
       borderRadius: 8,
       shadow: true,
       blur: false,
-      scale: true
+      scale: true,
+      showPromotions: false,
+      selectedPromotions: [],
+      promotionLayout: 'grid',
+      promotionStyle: 'cards'
     }
   ]
 
@@ -162,7 +196,11 @@ export function ShopBanner({
       borderRadius: 0,
       shadow: false,
       blur: false,
-      scale: false
+      scale: false,
+      showPromotions: false,
+      selectedPromotions: [],
+      promotionLayout: 'grid',
+      promotionStyle: 'cards'
     }
     setEditingBanners([...editingBanners, newBanner])
   }
@@ -256,6 +294,161 @@ export function ShopBanner({
     return animationMap[animation] || animationMap.fadeIn
   }
 
+
+
+  // Obtener promociones seleccionadas para un banner
+  const getSelectedPromotions = (banner: any) => {
+    if (!banner.showPromotions || !banner.selectedPromotions) return []
+    return availablePromotions.filter(promo => 
+      banner.selectedPromotions.includes(promo.id) && promo.isActive
+    )
+  }
+
+  // Calcular descuento de una promoción
+  const getDiscountPercentage = (originalPrice: number, currentPrice: number) => {
+    if (originalPrice <= currentPrice) return 0
+    return Math.round(((originalPrice - currentPrice) / originalPrice) * 100)
+  }
+
+  // Renderizar promociones en el banner
+  const renderPromotions = (banner: any) => {
+    const selectedPromotions = getSelectedPromotions(banner)
+    if (selectedPromotions.length === 0) return null
+
+    const layout = banner.promotionLayout || 'grid'
+    const style = banner.promotionStyle || 'cards'
+
+    if (layout === 'featured' && selectedPromotions.length > 0) {
+      const featuredPromotion = selectedPromotions[0]
+      const discount = getDiscountPercentage(featuredPromotion.originalPrice, featuredPromotion.price)
+      
+      return (
+        <div className="absolute bottom-0 left-0 right-0 bg-white/90 backdrop-blur-sm p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="relative">
+                <img
+                  src={featuredPromotion.image || '/placeholder.jpg'}
+                  alt={featuredPromotion.name}
+                  className="w-12 h-12 rounded-lg object-cover"
+                />
+                {discount > 0 && (
+                  <Badge className="absolute -top-2 -right-2 bg-red-500 text-white text-xs">
+                    -{discount}%
+                  </Badge>
+                )}
+              </div>
+              <div>
+                <h4 className="font-bold text-sm text-gray-900">{featuredPromotion.name}</h4>
+                <div className="flex items-center space-x-2">
+                  <span className="text-lg font-bold text-red-600">${featuredPromotion.price}</span>
+                  {featuredPromotion.originalPrice > featuredPromotion.price && (
+                    <span className="text-sm text-gray-400 line-through">${featuredPromotion.originalPrice}</span>
+                  )}
+                </div>
+              </div>
+            </div>
+            <Button
+              size="sm"
+              className="bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600"
+              onClick={() => onPromotionClick?.(featuredPromotion)}
+            >
+              <ShoppingCart className="h-4 w-4 mr-1" />
+              Comprar
+            </Button>
+          </div>
+        </div>
+      )
+    }
+
+    if (layout === 'carousel') {
+      return (
+        <div className="absolute bottom-0 left-0 right-0 bg-white/90 backdrop-blur-sm p-4">
+          <div className="flex space-x-3 overflow-x-auto pb-2">
+            {selectedPromotions.map((promotion) => {
+              const discount = getDiscountPercentage(promotion.originalPrice, promotion.price)
+              return (
+                <Card key={promotion.id} className="min-w-[200px] flex-shrink-0">
+                  <CardContent className="p-3">
+                    <div className="flex items-center space-x-2">
+                      <div className="relative">
+                        <img
+                          src={promotion.image || '/placeholder.jpg'}
+                          alt={promotion.name}
+                          className="w-10 h-10 rounded object-cover"
+                        />
+                        {discount > 0 && (
+                          <Badge className="absolute -top-1 -right-1 bg-red-500 text-white text-xs">
+                            -{discount}%
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-semibold text-sm text-gray-900 truncate">{promotion.name}</h4>
+                        <div className="flex items-center space-x-1">
+                          <span className="text-sm font-bold text-red-600">${promotion.price}</span>
+                          {promotion.originalPrice > promotion.price && (
+                            <span className="text-xs text-gray-400 line-through">${promotion.originalPrice}</span>
+                          )}
+                        </div>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-8 w-8 p-0"
+                        onClick={() => onPromotionClick?.(promotion)}
+                      >
+                        <ShoppingCart className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              )
+            })}
+          </div>
+        </div>
+      )
+    }
+
+    // Layout grid por defecto
+    return (
+      <div className="absolute bottom-0 left-0 right-0 bg-white/90 backdrop-blur-sm p-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          {selectedPromotions.slice(0, 6).map((promotion) => {
+            const discount = getDiscountPercentage(promotion.originalPrice, promotion.price)
+            return (
+              <div
+                key={promotion.id}
+                className="bg-white rounded-lg p-2 shadow-sm border border-gray-200 cursor-pointer hover:shadow-md transition-shadow"
+                onClick={() => onPromotionClick?.(promotion)}
+              >
+                <div className="relative">
+                  <img
+                    src={promotion.image || '/placeholder.jpg'}
+                    alt={promotion.name}
+                    className="w-full h-16 object-cover rounded"
+                  />
+                  {discount > 0 && (
+                    <Badge className="top-1 left-1 bg-red-500 text-white text-xs">
+                      -{discount}%
+                    </Badge>
+                  )}
+                </div>
+                <div className="mt-2">
+                  <h4 className="font-semibold text-xs text-gray-900 truncate">{promotion.name}</h4>
+                  <div className="flex items-center justify-between mt-1">
+                    <span className="text-sm font-bold text-red-600">${promotion.price}</span>
+                    <Star className="h-3 w-3 text-yellow-400 fill-current" />
+                  </div>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+    )
+  }
+
   if (!isVisible || activeBanners.length === 0) {
     return null
   }
@@ -336,6 +529,12 @@ export function ShopBanner({
                 </Button>
               )}
             </div>
+
+            {/* Promociones */}
+            {renderPromotions(currentBanner)}
+
+            {/* Promociones */}
+            {renderPromotions(currentBanner)}
           </div>
 
           {/* Controles de navegación */}
@@ -429,7 +628,8 @@ export function ShopBanner({
                       { id: 'timing', label: 'Tiempo', icon: Clock },
                       { id: 'effects', label: 'Efectos', icon: Zap },
                       { id: 'style', label: 'Estilo', icon: Palette },
-                      { id: 'image', label: 'Imagen', icon: ImageIcon }
+                      { id: 'image', label: 'Imagen', icon: ImageIcon },
+                      { id: 'promotions', label: 'Promociones', icon: Tag }
                     ].map((tab) => {
                       const Icon = tab.icon
                       return (
@@ -696,6 +896,266 @@ export function ShopBanner({
                         )}
                       </div>
                     )}
+
+                    {/* Pestaña Promociones */}
+                    {activeTab === 'promotions' && (
+                      <div className="space-y-6">
+                        <div className="flex items-center space-x-2">
+                          <Switch
+                            checked={banner.showPromotions || false}
+                            onCheckedChange={(checked) => handleUpdateBanner(index, 'showPromotions', checked)}
+                          />
+                          <Label className="text-base font-medium">Mostrar Promociones en el Banner</Label>
+                        </div>
+
+                        {banner.showPromotions && (
+                          <>
+                            <div>
+                              <Label>Layout de Promociones</Label>
+                              <Select
+                                value={banner.promotionLayout || 'grid'}
+                                onValueChange={(value) => handleUpdateBanner(index, 'promotionLayout', value)}
+                              >
+                                <SelectTrigger>
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="grid">Grid (Cuadrícula)</SelectItem>
+                                  <SelectItem value="carousel">Carousel (Carrusel)</SelectItem>
+                                  <SelectItem value="featured">Featured (Destacada)</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            <div>
+                              <Label>Estilo de Promociones</Label>
+                              <Select
+                                value={banner.promotionStyle || 'cards'}
+                                onValueChange={(value) => handleUpdateBanner(index, 'promotionStyle', value)}
+                              >
+                                <SelectTrigger>
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="cards">Tarjetas</SelectItem>
+                                  <SelectItem value="minimal">Minimalista</SelectItem>
+                                  <SelectItem value="highlight">Destacado</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            <div>
+                              <Label className="text-base font-medium mb-3 block">
+                                Seleccionar Promociones ({availablePromotions.filter(p => p.isActive).length} disponibles)
+                              </Label>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-60 overflow-y-auto">
+                                {availablePromotions.filter(p => p.isActive).map((promotion) => {
+                                  const isSelected = banner.selectedPromotions?.includes(promotion.id) || false
+                                  const discount = getDiscountPercentage(promotion.originalPrice, promotion.price)
+                                  
+                                  return (
+                                    <div
+                                      key={promotion.id}
+                                      className={`border rounded-lg p-3 cursor-pointer transition-all ${
+                                        isSelected 
+                                          ? 'border-blue-500 bg-blue-50' 
+                                          : 'border-gray-200 hover:border-gray-300'
+                                      }`}
+                                      onClick={() => {
+                                        const currentSelected = banner.selectedPromotions || []
+                                        const newSelected = isSelected
+                                          ? currentSelected.filter((id: string) => id !== promotion.id)
+                                          : [...currentSelected, promotion.id]
+                                        handleUpdateBanner(index, 'selectedPromotions', newSelected)
+                                      }}
+                                    >
+                                      <div className="flex items-center space-x-3">
+                                        <div className="relative">
+                                          <img
+                                            src={promotion.image || '/placeholder.jpg'}
+                                            alt={promotion.name}
+                                            className="w-12 h-12 rounded object-cover"
+                                          />
+                                          {discount > 0 && (
+                                            <Badge className="absolute -top-1 -right-1 bg-red-500 text-white text-xs">
+                                              -{discount}%
+                                            </Badge>
+                                          )}
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                          <h4 className="font-semibold text-sm text-gray-900 truncate">
+                                            {promotion.name}
+                                          </h4>
+                                          <p className="text-xs text-gray-600 truncate">
+                                            {promotion.description}
+                                          </p>
+                                          <div className="flex items-center space-x-2 mt-1">
+                                            <span className="text-sm font-bold text-red-600">
+                                              ${promotion.price}
+                                            </span>
+                                            {promotion.originalPrice > promotion.price && (
+                                              <span className="text-xs text-gray-400 line-through">
+                                                ${promotion.originalPrice}
+                                              </span>
+                                            )}
+                                          </div>
+                                        </div>
+                                        <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
+                                          isSelected 
+                                            ? 'border-blue-500 bg-blue-500' 
+                                            : 'border-gray-300'
+                                        }`}>
+                                          {isSelected && (
+                                            <div className="w-2 h-2 bg-white rounded-full"></div>
+                                          )}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )
+                                })}
+                              </div>
+                              {availablePromotions.filter(p => p.isActive).length === 0 && (
+                                <div className="text-center py-8 text-gray-500">
+                                  <Tag className="h-12 w-12 mx-auto mb-2 text-gray-300" />
+                                  <p>No hay promociones activas disponibles</p>
+                                  <p className="text-sm">Crea promociones en la sección de promociones para mostrarlas aquí</p>
+                                </div>
+                              )}
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Pestaña Promociones */}
+                    {activeTab === 'promotions' && (
+                      <div className="space-y-6">
+                        <div className="flex items-center space-x-2">
+                          <Switch
+                            checked={banner.showPromotions || false}
+                            onCheckedChange={(checked) => handleUpdateBanner(index, 'showPromotions', checked)}
+                          />
+                          <Label className="text-base font-medium">Mostrar Promociones en el Banner</Label>
+                        </div>
+
+                        {banner.showPromotions && (
+                          <>
+                            <div>
+                              <Label>Layout de Promociones</Label>
+                              <Select
+                                value={banner.promotionLayout || 'grid'}
+                                onValueChange={(value) => handleUpdateBanner(index, 'promotionLayout', value)}
+                              >
+                                <SelectTrigger>
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="grid">Grid (Cuadrícula)</SelectItem>
+                                  <SelectItem value="carousel">Carousel (Carrusel)</SelectItem>
+                                  <SelectItem value="featured">Featured (Destacada)</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            <div>
+                              <Label>Estilo de Promociones</Label>
+                              <Select
+                                value={banner.promotionStyle || 'cards'}
+                                onValueChange={(value) => handleUpdateBanner(index, 'promotionStyle', value)}
+                              >
+                                <SelectTrigger>
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="cards">Tarjetas</SelectItem>
+                                  <SelectItem value="minimal">Minimalista</SelectItem>
+                                  <SelectItem value="highlight">Destacado</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            <div>
+                              <Label className="text-base font-medium mb-3 block">
+                                Seleccionar Promociones ({availablePromotions.filter(p => p.isActive).length} disponibles)
+                              </Label>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-60 overflow-y-auto">
+                                {availablePromotions.filter(p => p.isActive).map((promotion) => {
+                                  const isSelected = banner.selectedPromotions?.includes(promotion.id) || false
+                                  const discount = getDiscountPercentage(promotion.originalPrice, promotion.price)
+                                  
+                                  return (
+                                    <div
+                                      key={promotion.id}
+                                      className={`border rounded-lg p-3 cursor-pointer transition-all ${
+                                        isSelected 
+                                          ? 'border-blue-500 bg-blue-50' 
+                                          : 'border-gray-200 hover:border-gray-300'
+                                      }`}
+                                      onClick={() => {
+                                        const currentSelected = banner.selectedPromotions || []
+                                        const newSelected = isSelected
+                                          ? currentSelected.filter(id => id !== promotion.id)
+                                          : [...currentSelected, promotion.id]
+                                        handleUpdateBanner(index, 'selectedPromotions', newSelected)
+                                      }}
+                                    >
+                                      <div className="flex items-center space-x-3">
+                                        <div className="relative">
+                                          <img
+                                            src={promotion.image || '/placeholder.jpg'}
+                                            alt={promotion.name}
+                                            className="w-12 h-12 rounded object-cover"
+                                          />
+                                          {discount > 0 && (
+                                            <Badge className="absolute -top-1 -right-1 bg-red-500 text-white text-xs">
+                                              -{discount}%
+                                            </Badge>
+                                          )}
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                          <h4 className="font-semibold text-sm text-gray-900 truncate">
+                                            {promotion.name}
+                                          </h4>
+                                          <p className="text-xs text-gray-600 truncate">
+                                            {promotion.description}
+                                          </p>
+                                          <div className="flex items-center space-x-2 mt-1">
+                                            <span className="text-sm font-bold text-red-600">
+                                              ${promotion.price}
+                                            </span>
+                                            {promotion.originalPrice > promotion.price && (
+                                              <span className="text-xs text-gray-400 line-through">
+                                                ${promotion.originalPrice}
+                                              </span>
+                                            )}
+                                          </div>
+                                        </div>
+                                        <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
+                                          isSelected 
+                                            ? 'border-blue-500 bg-blue-500' 
+                                            : 'border-gray-300'
+                                        }`}>
+                                          {isSelected && (
+                                            <div className="w-2 h-2 bg-white rounded-full"></div>
+                                          )}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )
+                                })}
+                              </div>
+                              {availablePromotions.filter(p => p.isActive).length === 0 && (
+                                <div className="text-center py-8 text-gray-500">
+                                  <Tag className="h-12 w-12 mx-auto mb-2 text-gray-300" />
+                                  <p>No hay promociones activas disponibles</p>
+                                  <p className="text-sm">Crea promociones en la sección de promociones para mostrarlas aquí</p>
+                                </div>
+                              )}
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    )}
                   </div>
 
                   {/* Vista previa del banner */}
@@ -741,6 +1201,50 @@ export function ShopBanner({
                           </p>
                         )}
                       </div>
+
+                      {/* Vista previa de promociones */}
+                      {banner.showPromotions && getSelectedPromotions(banner).length > 0 && (
+                        <div className="absolute bottom-0 left-0 right-0 bg-white/80 p-1">
+                          <div className="flex space-x-1">
+                            {getSelectedPromotions(banner).slice(0, 3).map((promotion) => (
+                              <div
+                                key={promotion.id}
+                                className="w-4 h-4 rounded bg-red-500 flex items-center justify-center"
+                                title={promotion.name}
+                              >
+                                <Star className="h-2 w-2 text-white fill-current" />
+                              </div>
+                            ))}
+                            {getSelectedPromotions(banner).length > 3 && (
+                              <div className="w-4 h-4 rounded bg-gray-500 flex items-center justify-center">
+                                <span className="text-xs text-white">+{getSelectedPromotions(banner).length - 3}</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Vista previa de promociones */}
+                      {banner.showPromotions && getSelectedPromotions(banner).length > 0 && (
+                        <div className="absolute bottom-0 left-0 right-0 bg-white/80 p-1">
+                          <div className="flex space-x-1">
+                            {getSelectedPromotions(banner).slice(0, 3).map((promotion) => (
+                              <div
+                                key={promotion.id}
+                                className="w-4 h-4 rounded bg-red-500 flex items-center justify-center"
+                                title={promotion.name}
+                              >
+                                <Star className="h-2 w-2 text-white fill-current" />
+                              </div>
+                            ))}
+                            {getSelectedPromotions(banner).length > 3 && (
+                              <div className="w-4 h-4 rounded bg-gray-500 flex items-center justify-center">
+                                <span className="text-xs text-white">+{getSelectedPromotions(banner).length - 3}</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>

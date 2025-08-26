@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -12,12 +12,21 @@ import { ImageUpload } from '@/components/image-upload'
 import { Product } from './types'
 import { X, Save, Upload, Link } from 'lucide-react'
 
+interface Category {
+  id: string
+  name: string
+  description: string
+  isExpanded: boolean
+  products: Product[]
+  isActive: boolean
+}
+
 interface ProductEditModalProps {
   isOpen: boolean
   onClose: () => void
   onSave: (product: Product) => void
   product: Product | null
-  categories: string[]
+  categories: Category[] // Cambiado de string[] a Category[]
 }
 
 export function ProductEditModal({ 
@@ -45,6 +54,15 @@ export function ProductEditModal({
   const [showImageUpload, setShowImageUpload] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
 
+  // Obtener nombres de categorías para el selector (memoizado)
+  const categoryNames = useMemo(() => 
+    categories
+      .filter(cat => cat.isActive)
+      .map(cat => cat.name)
+      .sort(),
+    [categories]
+  )
+
   // Inicializar formulario cuando se abre el modal
   useEffect(() => {
     if (product) {
@@ -64,14 +82,14 @@ export function ProductEditModal({
         image: '',
         rating: 0,
         reviews: 0,
-        category: categories[0] || '',
+        category: categoryNames[0] || '',
         inStock: true,
         description: '',
         features: []
       })
       setFeatures('')
     }
-  }, [product, categories])
+  }, [product, categoryNames])
 
   const handleInputChange = (field: keyof Product, value: any) => {
     setFormData(prev => ({
@@ -218,9 +236,9 @@ export function ProductEditModal({
                   <SelectValue placeholder="Seleccionar categoría" />
                 </SelectTrigger>
                 <SelectContent>
-                  {categories.map((category) => (
-                    <SelectItem key={category} value={category}>
-                      {category}
+                  {categoryNames.map((categoryName) => (
+                    <SelectItem key={categoryName} value={categoryName}>
+                      {categoryName}
                     </SelectItem>
                   ))}
                 </SelectContent>

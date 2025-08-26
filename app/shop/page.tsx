@@ -146,6 +146,7 @@ export default function ShopPage() {
     addCategory,
     updateCategory,
     toggleCategory,
+    addProduct,
     addProductToCategory,
     updateProduct,
     deleteProduct
@@ -154,6 +155,12 @@ export default function ShopPage() {
   // Debug logs
   console.log('🏪 ShopPage render - Products count:', products.length)
   console.log('🏪 ShopPage render - Filtered products count:', filteredProducts.length)
+
+  // Obtener nombres de categorías para componentes que los necesiten
+  const categoryNames = categories
+    .filter(cat => cat.isActive)
+    .map(cat => cat.name)
+    .sort()
 
   // Configuración de la tienda
   const shopConfig = {
@@ -308,10 +315,18 @@ export default function ShopPage() {
 
   const handleSaveNewProduct = async (product: Product) => {
     try {
-      // Agregar el nuevo producto a la lista
-      const updatedProducts = [...products, product]
-      // Aquí deberías llamar a una función para guardar en la configuración
-      console.log('Nuevo producto creado:', product)
+      // Agregar el producto a la lista general
+      await addProduct(product)
+      
+      // Si el producto tiene una categoría específica, también agregarlo a esa categoría
+      if (product.category) {
+        const selectedCategory = categories.find(cat => cat.name === product.category)
+        if (selectedCategory) {
+          // Agregar el producto a la categoría específica usando la función del hook
+          await addProductToCategory(selectedCategory.id, product)
+        }
+      }
+      
       setShowProductEditModal(false)
     } catch (error) {
       console.error('Error creando producto:', error)
@@ -488,7 +503,7 @@ export default function ShopPage() {
         <BulkUploadProducts
           onProductsUploaded={handleBulkProductsUploaded}
           onClose={() => setShowBulkUploadModal(false)}
-          existingCategories={productCategories}
+          existingCategories={categoryNames}
         />
       )}
 
@@ -576,7 +591,7 @@ export default function ShopPage() {
         }}
         onSave={editingProduct ? handleSaveProduct : handleSaveNewProduct}
         product={editingProduct}
-        categories={productCategories}
+        categories={categories}
       />
 
       {/* Modal de imagen */}

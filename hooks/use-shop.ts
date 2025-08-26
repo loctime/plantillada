@@ -91,23 +91,9 @@ export function useShop() {
       // Guardar en localStorage
       localStorage.setItem('shop-categories', JSON.stringify(updatedCategories))
       
-      // Guardar en configuración global si está disponible
-      if (updateConfig) {
-        try {
-          const response = await fetch('/api/config')
-          if (response.ok) {
-            const currentConfig = await response.json()
-            const updatedConfig = {
-              ...currentConfig,
-              shopCategories: updatedCategories
-            }
-            await updateConfig(updatedConfig)
-            console.log('✅ Categorías guardadas en configuración global')
-          }
-        } catch (error) {
-          console.warn('No se pudo guardar categorías en configuración global:', error)
-        }
-      }
+      // Por ahora, solo guardar en localStorage para evitar bucles infinitos
+      // TODO: Implementar guardado en configuración global de forma segura
+      console.log('✅ Categorías guardadas en localStorage')
     } catch (error) {
       console.error('Error persistiendo categorías:', error)
     }
@@ -156,7 +142,7 @@ export function useShop() {
     })
 
     setFilteredProducts(filtered)
-  }, [products, searchTerm, selectedCategory, priceRange, selectedRating, sortBy])
+  }, [products, searchTerm, selectedCategory, priceRange[0], priceRange[1], selectedRating, sortBy])
 
   // Funciones del carrito
   const addToCart = (product: Product, selectedOptions?: any, selectedAddons?: any[]) => {
@@ -315,12 +301,6 @@ export function useShop() {
     setProducts(updatedProducts)
     setFilteredProducts(updatedProducts)
     
-    // Forzar actualización inmediata
-    setTimeout(() => {
-      console.log('🔄 Forcing re-render after bulk upload')
-      setProducts([...updatedProducts])
-    }, 100)
-    
     // Mostrar notificación con información sobre categorías
     let categoryMessage = ''
     if (categoriesToAdd.length > 0 && categoriesToUpdate.length > 0) {
@@ -381,18 +361,51 @@ export function useShop() {
     await persistCategories(updatedCategories)
   }
 
+  const addProduct = async (product: Product) => {
+    // Agregar el producto a la lista general de productos
+    setProducts(prev => {
+      const newProducts = [...prev, product]
+      
+      // Guardar productos en localStorage como respaldo
+      try {
+        localStorage.setItem('shop-products', JSON.stringify(newProducts))
+        console.log('✅ Producto guardado en localStorage')
+      } catch (error) {
+        console.error('Error guardando producto en localStorage:', error)
+      }
+      
+      return newProducts
+    })
+    
+    toast({
+      title: 'Producto agregado',
+      description: `${product.name} se agregó exitosamente`
+    })
+  }
+
   const addProductToCategory = async (categoryId: string, product: Product) => {
     // Agregar el producto a la lista general de productos
     setProducts(prev => [...prev, product])
     
-    // Agregar el producto a la categoría específica
-    const updatedCategories = categories.map(cat => 
-      cat.id === categoryId 
-        ? { ...cat, products: [...cat.products, product] }
-        : cat
-    )
-    setCategories(updatedCategories)
-    await persistCategories(updatedCategories)
+    // Agregar el producto a la categoría específica y persistir
+    setCategories(prev => {
+      const updatedCategories = prev.map(cat => 
+        cat.id === categoryId 
+          ? { ...cat, products: [...cat.products, product] }
+          : cat
+      )
+      
+      // Persistir categorías de forma asíncrona
+      setTimeout(async () => {
+        try {
+          await persistCategories(updatedCategories)
+        } catch (error) {
+          console.error('Error persistiendo categorías:', error)
+        }
+      }, 0)
+      
+      return updatedCategories
+    })
     
     toast({
       title: 'Producto agregado',
@@ -521,24 +534,8 @@ export function useShop() {
       console.error('Error guardando productos en localStorage:', error)
     }
     
-    // Guardar en configuración global si está disponible
-    if (updateConfig) {
-      try {
-        const response = await fetch('/api/config')
-        if (response.ok) {
-          const currentConfig = await response.json()
-          const updatedConfig = {
-            ...currentConfig,
-            products: updatedProducts,
-            shopCategories: updatedCategories
-          }
-          await updateConfig(updatedConfig)
-          console.log('✅ Productos y categorías guardados en configuración global')
-        }
-      } catch (error) {
-        console.warn('No se pudo guardar en configuración global:', error)
-      }
-    }
+    // Por ahora, solo guardar en localStorage para evitar bucles infinitos
+    // TODO: Implementar guardado en configuración global de forma segura
     
     toast({
       title: 'Edición masiva completada',
@@ -585,6 +582,7 @@ export function useShop() {
     addCategory,
     updateCategory,
     toggleCategory,
+    addProduct,
     addProductToCategory,
     updateProduct,
     deleteProduct,
