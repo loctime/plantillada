@@ -23,32 +23,39 @@ export function ShopCart({
 }: ShopCartProps) {
   const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)
 
-  if (!isOpen) return null
-
   return (
-    <div 
-      className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
-      onClick={onClose}
-    >
+    <>
+      {/* Overlay de fondo */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-50 transition-opacity duration-300"
+          onClick={onClose}
+        />
+      )}
+      
+      {/* Barra lateral del carrito */}
       <div 
-        className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto"
-        onClick={(e) => e.stopPropagation()}
+        className={`fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out ${
+          isOpen ? 'translate-x-0' : 'translate-x-full'
+        }`}
       >
-        <div className="flex justify-between items-center p-6 border-b">
+        {/* Header */}
+        <div className="flex justify-between items-center p-6 border-b bg-white sticky top-0 z-10">
           <h2 className="text-xl font-bold">Carrito de Compras</h2>
           <Button variant="ghost" size="sm" onClick={onClose}>
             <X className="h-5 w-5" />
           </Button>
         </div>
 
-        <div className="p-6">
-          {cartItems.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-gray-500">Tu carrito está vacío</p>
-            </div>
-          ) : (
-            <>
-              <div className="space-y-4 max-h-96 overflow-y-auto">
+        {/* Contenido */}
+        <div className="flex flex-col h-full">
+          <div className="flex-1 overflow-y-auto p-6">
+            {cartItems.length === 0 ? (
+              <div className="text-center py-8">
+                <p className="text-gray-500">Tu carrito está vacío</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
                 {cartItems.map(item => (
                   <div key={item.id} className="flex items-center space-x-4 p-4 border rounded-lg">
                     <img
@@ -89,30 +96,33 @@ export function ShopCart({
                   </div>
                 ))}
               </div>
+            )}
+          </div>
 
-              <div className="border-t pt-4 mt-4">
-                <div className="flex justify-between items-center mb-4">
-                  <span className="text-lg font-semibold">Total:</span>
-                  <span className="text-lg font-bold text-blue-600">${total.toFixed(2)}</span>
-                </div>
-                
-                <div className="space-y-2">
-                  <Button className="w-full" size="lg">
-                    Proceder al Pago
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="w-full"
-                    onClick={onClearCart}
-                  >
-                    Vaciar Carrito
-                  </Button>
-                </div>
+          {/* Footer */}
+          {cartItems.length > 0 && (
+            <div className="border-t p-6 space-y-4 bg-white sticky bottom-0">
+              <div className="flex justify-between items-center">
+                <span className="text-lg font-semibold">Total:</span>
+                <span className="text-lg font-bold text-blue-600">${total.toFixed(2)}</span>
               </div>
-            </>
+              
+              <div className="space-y-2">
+                <Button className="w-full" size="lg">
+                  Proceder al Pago
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={onClearCart}
+                >
+                  Vaciar Carrito
+                </Button>
+              </div>
+            </div>
           )}
         </div>
       </div>
-    </div>
+    </>
   )
 }

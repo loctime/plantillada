@@ -83,21 +83,24 @@ export function Cart({
     }
   }
 
-
-
-  if (!isOpen) return null
-
   return (
-    <div 
-      className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
-      onClick={onClose}
-    >
+    <>
+      {/* Overlay de fondo */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-50 transition-opacity duration-300"
+          onClick={onClose}
+        />
+      )}
+      
+      {/* Barra lateral del carrito */}
       <div 
-        className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-hidden"
-        onClick={(e) => e.stopPropagation()}
+        className={`fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out ${
+          isOpen ? 'translate-x-0' : 'translate-x-full'
+        }`}
       >
         {/* Header */}
-        <div className="flex justify-between items-center p-4 border-b">
+        <div className="flex justify-between items-center p-4 border-b bg-white sticky top-0 z-10">
           <div className="flex items-center space-x-2">
             <ShoppingCart className="h-6 w-6 text-blue-600" />
             <h2 className="text-xl font-bold">Carrito de Compras</h2>
@@ -113,121 +116,123 @@ export function Cart({
         </div>
 
         {/* Contenido */}
-        <div className="flex-1 overflow-y-auto">
-          {items.length === 0 ? (
-            <div className="p-8 text-center">
-              <Package className="h-16 w-16 mx-auto text-gray-300 mb-4" />
-              <h3 className="text-lg font-semibold text-gray-600 mb-2">
-                Tu carrito está vacío
-              </h3>
-              <p className="text-gray-500">
-                Agrega algunos productos para comenzar tu pedido
+        <div className="flex flex-col h-full">
+          <div className="flex-1 overflow-y-auto">
+            {items.length === 0 ? (
+              <div className="p-8 text-center">
+                <Package className="h-16 w-16 mx-auto text-gray-300 mb-4" />
+                <h3 className="text-lg font-semibold text-gray-600 mb-2">
+                  Tu carrito está vacío
+                </h3>
+                <p className="text-gray-500">
+                  Agrega algunos productos para comenzar tu pedido
+                </p>
+              </div>
+            ) : (
+              <div className="p-4 space-y-4">
+                {items.map((item) => (
+                  <div key={item.id} className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg">
+                    {/* Imagen */}
+                    <img 
+                      src={item.image || '/placeholder.jpg'} 
+                      alt={item.name}
+                      className="w-12 h-12 rounded-lg object-cover flex-shrink-0"
+                    />
+                    
+                    {/* Información */}
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-medium text-gray-900 text-sm truncate">
+                        {item.name}
+                      </h4>
+                      <p className="text-sm text-gray-600">
+                        ${item.price.toFixed(2)} c/u
+                      </p>
+                    </div>
+                    
+                    {/* Controles de cantidad */}
+                    <div className="flex items-center space-x-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
+                        className="h-8 w-8 p-0"
+                      >
+                        <Minus className="h-3 w-3" />
+                      </Button>
+                      
+                      <span className="text-sm font-medium w-8 text-center">
+                        {item.quantity}
+                      </span>
+                      
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
+                        className="h-8 w-8 p-0"
+                      >
+                        <Plus className="h-3 w-3" />
+                      </Button>
+                    </div>
+                    
+                    {/* Subtotal y eliminar */}
+                    <div className="flex flex-col items-end space-y-1">
+                      <span className="text-sm font-semibold text-gray-900">
+                        ${(item.price * item.quantity).toFixed(2)}
+                      </span>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => onRemoveItem(item.id)}
+                        className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Footer */}
+          {items.length > 0 && (
+            <div className="border-t p-4 space-y-4 bg-white sticky bottom-0">
+              {/* Total */}
+              <div className="flex justify-between items-center">
+                <span className="text-lg font-semibold">Total:</span>
+                <span className="text-xl font-bold text-blue-600">
+                  ${total.toFixed(2)}
+                </span>
+              </div>
+              
+              {/* Botones */}
+              <div className="flex space-x-2">
+                <Button
+                  variant="outline"
+                  onClick={onClearCart}
+                  className="flex-1"
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Vaciar
+                </Button>
+                
+                <Button
+                  onClick={handleSendWhatsApp}
+                  disabled={isSending}
+                  className="flex-1 bg-green-600 hover:bg-green-700"
+                >
+                  <MessageCircle className="h-4 w-4 mr-2" />
+                  {isSending ? 'Enviando...' : 'Enviar por WhatsApp'}
+                </Button>
+              </div>
+              
+              <p className="text-xs text-gray-500 text-center">
+                Al hacer clic en "Enviar por WhatsApp" se abrirá la aplicación con tu pedido listo
               </p>
-            </div>
-          ) : (
-            <div className="p-4 space-y-4">
-              {items.map((item) => (
-                <div key={item.id} className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg">
-                  {/* Imagen */}
-                  <img 
-                    src={item.image || '/placeholder.jpg'} 
-                    alt={item.name}
-                    className="w-12 h-12 rounded-lg object-cover flex-shrink-0"
-                  />
-                  
-                  {/* Información */}
-                  <div className="flex-1 min-w-0">
-                    <h4 className="font-medium text-gray-900 text-sm truncate">
-                      {item.name}
-                    </h4>
-                    <p className="text-sm text-gray-600">
-                      ${item.price.toFixed(2)} c/u
-                    </p>
-                  </div>
-                  
-                  {/* Controles de cantidad */}
-                  <div className="flex items-center space-x-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
-                      className="h-8 w-8 p-0"
-                    >
-                      <Minus className="h-3 w-3" />
-                    </Button>
-                    
-                    <span className="text-sm font-medium w-8 text-center">
-                      {item.quantity}
-                    </span>
-                    
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
-                      className="h-8 w-8 p-0"
-                    >
-                      <Plus className="h-3 w-3" />
-                    </Button>
-                  </div>
-                  
-                  {/* Subtotal y eliminar */}
-                  <div className="flex flex-col items-end space-y-1">
-                    <span className="text-sm font-semibold text-gray-900">
-                      ${(item.price * item.quantity).toFixed(2)}
-                    </span>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => onRemoveItem(item.id)}
-                      className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
             </div>
           )}
         </div>
-
-        {/* Footer */}
-        {items.length > 0 && (
-          <div className="border-t p-4 space-y-4">
-            {/* Total */}
-            <div className="flex justify-between items-center">
-              <span className="text-lg font-semibold">Total:</span>
-              <span className="text-xl font-bold text-blue-600">
-                ${total.toFixed(2)}
-              </span>
-            </div>
-            
-            {/* Botones */}
-            <div className="flex space-x-2">
-              <Button
-                variant="outline"
-                onClick={onClearCart}
-                className="flex-1"
-              >
-                <Trash2 className="h-4 w-4 mr-2" />
-                Vaciar
-              </Button>
-              
-              <Button
-                onClick={handleSendWhatsApp}
-                disabled={isSending}
-                className="flex-1 bg-green-600 hover:bg-green-700"
-              >
-                <MessageCircle className="h-4 w-4 mr-2" />
-                {isSending ? 'Enviando...' : 'Enviar por WhatsApp'}
-              </Button>
-            </div>
-            
-            <p className="text-xs text-gray-500 text-center">
-              Al hacer clic en "Enviar por WhatsApp" se abrirá la aplicación con tu pedido listo
-            </p>
-          </div>
-        )}
       </div>
-    </div>
+    </>
   )
 }
