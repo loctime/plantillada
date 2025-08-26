@@ -223,7 +223,7 @@ export function BulkEditProducts({
 
   const addRow = () => {
     const newProduct = {
-      id: `temp-${Date.now()}`,
+      id: `temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       nombre: '',
       descripcion: '',
       categoria: '',
@@ -444,7 +444,7 @@ export function BulkEditProducts({
           if (neededRows > 0) {
             for (let i = 0; i < neededRows; i++) {
               const newProduct = {
-                id: `temp-${Date.now()}-${products.length + i}`,
+                id: `temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}-${i}`,
                 nombre: '',
                 descripcion: '',
                 categoria: '',
@@ -862,7 +862,7 @@ export function BulkEditProducts({
         if (productsSheet) {
           const productsData = XLSX.utils.sheet_to_json(productsSheet)
           importedProducts = productsData.map((row: any) => ({
-            id: `temp-${Date.now()}-${Math.random()}`,
+            id: `temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
             nombre: row['Nombre'] || '',
             descripcion: row['Descripción'] || '',
             categoria: row['Categoría'] || '',
@@ -892,7 +892,7 @@ export function BulkEditProducts({
         if (categoriesSheet) {
           const categoriesData = XLSX.utils.sheet_to_json(categoriesSheet)
           importedCategories = categoriesData.map((row: any) => ({
-            id: row['ID'] || `cat-${Date.now()}-${Math.random()}`,
+            id: row['ID'] || `cat-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
             name: row['Nombre'] || '',
             description: row['Descripción'] || '',
             isExpanded: false,

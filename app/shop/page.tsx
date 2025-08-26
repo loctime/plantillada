@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Config } from '@/lib/config-loader'
 import { useAdmin } from '@/lib/admin-context'
-import { AdminToggle } from '@/components/admin-toggle'
+
 import { ShopDesignSelector } from '@/components/shop-design-selector'
 import { Design } from '@/lib/designs'
 import './layout-styles.css'
@@ -602,7 +602,7 @@ export default function ShopPage() {
       />
 
       {/* Componentes de administración */}
-      <AdminToggle />
+      {/* AdminToggle se maneja desde el ShopHeader */}
     </div>
   )
 }

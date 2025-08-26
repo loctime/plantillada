@@ -154,7 +154,7 @@ export function CategoriesSection({
     if (!selectedCategory) return
 
     const product: Product = {
-      id: `product-${Date.now()}`,
+      id: `product-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       name: newProduct.name.trim(),
       brand: newProduct.brand.trim() || 'Sin marca',
       price: parseFloat(newProduct.price) || 0,

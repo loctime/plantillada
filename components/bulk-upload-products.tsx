@@ -95,7 +95,7 @@ export function BulkUploadProducts({ onProductsUploaded, onClose, prefillCategor
 
   const [products, setProducts] = useState<any[]>([
     {
-      id: Date.now().toString(),
+      id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       nombre: '',
       descripcion: '',
       categoria: prefillCategory || '',
@@ -122,7 +122,7 @@ export function BulkUploadProducts({ onProductsUploaded, onClose, prefillCategor
   // Historial para deshacer
   const [history, setHistory] = useState<any[][]>([[
     {
-      id: Date.now().toString(),
+      id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       nombre: '',
       descripcion: '',
       categoria: prefillCategory || '',
@@ -217,7 +217,7 @@ export function BulkUploadProducts({ onProductsUploaded, onClose, prefillCategor
 
   const addRow = () => {
     const newProduct = {
-      id: Date.now().toString(),
+      id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       nombre: '',
       descripcion: '',
       categoria: prefillCategory || '',
@@ -432,7 +432,7 @@ export function BulkUploadProducts({ onProductsUploaded, onClose, prefillCategor
           if (neededRows > 0) {
             for (let i = 0; i < neededRows; i++) {
               const newProduct = {
-                id: Date.now().toString() + '-' + (products.length + i),
+                id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}-${i}`,
                 nombre: '',
                 descripcion: '',
                 categoria: '',

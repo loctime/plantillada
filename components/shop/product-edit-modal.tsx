@@ -74,7 +74,7 @@ export function ProductEditModal({
     } else {
       // Nuevo producto
       setFormData({
-        id: `product-${Date.now()}`,
+        id: `product-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         name: '',
         brand: '',
         price: 0,
@@ -124,7 +124,7 @@ export function ProductEditModal({
     setIsSaving(true)
     try {
       const productToSave: Product = {
-        id: formData.id || `product-${Date.now()}`,
+        id: formData.id || `product-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         name: formData.name || '',
         brand: formData.brand || '',
         price: formData.price || 0,
