@@ -20,6 +20,7 @@ import {
   ChevronDown,
   GripVertical
 } from 'lucide-react'
+import * as XLSX from 'xlsx'
 import { useToast } from '@/hooks/use-toast'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
@@ -703,24 +704,67 @@ export function BulkEditProducts({
   }
 
   const exportData = () => {
-    const data = {
-      products: products,
-      categories: categories
+    try {
+      // Crear workbook y worksheet para productos
+      const workbook = XLSX.utils.book_new()
+      
+      // Preparar datos de productos para Excel
+      const productsData = products.map(product => ({
+        'ID': product.id,
+        'Nombre': product.nombre || '',
+        'Descripción': product.descripcion || '',
+        'Categoría': product.categoria || '',
+        'Precio': product.precio || '',
+        'Precio Original': product.precioOriginal || '',
+        'Marca': product.marca || '',
+        'URL Imagen': product.urlImagen || '',
+        'Rating': product.rating || '',
+        'Reviews': product.reviews || '',
+        'En Stock': product.enStock ? 'Sí' : 'No',
+        'Características': product.caracteristicas || ''
+      }))
+      
+      // Crear worksheet de productos
+      const productsWorksheet = XLSX.utils.json_to_sheet(productsData)
+      XLSX.utils.book_append_sheet(workbook, productsWorksheet, 'Productos')
+      
+      // Preparar datos de categorías para Excel
+      const categoriesData = categories.map(category => ({
+        'ID': category.id,
+        'Nombre': category.name || '',
+        'Descripción': category.description || '',
+        'Productos': category.products?.length || 0,
+        'Activa': category.isActive ? 'Sí' : 'No'
+      }))
+      
+      // Crear worksheet de categorías
+      const categoriesWorksheet = XLSX.utils.json_to_sheet(categoriesData)
+      XLSX.utils.book_append_sheet(workbook, categoriesWorksheet, 'Categorías')
+      
+      // Generar archivo Excel
+      const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' })
+      const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = 'productos-categorias.xlsx'
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+      
+      toast({
+        title: 'Datos exportados',
+        description: 'Archivo Excel descargado exitosamente'
+      })
+    } catch (error) {
+      console.error('Error al exportar:', error)
+      toast({
+        title: 'Error al exportar',
+        description: 'No se pudo generar el archivo Excel',
+        variant: 'destructive'
+      })
     }
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = 'productos-categorias.json'
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
-    
-    toast({
-      title: 'Datos exportados',
-      description: 'Archivo JSON descargado exitosamente'
-    })
   }
 
   const importData = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -730,26 +774,81 @@ export function BulkEditProducts({
     const reader = new FileReader()
     reader.onload = (e) => {
       try {
-        const data = JSON.parse(e.target?.result as string)
-        if (data.products && data.categories) {
-          setProducts(data.products)
-          setCategories(data.categories)
-          addToHistory({ products: data.products, categories: data.categories })
+        const data = new Uint8Array(e.target?.result as ArrayBuffer)
+        const workbook = XLSX.read(data, { type: 'array' })
+        
+        let importedProducts: any[] = []
+        let importedCategories: Category[] = []
+        
+        // Procesar hoja de productos
+        const productsSheet = workbook.Sheets['Productos']
+        if (productsSheet) {
+          const productsData = XLSX.utils.sheet_to_json(productsSheet)
+          importedProducts = productsData.map((row: any) => ({
+            id: row['ID'] || `temp-${Date.now()}-${Math.random()}`,
+            nombre: row['Nombre'] || '',
+            descripcion: row['Descripción'] || '',
+            categoria: row['Categoría'] || '',
+            precio: row['Precio']?.toString() || '',
+            precioOriginal: row['Precio Original']?.toString() || '',
+            marca: row['Marca'] || '',
+            urlImagen: row['URL Imagen'] || '/placeholder.jpg',
+            rating: row['Rating']?.toString() || '4.0',
+            reviews: row['Reviews']?.toString() || '0',
+            enStock: row['En Stock'] === 'Sí',
+            caracteristicas: row['Características'] || ''
+          }))
+        }
+        
+        // Procesar hoja de categorías
+        const categoriesSheet = workbook.Sheets['Categorías']
+        if (categoriesSheet) {
+          const categoriesData = XLSX.utils.sheet_to_json(categoriesSheet)
+          importedCategories = categoriesData.map((row: any) => ({
+            id: row['ID'] || `cat-${Date.now()}-${Math.random()}`,
+            name: row['Nombre'] || '',
+            description: row['Descripción'] || '',
+            isExpanded: false,
+            products: [],
+            isActive: row['Activa'] === 'Sí'
+          }))
+        }
+        
+        // Si no hay datos en Excel, intentar procesar como JSON (compatibilidad)
+        if (importedProducts.length === 0 && importedCategories.length === 0) {
+          const jsonText = new TextDecoder().decode(data)
+          const jsonData = JSON.parse(jsonText)
+          if (jsonData.products && jsonData.categories) {
+            importedProducts = jsonData.products
+            importedCategories = jsonData.categories
+          }
+        }
+        
+        if (importedProducts.length > 0 || importedCategories.length > 0) {
+          setProducts(importedProducts.length > 0 ? importedProducts : products)
+          setCategories(importedCategories.length > 0 ? importedCategories : categories)
+          addToHistory({ 
+            products: importedProducts.length > 0 ? importedProducts : products, 
+            categories: importedCategories.length > 0 ? importedCategories : categories 
+          })
           
           toast({
             title: 'Datos importados',
-            description: `${data.products.length} productos y ${data.categories.length} categorías importados`
+            description: `${importedProducts.length} productos y ${importedCategories.length} categorías importados`
           })
+        } else {
+          throw new Error('No se encontraron datos válidos')
         }
       } catch (error) {
+        console.error('Error al importar:', error)
         toast({
           title: 'Error al importar',
-          description: 'El archivo no tiene el formato correcto',
+          description: 'El archivo no tiene el formato correcto. Usa un archivo Excel (.xlsx) o JSON.',
           variant: 'destructive'
         })
       }
     }
-    reader.readAsText(file)
+    reader.readAsArrayBuffer(file)
   }
 
   return (
@@ -779,18 +878,18 @@ export function BulkEditProducts({
                       variant="outline"
                     >
                       <Download className="h-4 w-4 mr-2" />
-                      Exportar
+                      Exportar Excel
                     </Button>
                     <label className="cursor-pointer">
                       <input
                         type="file"
-                        accept=".json"
+                        accept=".xlsx,.json"
                         onChange={importData}
                         className="hidden"
                       />
                       <Button size="sm" variant="outline">
                         <Upload className="h-4 w-4 mr-2" />
-                        Importar
+                        Importar Excel
                       </Button>
                     </label>
                     <Button 
@@ -982,6 +1081,7 @@ export function BulkEditProducts({
                 <div className="mt-4 text-sm text-gray-600">
                   <p>💡 <strong>Consejo:</strong> Usa las flechas del teclado para navegar entre campos. Enter para nueva fila. Pega múltiples líneas para crear filas automáticamente. <strong>Ctrl+Z</strong> para deshacer y <strong>Ctrl+Y</strong> para rehacer.</p>
                   <p>📊 <strong>Ordenamiento:</strong> Haz clic en los encabezados de las columnas para ordenar. <strong>Redimensionamiento:</strong> Arrastra el borde derecho de los encabezados para ajustar el ancho de las columnas.</p>
+                  <p>📁 <strong>Importar/Exportar:</strong> Los botones de Excel crean archivos con dos hojas: "Productos" y "Categorías". También puedes importar archivos JSON existentes.</p>
                 </div>
               </CardContent>
             </Card>
