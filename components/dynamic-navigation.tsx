@@ -59,14 +59,22 @@ export function DynamicNavigation({ config, isMobile = false }: DynamicNavigatio
   const { isAuthenticated, login } = useAdminAuth()
 
   useEffect(() => {
-    if (config?.selectedTemplates) {
-      const items = config.selectedTemplates
+    // Usar activeTemplates si está disponible, sino selectedTemplates (legacy)
+    const activeTemplates = config?.activeTemplates || config?.selectedTemplates || []
+    
+    if (activeTemplates.length > 0) {
+      const items = activeTemplates
         .map(templateId => templateNavigation[templateId])
         .filter(Boolean)
       
       // Siempre incluir la página principal si no está seleccionada
-      if (!config.selectedTemplates.includes('landing')) {
+      if (!activeTemplates.includes('landing')) {
         items.unshift(templateNavigation.landing)
+      }
+      
+      // Agregar elementos de navegación personalizados si existen
+      if (config?.navigation?.customItems) {
+        items.push(...config.navigation.customItems)
       }
       
       // Agregar enlace de admin si está autenticado
@@ -96,6 +104,11 @@ export function DynamicNavigation({ config, isMobile = false }: DynamicNavigatio
         templateNavigation.shop
       ]
       
+      // Agregar elementos de navegación personalizados si existen
+      if (config?.navigation?.customItems) {
+        defaultItems.push(...config.navigation.customItems)
+      }
+      
       // Agregar enlace de admin si está autenticado
       if (isAuthenticated) {
         defaultItems.push({
@@ -117,7 +130,7 @@ export function DynamicNavigation({ config, isMobile = false }: DynamicNavigatio
       
       setNavigationItems(defaultItems)
     }
-  }, [config?.selectedTemplates, isAuthenticated])
+  }, [config?.activeTemplates, config?.selectedTemplates, config?.navigation?.customItems, isAuthenticated])
 
   const handleLoginSuccess = () => {
     login()

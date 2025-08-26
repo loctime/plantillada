@@ -346,6 +346,8 @@ export default function ShopPage() {
         onToggleMobileMenu={() => setMobileMenuOpen(!mobileMenuOpen)}
         selectedDesign={selectedDesign}
         onDesignSelect={handleDesignSelect}
+        config={config}
+        isMobileMenuOpen={mobileMenuOpen}
       />
 
       {/* Banner de la tienda */}

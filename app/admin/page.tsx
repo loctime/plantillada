@@ -17,6 +17,7 @@ import { TemplateSelector } from "@/components/template-selector"
 import { DesignSelector } from "@/components/design-selector"
 import BackupManager from "@/components/backup-manager"
 import { PriceVisibilityToggle } from "@/components/price-visibility-toggle"
+import { NavigationManager } from "@/components/navigation-manager"
 import { useAdminAuth } from "@/hooks/use-admin-auth"
 import { useRouter } from "next/navigation"
 import { AdminLoginModal } from "@/components/admin-login-modal"
@@ -962,6 +963,12 @@ export default function AdminPage() {
                        loadInitialConfig()
                      }}
                    />
+                 </div>
+
+                 <Separator />
+
+                 <div className="space-y-4">
+                   <NavigationManager />
                  </div>
                </CardContent>
              </Card>

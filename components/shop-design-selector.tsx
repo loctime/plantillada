@@ -23,12 +23,14 @@ interface ShopDesignSelectorProps {
   selectedDesign?: string
   onDesignSelect: (design: Design) => void
   className?: string
+  fullWidth?: boolean
 }
 
 export function ShopDesignSelector({ 
   selectedDesign, 
   onDesignSelect, 
-  className = "" 
+  className = "",
+  fullWidth = false
 }: ShopDesignSelectorProps) {
   const [isOpen, setIsOpen] = useState(false)
 
@@ -48,7 +50,7 @@ export function ShopDesignSelector({
         <Button 
           variant="outline" 
           size="sm" 
-          className={`${className}`}
+          className={`${className} ${fullWidth ? 'w-full' : ''}`}
         >
           <Palette className="h-4 w-4 mr-2" />
           {currentDesign ? currentDesign.name : "Diseños"}
