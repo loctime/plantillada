@@ -43,7 +43,7 @@ interface CategoriesSectionProps {
   availableProducts: Product[]
   showAddButton?: boolean
   onShowAddModal?: () => void
-  onAddToCart?: (product: Product) => void
+  onAddToCart?: (product: Product, selectedOptions?: any, selectedAddons?: any[]) => void
   onUpdateCategory?: (categoryId: string, updates: Partial<Category>) => void
   onUpdateProduct?: (categoryId: string, productId: string, updates: Partial<Product>) => void
   onDeleteProduct?: (categoryId: string, productId: string) => void
@@ -82,6 +82,12 @@ export function CategoriesSection({
   const [editingProduct, setEditingProduct] = useState<string | null>(null)
   const [editingProductData, setEditingProductData] = useState<Partial<Product>>({})
   const { isAdminMode } = useAdmin()
+
+  // Estados para el modal de opciones personalizables
+  const [showOptionsModal, setShowOptionsModal] = useState(false)
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
+  const [selectedOptions, setSelectedOptions] = useState<{[key: string]: string}>({})
+  const [selectedAddons, setSelectedAddons] = useState<{[key: string]: boolean}>({})
 
   const activeCategories = categories.filter(c => c.isActive)
 
@@ -229,6 +235,70 @@ export function CategoriesSection({
     if (onDeleteProduct) {
       await onDeleteProduct(categoryId, productId)
     }
+  }
+
+  // Función para manejar el clic en "Agregar al Carrito"
+  const handleAddToCart = (product: Product) => {
+    // Si el producto tiene opciones, mostrar el modal de opciones
+    if (product.options && Object.values(product.options).some(opt => opt)) {
+      setSelectedProduct(product)
+      setSelectedOptions({})
+      setSelectedAddons({})
+      setShowOptionsModal(true)
+    } else {
+      // Si no tiene opciones, agregar directamente al carrito
+      onAddToCart?.(product)
+    }
+  }
+
+  // Función para confirmar las opciones seleccionadas
+  const handleConfirmOptions = () => {
+    if (!selectedProduct) return
+
+    const formattedOptions: any = {}
+    const formattedAddons: any[] = []
+
+    // Procesar opciones seleccionadas
+    Object.keys(selectedOptions).forEach(key => {
+      if (selectedOptions[key]) {
+        formattedOptions[key] = selectedOptions[key]
+      }
+    })
+
+    // Procesar adicionales seleccionados
+    Object.keys(selectedAddons).forEach(addonName => {
+      if (selectedAddons[addonName]) {
+        const addon = selectedProduct.addons?.find(a => a.name === addonName)
+        if (addon) {
+          formattedAddons.push(addon)
+        }
+      }
+    })
+
+    onAddToCart?.(selectedProduct, formattedOptions, formattedAddons)
+    setShowOptionsModal(false)
+    setSelectedProduct(null)
+    setSelectedOptions({})
+    setSelectedAddons({})
+  }
+
+  // Función para calcular el precio total con adicionales
+  const calculateTotalPrice = () => {
+    if (!selectedProduct) return 0
+    
+    let total = selectedProduct.price
+    
+    // Agregar precio de adicionales seleccionados
+    Object.keys(selectedAddons).forEach(addonName => {
+      if (selectedAddons[addonName]) {
+        const addon = selectedProduct.addons?.find(a => a.name === addonName)
+        if (addon) {
+          total += addon.price
+        }
+      }
+    })
+    
+    return total
   }
 
   return (
@@ -487,6 +557,13 @@ export function CategoriesSection({
                                       </div>
                                       <span className="text-xs text-gray-500">({product.reviews || 0})</span>
                                     </div>
+                                    
+                                    {/* Indicador de opciones personalizables */}
+                                    {product.options && Object.values(product.options).some(opt => opt) && (
+                                      <div className="flex items-center space-x-1 mt-1">
+                                        <span className="text-xs text-blue-600">⚙️ Opciones personalizables disponibles</span>
+                                      </div>
+                                    )}
                                   </div>
                                   
                                   {/* Precio y acciones */}
@@ -528,7 +605,7 @@ export function CategoriesSection({
                                         </>
                                       )}
                                       <button 
-                                        onClick={() => onAddToCart?.(product)}
+                                        onClick={() => handleAddToCart(product)}
                                         className="bg-pink-500 hover:bg-pink-600 text-white px-3 py-1.5 rounded-md text-sm font-medium transition-colors flex items-center space-x-1"
                                       >
                                         <ShoppingCart className="h-3 w-3" />
@@ -818,6 +895,125 @@ export function CategoriesSection({
           existingCategories={categories.map(c => c.name)}
         />
       )}
+
+             {/* Modal de opciones personalizables */}
+       {showOptionsModal && selectedProduct && (
+         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+           <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+             <div className="p-6">
+               <div className="flex justify-between items-center mb-4">
+                 <h3 className="text-lg font-semibold text-gray-900">
+                   Opciones para {selectedProduct.name}
+                 </h3>
+                 <button
+                   onClick={() => setShowOptionsModal(false)}
+                   className="text-gray-400 hover:text-gray-600"
+                 >
+                   <X className="h-5 w-5" />
+                 </button>
+               </div>
+
+               <div className="space-y-4">
+                 {/* Opciones */}
+                 {selectedProduct.options && Object.entries(selectedProduct.options).map(([key, optionName]) => {
+                   if (!optionName) return null
+                   const varietyKey = key.replace('option', 'variety') as keyof typeof selectedProduct.varieties
+                   const varieties = selectedProduct.varieties?.[varietyKey as keyof typeof selectedProduct.varieties] as string[]
+                   
+                   if (!varieties || varieties.length === 0) return null
+                   
+                   return (
+                     <div key={key} className="mb-4">
+                       <label className="block text-sm font-medium text-gray-700 mb-2">
+                         {optionName}
+                       </label>
+                       <div className="space-y-2">
+                         {varieties.map((variety) => (
+                           <label key={variety} className="flex items-center">
+                             <input
+                               type="radio"
+                               name={key}
+                               value={variety}
+                               checked={selectedOptions[key] === variety}
+                               onChange={(e) => setSelectedOptions(prev => ({
+                                 ...prev,
+                                 [key]: e.target.value
+                               }))}
+                               className="mr-2"
+                             />
+                             <span className="text-sm">{variety}</span>
+                           </label>
+                         ))}
+                       </div>
+                     </div>
+                   )
+                 })}
+
+                 {/* Adicionales */}
+                 {selectedProduct.addons && selectedProduct.addons.length > 0 && (
+                   <div className="mb-4">
+                     <label className="block text-sm font-medium text-gray-700 mb-2">
+                       Adicionales
+                     </label>
+                     <div className="space-y-2">
+                       {selectedProduct.addons.map((addon) => (
+                         <label key={addon.name} className="flex items-center justify-between">
+                           <div className="flex items-center">
+                             <input
+                               type="checkbox"
+                               checked={selectedAddons[addon.name] || false}
+                               onChange={(e) => setSelectedAddons(prev => ({
+                                 ...prev,
+                                 [addon.name]: e.target.checked
+                               }))}
+                               className="mr-2"
+                             />
+                             <span className="text-sm">{addon.name}</span>
+                           </div>
+                           <span className="text-sm font-medium text-blue-600">
+                             +${addon.price.toFixed(2)}
+                           </span>
+                         </label>
+                       ))}
+                     </div>
+                   </div>
+                 )}
+
+                 {/* Precio total */}
+                 <div className="border-t pt-4 mb-4">
+                   <div className="flex justify-between items-center">
+                     <span className="font-medium">Total:</span>
+                     <span className="text-lg font-bold text-blue-600">
+                       ${calculateTotalPrice().toFixed(2)}
+                     </span>
+                   </div>
+                 </div>
+
+                 {/* Botones */}
+                 <div className="flex gap-2">
+                   <Button
+                     variant="outline"
+                     onClick={() => {
+                       setShowOptionsModal(false)
+                       setSelectedOptions({})
+                       setSelectedAddons({})
+                     }}
+                     className="flex-1"
+                   >
+                     Cancelar
+                   </Button>
+                   <Button
+                     onClick={handleConfirmOptions}
+                     className="flex-1"
+                   >
+                     Agregar al Carrito
+                   </Button>
+                 </div>
+               </div>
+             </div>
+           </div>
+         </div>
+       )}
     </div>
   )
 }
