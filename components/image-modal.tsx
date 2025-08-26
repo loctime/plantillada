@@ -72,11 +72,17 @@ export function ImageModal({
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-      <div className={cn(
-        "bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto",
-        className
-      )}>
+    <div 
+      className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+      onClick={handleCancel}
+    >
+      <div 
+        className={cn(
+          "bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto",
+          className
+        )}
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
         <div className="flex justify-between items-center p-6 border-b">
           <h2 className="text-xl font-bold">{title}</h2>

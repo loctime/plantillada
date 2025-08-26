@@ -381,8 +381,14 @@ export function ProductEditModal({
 
         {/* Modal de subida de imagen */}
         {showImageUpload && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+          <div 
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+            onClick={() => setShowImageUpload(false)}
+          >
+            <div 
+              className="bg-white rounded-lg p-6 max-w-md w-full mx-4"
+              onClick={(e) => e.stopPropagation()}
+            >
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold">Subir Imagen</h3>
                 <Button
