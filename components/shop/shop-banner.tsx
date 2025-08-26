@@ -105,12 +105,15 @@ export function ShopBanner({
   useEffect(() => {
     if (!autoPlay || activeBanners.length <= 1) return
 
+    const currentBanner = activeBanners[currentIndex]
+    const displayTime = currentBanner.displayTime || interval
+
     const timer = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % activeBanners.length)
-    }, interval)
+    }, displayTime * 1000) // Convertir segundos a milisegundos
 
     return () => clearInterval(timer)
-  }, [autoPlay, interval, activeBanners.length])
+  }, [autoPlay, interval, activeBanners.length, currentIndex, activeBanners])
 
   const goToSlide = (index: number) => {
     setCurrentIndex(index)
@@ -203,7 +206,7 @@ export function ShopBanner({
     // Efectos visuales
     if (banner.shadow) classes.push('shadow-2xl')
     if (banner.blur) classes.push('backdrop-blur-sm')
-    if (banner.scale) classes.push('hover:scale-105')
+    if (banner.scale) classes.push('transform transition-transform duration-300 hover:scale-105')
 
     return classes.join(' ')
   }
@@ -219,6 +222,38 @@ export function ShopBanner({
     }
 
     return styles
+  }
+
+  // Obtener clases de transición
+  const getTransitionClasses = (banner: any) => {
+    const transitionMap: { [key: string]: string } = {
+      fade: 'transition-opacity duration-500',
+      slide: 'transition-transform duration-500',
+      zoom: 'transition-transform duration-500',
+      flip: 'transition-transform duration-500'
+    }
+    return transitionMap[banner.transitionEffect] || 'transition-opacity duration-500'
+  }
+
+  // Obtener clases de animación del texto
+  const getTextAnimationClasses = (banner: any, element: 'title' | 'subtitle' | 'button') => {
+    const animation = banner.textAnimation || 'fadeIn'
+    const delayMap = {
+      title: '',
+      subtitle: 'animation-delay-200',
+      button: 'animation-delay-400'
+    }
+    
+    const animationMap: { [key: string]: string } = {
+      fadeIn: `animate-fade-in ${delayMap[element]}`,
+      slideIn: `animate-slide-in ${delayMap[element]}`,
+      bounce: 'animate-bounce',
+      zoomIn: `animate-zoom-in ${delayMap[element]}`,
+      flipIn: `animate-flip-in ${delayMap[element]}`,
+      none: ''
+    }
+    
+    return animationMap[animation] || animationMap.fadeIn
   }
 
   if (!isVisible || activeBanners.length === 0) {
@@ -273,14 +308,14 @@ export function ShopBanner({
 
             <div className={`max-w-4xl mx-auto relative z-10 ${currentBanner.textPosition === 'left' ? 'ml-8' : currentBanner.textPosition === 'right' ? 'mr-8' : ''}`}>
               <h2 
-                className={`text-xl md:text-2xl font-bold mb-2 ${currentBanner.textAnimation === 'slideIn' ? 'animate-slide-in' : currentBanner.textAnimation === 'bounce' ? 'animate-bounce' : 'animate-fade-in'}`}
+                className={`text-xl md:text-2xl font-bold mb-2 ${getTextAnimationClasses(currentBanner, 'title')}`}
                 style={{ color: currentBanner.textColor || '#ffffff' }}
               >
                 {currentBanner.title}
               </h2>
               {currentBanner.subtitle && (
                 <p 
-                  className={`text-sm md:text-base opacity-90 mb-4 ${currentBanner.textAnimation === 'slideIn' ? 'animate-slide-in-delay' : 'animate-fade-in-delay'}`}
+                  className={`text-sm md:text-base opacity-90 mb-4 ${getTextAnimationClasses(currentBanner, 'subtitle')}`}
                   style={{ color: currentBanner.textColor || '#ffffff' }}
                 >
                   {currentBanner.subtitle}
@@ -290,7 +325,7 @@ export function ShopBanner({
                 <Button
                   variant="secondary"
                   size="sm"
-                  className={`bg-white text-gray-900 hover:bg-gray-100 ${currentBanner.textAnimation === 'slideIn' ? 'animate-slide-in-delay-2' : 'animate-fade-in-delay-2'}`}
+                  className={`bg-white text-gray-900 hover:bg-gray-100 ${getTextAnimationClasses(currentBanner, 'button')}`}
                   onClick={() => {
                     if (currentBanner.ctaUrl && currentBanner.ctaUrl !== '#') {
                       window.location.href = currentBanner.ctaUrl
@@ -527,6 +562,8 @@ export function ShopBanner({
                               <SelectItem value="fadeIn">Aparecer</SelectItem>
                               <SelectItem value="slideIn">Deslizar</SelectItem>
                               <SelectItem value="bounce">Rebotar</SelectItem>
+                              <SelectItem value="zoomIn">Zoom</SelectItem>
+                              <SelectItem value="flipIn">Voltear</SelectItem>
                               <SelectItem value="none">Sin animación</SelectItem>
                             </SelectContent>
                           </Select>
@@ -726,23 +763,35 @@ export function ShopBanner({
           from { transform: translateX(-100%); opacity: 0; }
           to { transform: translateX(0); opacity: 1; }
         }
+        @keyframes zoom-in {
+          from { transform: scale(0.8); opacity: 0; }
+          to { transform: scale(1); opacity: 1; }
+        }
+        @keyframes flip-in {
+          from { transform: rotateY(90deg); opacity: 0; }
+          to { transform: rotateY(0deg); opacity: 1; }
+        }
         .animate-fade-in {
           animation: fade-in 0.5s ease-in-out;
-        }
-        .animate-fade-in-delay {
-          animation: fade-in 0.5s ease-in-out 0.2s both;
-        }
-        .animate-fade-in-delay-2 {
-          animation: fade-in 0.5s ease-in-out 0.4s both;
         }
         .animate-slide-in {
           animation: slide-in 0.6s ease-out;
         }
-        .animate-slide-in-delay {
-          animation: slide-in 0.6s ease-out 0.2s both;
+        .animate-zoom-in {
+          animation: zoom-in 0.5s ease-out;
         }
-        .animate-slide-in-delay-2 {
-          animation: slide-in 0.6s ease-out 0.4s both;
+        .animate-flip-in {
+          animation: flip-in 0.6s ease-out;
+        }
+        .animation-delay-200 {
+          animation-delay: 0.2s;
+        }
+        .animation-delay-400 {
+          animation-delay: 0.4s;
+        }
+        .animation-delay-200,
+        .animation-delay-400 {
+          animation-fill-mode: both;
         }
       `}</style>
     </div>
