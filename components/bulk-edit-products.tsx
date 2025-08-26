@@ -967,16 +967,19 @@ export function BulkEditProducts({
                       <Download className="h-4 w-4 mr-2" />
                       Exportar Excel
                     </Button>
-                    <label className="cursor-pointer">
-                      <input
-                        type="file"
-                        accept=".xlsx,.json"
-                        onChange={importData}
-                        className="hidden"
-                      />
-                      <Button size="sm" variant="outline">
-                        <Upload className="h-4 w-4 mr-2" />
-                        Importar Excel
+                    <input
+                      type="file"
+                      accept=".xlsx,.json"
+                      onChange={importData}
+                      className="hidden"
+                      id="import-excel-input-edit"
+                    />
+                    <label htmlFor="import-excel-input-edit" className="cursor-pointer">
+                      <Button size="sm" variant="outline" asChild>
+                        <span>
+                          <Upload className="h-4 w-4 mr-2" />
+                          Importar Excel
+                        </span>
                       </Button>
                     </label>
                     <Button 
