@@ -85,6 +85,14 @@ export function Cart({
 
   return (
     <>
+      {/* Overlay transparente para detectar clics fuera del carrito */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 z-40"
+          onClick={onClose}
+        />
+      )}
+      
       {/* Barra lateral del carrito */}
       <div 
         className={`fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out ${
