@@ -159,29 +159,53 @@ export function useShop() {
   }, [products, searchTerm, selectedCategory, priceRange, selectedRating, sortBy])
 
   // Funciones del carrito
-  const addToCart = (product: Product) => {
+  const addToCart = (product: Product, selectedOptions?: any, selectedAddons?: any[]) => {
+    // Crear un ID único para el item del carrito que incluya las opciones
+    let cartItemId = product.id
+    let itemName = product.name
+    let itemPrice = product.price
+    
+    // Procesar opciones seleccionadas
+    if (selectedOptions && Object.keys(selectedOptions).length > 0) {
+      const optionsText = Object.entries(selectedOptions)
+        .map(([key, value]) => `${key}: ${value}`)
+        .join(', ')
+      itemName += ` (${optionsText})`
+      cartItemId += `-${JSON.stringify(selectedOptions)}`
+    }
+    
+    // Procesar adicionales seleccionados
+    if (selectedAddons && selectedAddons.length > 0) {
+      const addonsText = selectedAddons.map(addon => addon.name).join(', ')
+      itemName += ` [+${addonsText}]`
+      itemPrice += selectedAddons.reduce((total, addon) => total + addon.price, 0)
+      cartItemId += `-addons-${selectedAddons.map(a => a.name).join(',')}`
+    }
+    
     setCartItems(prev => {
-      const existingItem = prev.find(item => item.id === product.id)
+      const existingItem = prev.find(item => item.id === cartItemId)
       if (existingItem) {
         return prev.map(item =>
-          item.id === product.id
+          item.id === cartItemId
             ? { ...item, quantity: item.quantity + 1 }
             : item
         )
       } else {
         return [...prev, {
-          id: product.id,
-          name: product.name,
-          price: product.price,
+          id: cartItemId,
+          name: itemName,
+          price: itemPrice,
           quantity: 1,
-          image: product.image
+          image: product.image,
+          selectedOptions,
+          selectedAddons
         }]
       }
     })
     
     toast({
       title: 'Producto agregado',
-      description: `${product.name} se agregó al carrito`
+      description: `${itemName} se agregó al carrito`
     })
   }
 

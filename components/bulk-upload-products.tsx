@@ -75,6 +75,16 @@ export function BulkUploadProducts({ onProductsUploaded, onClose, prefillCategor
     { key: 'categoria', label: 'Categoría', width: 150, minWidth: 100, sortable: true },
     { key: 'precio', label: 'Precio *', width: 100, minWidth: 80, sortable: true },
     { key: 'marca', label: 'Marca', width: 120, minWidth: 80, sortable: true },
+    { key: 'opciones1', label: 'Opciones 1', width: 150, minWidth: 100, sortable: false },
+    { key: 'variedades1', label: 'Variedades 1', width: 200, minWidth: 150, sortable: false },
+    { key: 'opciones2', label: 'Opciones 2', width: 150, minWidth: 100, sortable: false },
+    { key: 'variedades2', label: 'Variedades 2', width: 200, minWidth: 150, sortable: false },
+    { key: 'opciones3', label: 'Opciones 3', width: 150, minWidth: 100, sortable: false },
+    { key: 'variedades3', label: 'Variedades 3', width: 200, minWidth: 150, sortable: false },
+    { key: 'opciones4', label: 'Opciones 4', width: 150, minWidth: 100, sortable: false },
+    { key: 'variedades4', label: 'Variedades 4', width: 200, minWidth: 150, sortable: false },
+    { key: 'adicionales', label: 'Adicionales', width: 200, minWidth: 150, sortable: false },
+    { key: 'precioAdicional', label: 'Precio Adicional', width: 120, minWidth: 80, sortable: true },
     { key: 'urlImagen', label: 'URL Imagen', width: 200, minWidth: 150, sortable: false },
     { key: 'rating', label: 'Rating', width: 80, minWidth: 60, sortable: true },
     { key: 'reviews', label: 'Reviews', width: 80, minWidth: 60, sortable: true },
@@ -91,6 +101,16 @@ export function BulkUploadProducts({ onProductsUploaded, onClose, prefillCategor
       categoria: prefillCategory || '',
       precio: '',
       marca: '',
+      opciones1: '',
+      variedades1: '',
+      opciones2: '',
+      variedades2: '',
+      opciones3: '',
+      variedades3: '',
+      opciones4: '',
+      variedades4: '',
+      adicionales: '',
+      precioAdicional: '',
       urlImagen: '/placeholder.jpg',
       rating: '4.0',
       reviews: '0',
@@ -108,6 +128,16 @@ export function BulkUploadProducts({ onProductsUploaded, onClose, prefillCategor
       categoria: prefillCategory || '',
       precio: '',
       marca: '',
+      opciones1: '',
+      variedades1: '',
+      opciones2: '',
+      variedades2: '',
+      opciones3: '',
+      variedades3: '',
+      opciones4: '',
+      variedades4: '',
+      adicionales: '',
+      precioAdicional: '',
       urlImagen: '/placeholder.jpg',
       rating: '4.0',
       reviews: '0',
@@ -193,6 +223,16 @@ export function BulkUploadProducts({ onProductsUploaded, onClose, prefillCategor
       categoria: prefillCategory || '',
       precio: '',
       marca: '',
+      opciones1: '',
+      variedades1: '',
+      opciones2: '',
+      variedades2: '',
+      opciones3: '',
+      variedades3: '',
+      opciones4: '',
+      variedades4: '',
+      adicionales: '',
+      precioAdicional: '',
       urlImagen: '/placeholder.jpg',
       rating: '4.0',
       reviews: '0',
@@ -298,7 +338,7 @@ export function BulkUploadProducts({ onProductsUploaded, onClose, prefillCategor
       e.preventDefault()
       
       const currentIndex = products.findIndex(p => p.id === productId)
-      const fields = ['nombre', 'descripcion', 'categoria', 'precio', 'marca', 'urlImagen', 'rating', 'reviews', 'caracteristicas']
+      const fields = ['nombre', 'descripcion', 'categoria', 'precio', 'marca', 'opciones1', 'variedades1', 'opciones2', 'variedades2', 'opciones3', 'variedades3', 'opciones4', 'variedades4', 'adicionales', 'precioAdicional', 'urlImagen', 'rating', 'reviews', 'caracteristicas']
       const currentFieldIndex = fields.indexOf(field)
       
       let nextProductIndex = currentIndex
@@ -398,6 +438,16 @@ export function BulkUploadProducts({ onProductsUploaded, onClose, prefillCategor
                 categoria: '',
                 precio: '',
                 marca: '',
+                opciones1: '',
+                variedades1: '',
+                opciones2: '',
+                variedades2: '',
+                opciones3: '',
+                variedades3: '',
+                opciones4: '',
+                variedades4: '',
+                adicionales: '',
+                precioAdicional: '',
                 urlImagen: '/placeholder.jpg',
                 rating: '4.0',
                 reviews: '0',
@@ -494,7 +544,25 @@ export function BulkUploadProducts({ onProductsUploaded, onClose, prefillCategor
         category: product.categoria?.trim().toLowerCase() || 'general',
         inStock: product.enStock !== false,
         description: product.descripcion?.trim() || '',
-        features: product.caracteristicas ? product.caracteristicas.split(',').map((f: string) => f.trim()).filter(Boolean) : []
+        features: product.caracteristicas ? product.caracteristicas.split(',').map((f: string) => f.trim()).filter(Boolean) : [],
+        // Procesar opciones y variedades
+        options: {
+          option1: product.opciones1?.trim() || undefined,
+          option2: product.opciones2?.trim() || undefined,
+          option3: product.opciones3?.trim() || undefined,
+          option4: product.opciones4?.trim() || undefined
+        },
+        varieties: {
+          variety1: product.variedades1 ? product.variedades1.split(',').map((v: string) => v.trim()).filter(Boolean) : undefined,
+          variety2: product.variedades2 ? product.variedades2.split(',').map((v: string) => v.trim()).filter(Boolean) : undefined,
+          variety3: product.variedades3 ? product.variedades3.split(',').map((v: string) => v.trim()).filter(Boolean) : undefined,
+          variety4: product.variedades4 ? product.variedades4.split(',').map((v: string) => v.trim()).filter(Boolean) : undefined
+        },
+        // Procesar adicionales
+        addons: product.adicionales ? product.adicionales.split(',').map((addon: string) => ({
+          name: addon.trim(),
+          price: parseFloat(product.precioAdicional) || 0
+        })).filter((addon: { name: string; price: number }) => addon.name) : undefined
       }))
 
     if (formattedProducts.length === 0) {
@@ -547,7 +615,7 @@ export function BulkUploadProducts({ onProductsUploaded, onClose, prefillCategor
       let bValue = b[config.key]
 
       // Manejar valores especiales
-      if (config.key === 'precio' || config.key === 'rating' || config.key === 'reviews') {
+      if (config.key === 'precio' || config.key === 'precioAdicional' || config.key === 'rating' || config.key === 'reviews') {
         aValue = parseFloat(aValue) || 0
         bValue = parseFloat(bValue) || 0
       } else if (config.key === 'enStock') {
@@ -667,6 +735,16 @@ export function BulkUploadProducts({ onProductsUploaded, onClose, prefillCategor
       { key: 'categoria', label: 'Categoría', width: 150, minWidth: 100, sortable: true },
       { key: 'precio', label: 'Precio *', width: 100, minWidth: 80, sortable: true },
       { key: 'marca', label: 'Marca', width: 120, minWidth: 80, sortable: true },
+      { key: 'opciones1', label: 'Opciones 1', width: 150, minWidth: 100, sortable: false },
+      { key: 'variedades1', label: 'Variedades 1', width: 200, minWidth: 150, sortable: false },
+      { key: 'opciones2', label: 'Opciones 2', width: 150, minWidth: 100, sortable: false },
+      { key: 'variedades2', label: 'Variedades 2', width: 200, minWidth: 150, sortable: false },
+      { key: 'opciones3', label: 'Opciones 3', width: 150, minWidth: 100, sortable: false },
+      { key: 'variedades3', label: 'Variedades 3', width: 200, minWidth: 150, sortable: false },
+      { key: 'opciones4', label: 'Opciones 4', width: 150, minWidth: 100, sortable: false },
+      { key: 'variedades4', label: 'Variedades 4', width: 200, minWidth: 150, sortable: false },
+      { key: 'adicionales', label: 'Adicionales', width: 200, minWidth: 150, sortable: false },
+      { key: 'precioAdicional', label: 'Precio Adicional', width: 120, minWidth: 80, sortable: true },
       { key: 'urlImagen', label: 'URL Imagen', width: 200, minWidth: 150, sortable: false },
       { key: 'rating', label: 'Rating', width: 80, minWidth: 60, sortable: true },
       { key: 'reviews', label: 'Reviews', width: 80, minWidth: 60, sortable: true },
@@ -689,12 +767,21 @@ export function BulkUploadProducts({ onProductsUploaded, onClose, prefillCategor
       
       // Preparar datos de productos para Excel
       const productsData = products.map(product => ({
-        'ID': product.id,
         'Nombre': product.nombre || '',
         'Descripción': product.descripcion || '',
         'Categoría': product.categoria || '',
         'Precio': product.precio || '',
         'Marca': product.marca || '',
+        'Opciones 1': product.opciones1 || '',
+        'Variedades 1': product.variedades1 || '',
+        'Opciones 2': product.opciones2 || '',
+        'Variedades 2': product.variedades2 || '',
+        'Opciones 3': product.opciones3 || '',
+        'Variedades 3': product.variedades3 || '',
+        'Opciones 4': product.opciones4 || '',
+        'Variedades 4': product.variedades4 || '',
+        'Adicionales': product.adicionales || '',
+        'Precio Adicional': product.precioAdicional || '',
         'URL Imagen': product.urlImagen || '',
         'Rating': product.rating || '',
         'Reviews': product.reviews || '',
@@ -750,12 +837,22 @@ export function BulkUploadProducts({ onProductsUploaded, onClose, prefillCategor
         if (productsSheet) {
           const productsData = XLSX.utils.sheet_to_json(productsSheet)
           importedProducts = productsData.map((row: any) => ({
-            id: row['ID'] || `temp-${Date.now()}-${Math.random()}`,
+            id: `temp-${Date.now()}-${Math.random()}`,
             nombre: row['Nombre'] || '',
             descripcion: row['Descripción'] || '',
             categoria: row['Categoría'] || prefillCategory || '',
             precio: row['Precio']?.toString() || '',
             marca: row['Marca'] || '',
+            opciones1: row['Opciones 1'] || '',
+            variedades1: row['Variedades 1'] || '',
+            opciones2: row['Opciones 2'] || '',
+            variedades2: row['Variedades 2'] || '',
+            opciones3: row['Opciones 3'] || '',
+            variedades3: row['Variedades 3'] || '',
+            opciones4: row['Opciones 4'] || '',
+            variedades4: row['Variedades 4'] || '',
+            adicionales: row['Adicionales'] || '',
+            precioAdicional: row['Precio Adicional']?.toString() || '',
             urlImagen: row['URL Imagen'] || '/placeholder.jpg',
             rating: row['Rating']?.toString() || '4.0',
             reviews: row['Reviews']?.toString() || '0',
@@ -1016,6 +1113,8 @@ export function BulkUploadProducts({ onProductsUploaded, onClose, prefillCategor
                   <p>💡 <strong>Consejo:</strong> Usa las flechas del teclado para navegar entre campos. Enter para nueva fila. Pega múltiples líneas para crear filas automáticamente. <strong>Ctrl+Z</strong> para deshacer y <strong>Ctrl+Y</strong> para rehacer.</p>
                   <p>📊 <strong>Ordenamiento:</strong> Haz clic en los encabezados de las columnas para ordenar. <strong>Redimensionamiento:</strong> Arrastra el borde derecho de los encabezados para ajustar el ancho de las columnas.</p>
                   <p>📁 <strong>Importar/Exportar:</strong> Los botones de Excel crean archivos con una hoja "Productos". También puedes importar archivos JSON existentes.</p>
+                  <p>⚙️ <strong>Opciones y Variedades:</strong> En "Opciones X" escribe el nombre de la opción (ej: "Tipo de masa"). En "Variedades X" escribe las opciones separadas por coma (ej: "Masa fina, Masa gruesa, Media masa").</p>
+                  <p>➕ <strong>Adicionales:</strong> En "Adicionales" escribe los nombres separados por coma (ej: "Queso extra, Aceitunas"). En "Precio Adicional" escribe el precio que se sumará por cada adicional.</p>
                 </div>
               </CardContent>
             </Card>
