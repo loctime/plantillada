@@ -28,7 +28,7 @@ export function AdminToggle() {
 
   return (
     <TooltipProvider>
-      <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2">
+      <div className="fixed bottom-4 left-4 z-50 flex flex-col gap-2">
                  {/* Fila superior: Botón Admin y Estado de autenticación */}
          <div className="flex items-center gap-2">
            {/* Toggle del modo admin */}

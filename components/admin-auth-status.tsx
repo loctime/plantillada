@@ -40,21 +40,8 @@ export function AdminAuthStatus() {
   const timeRemaining = getSessionTimeRemaining()
 
   return (
-    <div className="flex items-center gap-2 bg-white/90 backdrop-blur-sm rounded-lg px-3 py-2 shadow-lg border">
-      <div className="flex items-center gap-2">
-        <User className="h-4 w-4 text-emerald-600" />
-        <span className="text-sm font-medium">Admin</span>
-        <Badge variant="secondary" className="text-xs">
-          Activo
-        </Badge>
-      </div>
+    <div className="flex items-center gap-2 bg-white/90 backdrop-blur-sm rounded-lg px-2 py-2 shadow-lg border">
       
-      {timeRemaining && (
-        <div className="flex items-center gap-1 text-xs text-muted-foreground">
-          <Clock className="h-3 w-3" />
-          <span>{timeRemaining}</span>
-        </div>
-      )}
       
       <Button
         size="sm"
