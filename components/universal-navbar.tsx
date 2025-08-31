@@ -7,6 +7,7 @@ import { DynamicNavigation } from "@/components/dynamic-navigation"
 import { ThemeSwitch } from "@/components/theme-switch"
 import { DesignQuickPicker } from "@/components/design-quick-picker"
 import { ScheduleButton } from "@/components/schedule-dialog"
+import { SimplifiedColorEditor } from "@/components/simplified-color-editor"
 import { useAdmin } from "@/lib/admin-context"
 import { EditableText } from "@/components/editable-text"
 
@@ -51,6 +52,7 @@ export function UniversalNavbar({
         {/* Lado derecho: Botones y controles */}
         <div className="flex items-center gap-3">
           <ThemeSwitch />
+          <SimplifiedColorEditor />
           
           {showScheduleButton && (
             <ScheduleButton 

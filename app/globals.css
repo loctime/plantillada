@@ -38,25 +38,25 @@
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
   
-  /* Variables CSS personalizadas para el tema */
-  --background-color: #ffffff;
-  --section-background: #f8fafc;
-  --navbar-background: #ffffff;
-  --navbar-background-transparent: rgba(255, 255, 255, 0.8);
-  --text-color: #1e293b;
-  --accent-color: #10b981;
-  --primary-button-color: #10b981;
-  --secondary-button-color: #3b82f6;
-  --outline-button-color: #6b7280;
+  /* Variables CSS personalizadas para el tema simplificado */
+  --background-color: #f5f5dc;  /* beige */
+  --section-background: #f5f5dc;  /* beige */
+  --navbar-background: #f5f5dc;  /* beige */
+  --navbar-background-transparent: rgba(245, 245, 220, 0.8);
+  --text-color: #000000;  /* negro */
+  --accent-color: #87ceeb;  /* celeste */
+  --primary-button-color: #87ceeb;  /* celeste */
+  --secondary-button-color: #90ee90;  /* verde claro */
+  --outline-button-color: #0000ff;  /* azul */
   
   /* Nuevas variables CSS expandidas */
-  --card-background: #ffffff;
-  --card-foreground: #1e293b;
-  --popover-background: #ffffff;
-  --popover-foreground: #1e293b;
-  --muted-background: #f8fafc;
-  --muted-foreground: #64748b;
-  --border-color: #e2e8f0;
+  --card-background: #f5f5dc;  /* beige */
+  --card-foreground: #000000;  /* negro */
+  --popover-background: #f5f5dc;  /* beige */
+  --popover-foreground: #000000;  /* negro */
+  --muted-background: #f5f5dc;  /* beige */
+  --muted-foreground: #000000;  /* negro */
+  --border-color: #0000ff;  /* azul */
   --input-background: #ffffff;
   --ring-color: #3b82f6;
   
@@ -138,25 +138,25 @@
   --sidebar-border: oklch(0.269 0 0);
   --sidebar-ring: oklch(0.439 0 0);
   
-  /* Variables CSS personalizadas para el tema oscuro */
-  --background-color: #0f172a;
-  --section-background: #1e293b;
-  --navbar-background: #0f172a;
-  --navbar-background-transparent: rgba(15, 23, 42, 0.8);
-  --text-color: #f1f5f9;
-  --accent-color: #10b981;
-  --primary-button-color: #10b981;
-  --secondary-button-color: #3b82f6;
-  --outline-button-color: #9ca3af;
+  /* Variables CSS personalizadas para el tema oscuro simplificado */
+  --background-color: #2f2f2f;  /* negro mate */
+  --section-background: #2f2f2f;  /* negro mate */
+  --navbar-background: #2f2f2f;  /* negro mate */
+  --navbar-background-transparent: rgba(47, 47, 47, 0.8);
+  --text-color: #ffffff;  /* blanco */
+  --accent-color: #4a90e2;  /* azul */
+  --primary-button-color: #4a90e2;  /* azul */
+  --secondary-button-color: #6b8e23;  /* verde oliva */
+  --outline-button-color: #8a2be2;  /* violeta */
   
   /* Nuevas variables CSS expandidas para modo oscuro */
-  --card-background: #1e293b;
-  --card-foreground: #f1f5f9;
-  --popover-background: #1e293b;
-  --popover-foreground: #f1f5f9;
-  --muted-background: #334155;
-  --muted-foreground: #94a3b8;
-  --border-color: #334155;
+  --card-background: #2f2f2f;  /* negro mate */
+  --card-foreground: #ffffff;  /* blanco */
+  --popover-background: #2f2f2f;  /* negro mate */
+  --popover-foreground: #ffffff;  /* blanco */
+  --muted-background: #2f2f2f;  /* negro mate */
+  --muted-foreground: #ffffff;  /* blanco */
+  --border-color: #8a2be2;  /* violeta */
   --input-background: #1e293b;
   --ring-color: #3b82f6;
   

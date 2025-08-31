@@ -4,7 +4,9 @@ import {
   ShoppingBag,
   Utensils,
   Wrench,
-  Settings
+  Settings,
+  Heart,
+  ChefHat
 } from "lucide-react"
 import { Config } from "./config-loader"
 
@@ -129,6 +131,74 @@ export const shopDesigns: Design[] = [
       '--secondary-button-color': '#6b7280',
       '--outline-button-color': '#8b5cf6',
       '--heading-color': '#374151'
+    }
+  },
+  {
+    id: 'moda-shop',
+    name: 'Moda Shop',
+    description: 'Diseño elegante para tiendas de moda y accesorios',
+    icon: <Heart className="h-6 w-6" />,
+    category: 'shop',
+    colorScheme: {
+      primary: '#ec4899',
+      secondary: '#fbbf24',
+      accent: '#be185d'
+    },
+    features: [
+      'Colores rosas y dorados',
+      'Layout horizontal con expansores',
+      'Diseño elegante y sofisticado',
+      'Optimizado para moda'
+    ],
+    status: 'active',
+    cssVariables: {
+      '--primary': '#ec4899',
+      '--secondary': '#fbbf24',
+      '--accent': '#be185d',
+      '--font-family': 'Inter, sans-serif',
+      '--background-color': '#fdf2f8',
+      '--section-background': '#ffffff',
+      '--navbar-background': '#ec4899',
+      '--text-color': '#374151',
+      '--accent-color': '#fbbf24',
+      '--primary-button-color': '#ec4899',
+      '--secondary-button-color': '#fbbf24',
+      '--outline-button-color': '#ec4899',
+      '--heading-color': '#374151'
+    }
+  },
+  {
+    id: 'restaurant-shop',
+    name: 'Restaurant Shop',
+    description: 'Diseño especializado para restaurantes y menús de comida',
+    icon: <ChefHat className="h-6 w-6" />,
+    category: 'shop',
+    colorScheme: {
+      primary: '#dc2626',
+      secondary: '#fbbf24',
+      accent: '#059669'
+    },
+    features: [
+      'Colores apetitosos rojo y amarillo',
+      'Layout de menú vertical',
+      'Diseño optimizado para restaurantes',
+      'Estilo de menú de comida'
+    ],
+    status: 'active',
+    cssVariables: {
+      '--primary': '#dc2626',
+      '--secondary': '#fbbf24',
+      '--accent': '#059669',
+      '--font-family': 'Inter, sans-serif',
+      '--background-color': '#fef3c7',
+      '--section-background': '#ffffff',
+      '--navbar-background': '#dc2626',
+      '--text-color': '#1f2937',
+      '--accent-color': '#fbbf24',
+      '--primary-button-color': '#dc2626',
+      '--secondary-button-color': '#fbbf24',
+      '--outline-button-color': '#dc2626',
+      '--heading-color': '#1f2937'
     }
   }
 ]

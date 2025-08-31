@@ -118,10 +118,10 @@ export async function POST(request: NextRequest) {
     )
   }
 }
-
 // Configurar límites para archivos grandes
 export const config = {
   api: {
     bodyParser: false,
   },
 }
+

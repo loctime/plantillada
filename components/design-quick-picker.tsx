@@ -31,30 +31,53 @@ export function DesignQuickPicker({ templateType = "landing", fullWidth = false 
       // Aplicación visual inmediata de variables CSS del diseño
       applyDesignToDocument(design)
 
+      // Construir colores simplificados desde el diseño seleccionado
+      const buildSimplifiedColorsFromDesign = (d: any) => {
+        const scheme = d?.colorScheme || { primary: '#10b981', secondary: '#3b82f6', accent: '#10b981' }
+        return {
+          light: {
+            primary: '#f5f5dc',      // beige por defecto
+            secondary: scheme.secondary || '#87ceeb',  // usar el secundario del diseño
+            tertiary: scheme.primary || '#90ee90',     // usar el primario del diseño
+            border1: '#0000ff',      // azul por defecto
+            border2: '#000000',      // negro por defecto
+            text: '#000000'          // negro por defecto
+          },
+          dark: {
+            primary: '#2f2f2f',      // negro mate por defecto
+            secondary: scheme.secondary || '#4a90e2',  // usar el secundario del diseño
+            tertiary: scheme.primary || '#6b8e23',     // usar el primario del diseño
+            border1: '#8a2be2',      // violeta por defecto
+            border2: '#0000ff',      // azul por defecto
+            text: '#ffffff'          // blanco por defecto
+          }
+        }
+      }
+
       // Construir tema base desde el diseño seleccionado
       const buildBaseThemeFromDesign = (d: any) => {
         const scheme = d?.colorScheme || { primary: '#10b981', secondary: '#3b82f6', accent: '#10b981' }
         return {
           light: {
-            backgroundColor: '#ffffff',
-            sectionBackground: '#f8fafc',
-            navbarBackground: '#ffffff',
-            textColor: '#1e293b',
-            accentColor: scheme.accent,
-            primaryButtonColor: scheme.primary,
-            secondaryButtonColor: scheme.secondary,
-            outlineButtonColor: scheme.secondary,
+            backgroundColor: '#f5f5dc',
+            sectionBackground: '#f5f5dc',
+            navbarBackground: '#f5f5dc',
+            textColor: '#000000',
+            accentColor: scheme.secondary || '#87ceeb',
+            primaryButtonColor: scheme.secondary || '#87ceeb',
+            secondaryButtonColor: scheme.primary || '#90ee90',
+            outlineButtonColor: '#0000ff',
             headingColor: undefined
           },
           dark: {
-            backgroundColor: '#0f172a',
-            sectionBackground: '#1e293b',
-            navbarBackground: '#0f172a',
-            textColor: '#f1f5f9',
-            accentColor: scheme.accent,
-            primaryButtonColor: scheme.primary,
-            secondaryButtonColor: scheme.secondary,
-            outlineButtonColor: '#9ca3af',
+            backgroundColor: '#2f2f2f',
+            sectionBackground: '#2f2f2f',
+            navbarBackground: '#2f2f2f',
+            textColor: '#ffffff',
+            accentColor: scheme.secondary || '#4a90e2',
+            primaryButtonColor: scheme.secondary || '#4a90e2',
+            secondaryButtonColor: scheme.primary || '#6b8e23',
+            outlineButtonColor: '#8a2be2',
             headingColor: undefined
           }
         }

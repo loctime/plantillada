@@ -7,26 +7,44 @@
     "calendlyUrl": "https://calendly.com/tu-usuario/sesion",
     "hotmartBaseUrl": "https://pay.hotmart.com"
   },
-  "theme": {
+  "simplifiedColors": {
     "light": {
-      "backgroundColor": "#ffffff",
-      "sectionBackground": "#f8fafc",
-      "navbarBackground": "#ffffff",
-      "textColor": "#1e293b",
-      "accentColor": "#10b981",
-      "primaryButtonColor": "#10b981",
-      "secondaryButtonColor": "#3b82f6",
-      "outlineButtonColor": "#6b7280"
+      "primary": "#f5f5dc",
+      "secondary": "#87ceeb",
+      "tertiary": "#90ee90",
+      "border1": "#0000ff",
+      "border2": "#000000",
+      "text": "#000000"
     },
     "dark": {
-      "backgroundColor": "#0f172a",
-      "sectionBackground": "#1e293b",
-      "navbarBackground": "#0f172a",
-      "textColor": "#f1f5f9",
-      "accentColor": "#10b981",
-      "primaryButtonColor": "#10b981",
-      "secondaryButtonColor": "#3b82f6",
-      "outlineButtonColor": "#9ca3af"
+      "primary": "#2f2f2f",
+      "secondary": "#4a90e2",
+      "tertiary": "#6b8e23",
+      "border1": "#8a2be2",
+      "border2": "#0000ff",
+      "text": "#ffffff"
+    }
+  },
+  "theme": {
+    "light": {
+      "backgroundColor": "#f5f5dc",
+      "sectionBackground": "#f5f5dc",
+      "navbarBackground": "#f5f5dc",
+      "textColor": "#000000",
+      "accentColor": "#87ceeb",
+      "primaryButtonColor": "#87ceeb",
+      "secondaryButtonColor": "#90ee90",
+      "outlineButtonColor": "#0000ff"
+    },
+    "dark": {
+      "backgroundColor": "#2f2f2f",
+      "sectionBackground": "#2f2f2f",
+      "navbarBackground": "#2f2f2f",
+      "textColor": "#ffffff",
+      "accentColor": "#4a90e2",
+      "primaryButtonColor": "#4a90e2",
+      "secondaryButtonColor": "#6b8e23",
+      "outlineButtonColor": "#8a2be2"
     }
   },
   "sessions": [

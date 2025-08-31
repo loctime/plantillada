@@ -186,6 +186,58 @@
   padding: 1rem 0;
 }
 
+/* Override para menu-vertical */
+[data-product-style="menu-vertical"] .product-grid {
+  display: flex !important;
+  flex-direction: column !important;
+  grid-template-columns: none !important;
+  gap: 0.5rem;
+  padding: 0;
+  max-width: none;
+}
+
+[data-product-style="menu-vertical"] .main-content {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+[data-product-style="menu-vertical"] .products-grid {
+  display: flex !important;
+  flex-direction: column !important;
+  grid-template-columns: none !important;
+  gap: 0.5rem;
+  padding: 0;
+  max-width: none;
+}
+
+[data-product-style="menu-vertical"] .shop-container {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+[data-product-style="menu-vertical"] .shop-container .main-content {
+  width: 100% !important;
+  max-width: none !important;
+  padding: 0 1rem;
+}
+
+/* Estilos específicos para menu-vertical - más específicos */
+.shop-container[data-product-style="menu-vertical"] .product-grid,
+.shop-container[data-product-style="menu-vertical"] .products-grid {
+  display: flex !important;
+  flex-direction: column !important;
+  grid-template-columns: none !important;
+  gap: 0.5rem;
+  padding: 0;
+  max-width: none;
+}
+
+.shop-container[data-product-style="menu-vertical"] .product-card {
+  width: 100% !important;
+  max-width: none !important;
+  flex: none !important;
+}
+
 .product-card {
   background: white;
   border-radius: 12px;
@@ -227,23 +279,25 @@
 }
 
 [data-product-style="list-horizontal"] .product-card {
-  display: flex;
+  display: block;
   background: white;
   border-radius: 16px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   overflow: hidden;
   transition: transform 0.2s, box-shadow 0.2s;
+  border: 1px solid #e5e7eb;
 }
 
 [data-product-style="list-horizontal"] .product-card:hover {
-  transform: translateX(4px);
+  transform: translateY(-2px);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
 }
 
 [data-product-style="list-horizontal"] .product-image {
-  width: 200px;
-  height: 200px;
+  width: 96px;
+  height: 96px;
   object-fit: cover;
+  border-radius: 8px;
 }
 
 [data-product-style="list-horizontal"] .product-info {
@@ -252,6 +306,92 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+}
+
+/* Menu Vertical (Restaurante/Menú) */
+[data-product-style="menu-vertical"] .product-grid {
+  display: flex !important;
+  flex-direction: column !important;
+  grid-template-columns: none !important;
+  gap: 0.5rem;
+  padding: 0;
+  max-width: none;
+}
+
+[data-product-style="menu-vertical"] .product-card {
+  width: 100% !important;
+  max-width: none !important;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: all 0.2s ease;
+  border: 1px solid #e5e7eb;
+  margin-bottom: 0;
+}
+
+[data-product-style="menu-vertical"] .product-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-color: var(--primary-color, #3b82f6);
+}
+
+[data-product-style="menu-vertical"] .product-content {
+  padding: 1rem 1.5rem;
+}
+
+[data-product-style="menu-vertical"] .product-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-color, #1f2937);
+  margin-bottom: 0.25rem;
+}
+
+[data-product-style="menu-vertical"] .product-price {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--primary-color, #3b82f6);
+}
+
+/* Estilos específicos para las tarjetas de menú vertical */
+.menu-vertical-card {
+  width: 100%;
+  max-width: none;
+}
+
+.menu-vertical-card .product-content {
+  padding: 1rem 1.5rem;
+}
+
+.menu-vertical-card .product-title {
+  color: var(--text-color, #1f2937);
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.menu-vertical-card .product-price {
+  color: var(--primary-color, #3b82f6);
+  font-weight: 700;
+}
+
+/* Responsive para menu-vertical */
+@media (max-width: 768px) {
+  [data-product-style="menu-vertical"] .product-card {
+    margin: 0 0.5rem;
+    border-radius: 6px;
+  }
+  
+  [data-product-style="menu-vertical"] .product-content {
+    padding: 0.75rem 1rem;
+  }
+  
+  [data-product-style="menu-vertical"] .product-title {
+    font-size: 1rem;
+  }
+  
+  [data-product-style="menu-vertical"] .product-price {
+    font-size: 1.125rem;
+  }
 }
 
 /* Cards Round (Gym Shop) */

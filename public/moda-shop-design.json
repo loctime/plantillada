@@ -1,0 +1,113 @@
+{
+  "name": "Moda Shop",
+  "description": "Diseño elegante para tiendas de moda y accesorios",
+  "category": "shop",
+  "colorScheme": {
+    "primary": "#ec4899",
+    "secondary": "#fbbf24",
+    "accent": "#be185d"
+  },
+  "config": {
+    "shopConfig": {
+      "storeName": "MODA ELEGANTE",
+      "storeTagline": "Estilo y elegancia en cada prenda",
+      "navigation": ["COLECCIÓN", "NUEVOS", "OFERTAS", "ACCESORIOS", "TENDENCIAS", "CONTACTO"],
+      "categories": ["Todos", "Ropa", "Accesorios", "Calzado", "Bolsos", "Joyería"],
+      "searchPlaceholder": "Buscar en la colección...",
+      "filterButtonText": "FILTRAR",
+      "bestSellersTitle": "Tendencias del Momento",
+      "breadcrumbText": "Inicio / Moda Elegante",
+      "resultsText": "Mostrando 1-{count} de {total} productos",
+      "sortOptions": [
+        { "value": "latest", "label": "Más Recientes" },
+        { "value": "price-low", "label": "Precio: Menor a Mayor" },
+        { "value": "price-high", "label": "Precio: Mayor a Menor" },
+        { "value": "rating", "label": "Mejor Valorados" }
+      ],
+      "addToCartText": "Agregar al Carrito",
+      "outOfStockText": "Agotado",
+      "cartTitle": "Mi Carrito",
+      "emptyCartText": "Tu carrito está vacío",
+      "checkoutText": "Finalizar Compra",
+      "totalText": "Total:"
+    },
+    "layout": {
+      "type": "sidebar-right",
+      "productStyle": "list-horizontal",
+      "backgroundColor": "#fdf2f8",
+      "cardStyle": "elegant",
+      "headerStyle": "pink-gradient",
+      "sidebarStyle": "glass-morphism"
+    },
+    "products": [
+      {
+        "id": "1",
+        "name": "Vestido Elegante de Noche",
+        "description": "Vestido largo con detalles en encaje y brillos, perfecto para eventos especiales. Fabricado en seda natural con acabados de alta calidad.",
+        "price": 299.99,
+        "image": "/placeholder.jpg",
+        "category": "Ropa",
+        "brand": "Elegance",
+        "rating": 5,
+        "inStock": true
+      },
+      {
+        "id": "2",
+        "name": "Bolso de Cuero Premium",
+        "description": "Bolso de cuero genuino con diseño minimalista y múltiples compartimentos. Ideal para el día a día con estilo sofisticado.",
+        "price": 189.99,
+        "image": "/placeholder.jpg",
+        "category": "Bolsos",
+        "brand": "Luxury",
+        "rating": 4,
+        "inStock": true
+      },
+      {
+        "id": "3",
+        "name": "Zapatos de Tacón Alto",
+        "description": "Zapatos elegantes con tacón de 10cm, suela antideslizante y plantilla acolchada para máximo confort sin sacrificar el estilo.",
+        "price": 159.99,
+        "image": "/placeholder.jpg",
+        "category": "Calzado",
+        "brand": "Elegance",
+        "rating": 4,
+        "inStock": false
+      },
+      {
+        "id": "4",
+        "name": "Collar de Perlas Naturales",
+        "description": "Collar elegante con perlas naturales de agua dulce, cierre de oro de 18k y longitud ajustable para diferentes ocasiones.",
+        "price": 89.99,
+        "image": "/placeholder.jpg",
+        "category": "Joyería",
+        "brand": "Pearl",
+        "rating": 5,
+        "inStock": true
+      }
+    ]
+  },
+  "theme": {
+    "light": {
+      "backgroundColor": "#fdf2f8",
+      "sectionBackground": "#ffffff",
+      "navbarBackground": "#ec4899",
+      "textColor": "#374151",
+      "accentColor": "#fbbf24",
+      "primaryButtonColor": "#ec4899",
+      "secondaryButtonColor": "#fbbf24",
+      "outlineButtonColor": "#ec4899"
+    },
+    "dark": {
+      "backgroundColor": "#1f1f23",
+      "sectionBackground": "#2d2d32",
+      "navbarBackground": "#be185d",
+      "textColor": "#f9fafb",
+      "accentColor": "#fbbf24",
+      "primaryButtonColor": "#ec4899",
+      "secondaryButtonColor": "#fbbf24",
+      "outlineButtonColor": "#f472b6"
+    }
+  }
+}
+
+

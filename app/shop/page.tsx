@@ -11,6 +11,7 @@ import { UniversalNavbar } from '@/components/universal-navbar'
 import { ShopFooter } from '@/components/shop/ShopFooter'
 import { ShopSidebar } from '@/components/shop/ShopSidebar'
 import { ShopDesignSelector } from '@/components/shop-design-selector'
+import { AdminToggle } from '@/components/admin-toggle'
 
 // Componentes de UI
 import { Button } from '@/components/ui/button'
@@ -33,7 +34,7 @@ interface Product {
 interface LayoutConfig {
   design: string
   layout: 'mobile-first' | 'web-first'
-  productStyle: 'cards-square' | 'list-horizontal'
+  productStyle: 'cards-square' | 'list-horizontal' | 'menu-vertical'
   sidebar: boolean
 }
 
@@ -116,14 +117,26 @@ export default function ShopPage() {
 
   // Manejadores del diseño
   const handleDesignSelect = (design: Design) => {
-    setLayoutConfig(prev => ({ ...prev, design: design.id }))
+    // Detectar el estilo de producto basado en el diseño
+    let productStyle = 'cards-square'
+    if (design.id === 'restaurant-shop') {
+      productStyle = 'menu-vertical'
+    } else if (design.id === 'moda-shop') {
+      productStyle = 'list-horizontal'
+    }
+    
+    setLayoutConfig(prev => ({ 
+      ...prev, 
+      design: design.id,
+      productStyle: productStyle as 'cards-square' | 'list-horizontal' | 'menu-vertical'
+    }))
   }
 
   const handleLayoutChange = (layout: 'mobile-first' | 'web-first') => {
     setLayoutConfig(prev => ({ ...prev, layout }))
   }
 
-  const handleProductStyleChange = (style: 'cards-square' | 'list-horizontal') => {
+  const handleProductStyleChange = (style: 'cards-square' | 'list-horizontal' | 'menu-vertical') => {
     setLayoutConfig(prev => ({ ...prev, productStyle: style }))
   }
 
@@ -219,6 +232,49 @@ export default function ShopPage() {
           </CardContent>
         </Card>
       )
+    } else if (layoutConfig.productStyle === 'menu-vertical') {
+      return (
+        <Card key={product.id} className="product-card menu-vertical-card">
+          <CardContent className="product-content p-4">
+            <div className="flex items-center justify-between w-full">
+              {/* Información del producto */}
+              <div className="flex-1">
+                <h3 className="product-title text-lg font-semibold mb-1">{product.name}</h3>
+                {product.description && (
+                  <p className="text-sm text-gray-600 mb-2">{product.description}</p>
+                )}
+                <div className="flex items-center gap-4">
+                  <span className="product-price text-xl font-bold text-primary">${product.price}</span>
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star
+                        key={i}
+                        className={`h-4 w-4 ${i < product.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+              
+              {/* Botones de acción */}
+              <div className="flex items-center gap-2 ml-4">
+                <Button 
+                  size="sm" 
+                  onClick={() => handleAddToCart(product)}
+                  disabled={!product.inStock}
+                  className="flex items-center gap-2"
+                >
+                  <ShoppingCart className="h-4 w-4" />
+                  {designConfig.addToCartText}
+                </Button>
+                <Button variant="ghost" size="sm">
+                  <Heart className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )
     } else {
       return (
         <Card key={product.id} className="product-card">
@@ -270,7 +326,10 @@ export default function ShopPage() {
   }
 
   return (
-    <div className={`shop-container ${getLayoutClasses()}`}>
+    <div 
+      className={`shop-container ${getLayoutClasses()}`}
+      data-product-style={layoutConfig.productStyle}
+    >
       {/* Navbar Universal */}
       <UniversalNavbar 
         showDesignPicker={false}
@@ -398,6 +457,16 @@ export default function ShopPage() {
       <ShopFooter
         storeName={designConfig.storeName}
         storeTagline={designConfig.storeTagline}
+      />
+
+      {/* Componentes de administración */}
+      <AdminToggle />
+      <ShopDesignSelector 
+        selectedDesign={layoutConfig.design}
+        onDesignSelect={handleDesignSelect}
+        onLayoutChange={handleLayoutChange}
+        onProductStyleChange={handleProductStyleChange}
+        onSidebarChange={handleSidebarToggle}
       />
     </div>
   )

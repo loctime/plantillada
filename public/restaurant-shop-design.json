@@ -1,0 +1,128 @@
+{
+  "name": "Restaurant Shop",
+  "description": "Diseño especializado para restaurantes y menús de comida",
+  "category": "shop",
+  "colorScheme": {
+    "primary": "#dc2626",
+    "secondary": "#fbbf24",
+    "accent": "#059669"
+  },
+  "config": {
+    "shopConfig": {
+      "storeName": "RESTAURANTE DELICIAS",
+      "storeTagline": "Los mejores sabores de la ciudad",
+      "navigation": ["MENÚ", "PROMOCIONES", "ESPECIALES", "BEBIDAS", "POSTRES", "CONTACTO"],
+      "categories": ["Todos", "Pizzas", "Hamburguesas", "Pasta", "Ensaladas", "Bebidas", "Postres"],
+      "searchPlaceholder": "Buscar en el menú...",
+      "filterButtonText": "FILTRAR",
+      "bestSellersTitle": "Platos Más Populares",
+      "breadcrumbText": "Inicio / Restaurante Delicias",
+      "resultsText": "Mostrando 1-{count} de {total} platos",
+      "sortOptions": [
+        { "value": "latest", "label": "Más Recientes" },
+        { "value": "price-low", "label": "Precio: Menor a Mayor" },
+        { "value": "price-high", "label": "Precio: Mayor a Menor" },
+        { "value": "rating", "label": "Mejor Valorados" }
+      ],
+      "addToCartText": "Agregar al Pedido",
+      "outOfStockText": "No Disponible",
+      "cartTitle": "Mi Pedido",
+      "emptyCartText": "Tu pedido está vacío",
+      "checkoutText": "Finalizar Pedido",
+      "totalText": "Total:"
+    },
+    "layout": {
+      "type": "mobile-first",
+      "productStyle": "menu-vertical",
+      "backgroundColor": "#fef3c7",
+      "cardStyle": "restaurant",
+      "headerStyle": "food-header",
+      "sidebarStyle": "food-sidebar"
+    },
+    "products": [
+      {
+        "id": "1",
+        "name": "Pizza Margherita",
+        "description": "Salsa de tomate, mozzarella fresca, albahaca y aceite de oliva. La pizza clásica italiana.",
+        "price": 12.99,
+        "image": "/placeholder.jpg",
+        "category": "Pizzas",
+        "rating": 5,
+        "inStock": true
+      },
+      {
+        "id": "2",
+        "name": "Hamburguesa Clásica",
+        "description": "Carne de res, lechuga, tomate, cebolla, queso cheddar y salsa especial en pan brioche.",
+        "price": 9.99,
+        "image": "/placeholder.jpg",
+        "category": "Hamburguesas",
+        "rating": 4,
+        "inStock": true
+      },
+      {
+        "id": "3",
+        "name": "Espagueti Carbonara",
+        "description": "Pasta con salsa cremosa de huevo, queso parmesano, panceta y pimienta negra.",
+        "price": 11.99,
+        "image": "/placeholder.jpg",
+        "category": "Pasta",
+        "rating": 4,
+        "inStock": false
+      },
+      {
+        "id": "4",
+        "name": "Ensalada César",
+        "description": "Lechuga romana, crutones, queso parmesano y aderezo César tradicional.",
+        "price": 8.99,
+        "image": "/placeholder.jpg",
+        "category": "Ensaladas",
+        "rating": 4,
+        "inStock": true
+      },
+      {
+        "id": "5",
+        "name": "Coca-Cola",
+        "description": "Refresco de cola clásico, 330ml.",
+        "price": 2.50,
+        "image": "/placeholder.jpg",
+        "category": "Bebidas",
+        "rating": 5,
+        "inStock": true
+      },
+      {
+        "id": "6",
+        "name": "Tiramisú",
+        "description": "Postre italiano con café, mascarpone y cacao en polvo.",
+        "price": 6.99,
+        "image": "/placeholder.jpg",
+        "category": "Postres",
+        "rating": 5,
+        "inStock": true
+      }
+    ]
+  },
+  "theme": {
+    "light": {
+      "backgroundColor": "#fef3c7",
+      "sectionBackground": "#ffffff",
+      "navbarBackground": "#dc2626",
+      "textColor": "#1f2937",
+      "accentColor": "#fbbf24",
+      "primaryButtonColor": "#dc2626",
+      "secondaryButtonColor": "#fbbf24",
+      "outlineButtonColor": "#dc2626"
+    },
+    "dark": {
+      "backgroundColor": "#1f1f23",
+      "sectionBackground": "#2d2d32",
+      "navbarBackground": "#b91c1c",
+      "textColor": "#f9fafb",
+      "accentColor": "#fbbf24",
+      "primaryButtonColor": "#dc2626",
+      "secondaryButtonColor": "#fbbf24",
+      "outlineButtonColor": "#ef4444"
+    }
+  }
+}
+

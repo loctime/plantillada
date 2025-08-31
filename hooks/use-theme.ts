@@ -2,6 +2,11 @@
 
 import { useState, useEffect } from 'react'
 import { useAdmin } from '@/lib/admin-context'
+import { 
+  DEFAULT_SIMPLIFIED_THEME, 
+  applySimplifiedColors,
+  SimplifiedTheme 
+} from '@/lib/simplified-colors'
 
 export function useTheme() {
   const { config } = useAdmin()
@@ -37,10 +42,14 @@ export function useTheme() {
     }
     console.log(`🎭 useTheme: Clase 'dark' ${isDarkMode ? 'agregada' : 'removida'} del documentElement`)
     
-    // Aplicar estilos CSS personalizados si existen en la configuración
+    // Aplicar sistema de colores simplificado
+    const simplifiedColors = (config as any)?.simplifiedColors || DEFAULT_SIMPLIFIED_THEME
+    console.log('🎨 useTheme: Aplicando colores simplificados')
+    applySimplifiedColors(simplifiedColors, isDarkMode)
+    
+    // Mantener compatibilidad con el sistema anterior si existe
     if (config?.theme) {
-      console.log('✅ useTheme: Configuración de tema disponible')
-      // Merge con overrides del diseño activo (si existen)
+      console.log('✅ useTheme: Configuración de tema anterior disponible (compatibilidad)')
       const designId = config.selectedDesigns?.landing
       const designOverride = designId ? (config as any).designOverrides?.[designId]?.theme : undefined
       const mergedTheme = {
@@ -49,8 +58,8 @@ export function useTheme() {
       }
       const activeTheme = mergedTheme[isDarkMode ? 'dark' : 'light']
       
-      // Aplicar variables CSS personalizadas
-      console.log('🎨 useTheme: Aplicando variables CSS personalizadas')
+      // Aplicar variables CSS adicionales del sistema anterior
+      console.log('🎨 useTheme: Aplicando variables CSS adicionales del sistema anterior')
       if (activeTheme.backgroundColor) root.style.setProperty('--background-color', activeTheme.backgroundColor)
       if (activeTheme.sectionBackground) root.style.setProperty('--section-background', activeTheme.sectionBackground)
       if (activeTheme.navbarBackground) root.style.setProperty('--navbar-background', activeTheme.navbarBackground)
@@ -59,6 +68,10 @@ export function useTheme() {
       if (activeTheme.primaryButtonColor) root.style.setProperty('--primary-button-color', activeTheme.primaryButtonColor)
       if (activeTheme.secondaryButtonColor) root.style.setProperty('--secondary-button-color', activeTheme.secondaryButtonColor)
       if (activeTheme.outlineButtonColor) root.style.setProperty('--outline-button-color', activeTheme.outlineButtonColor)
+      if (activeTheme.cardBackground) root.style.setProperty('--card-background', activeTheme.cardBackground)
+      if (activeTheme.cardForeground) root.style.setProperty('--card-foreground', activeTheme.cardForeground)
+      if (activeTheme.borderColor) root.style.setProperty('--border-color', activeTheme.borderColor)
+      if (activeTheme.headingColor) root.style.setProperty('--heading-color', activeTheme.headingColor)
       
       // Crear color de navegación con transparencia
       const navbarColor = activeTheme.navbarBackground || '#ffffff'

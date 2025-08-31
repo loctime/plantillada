@@ -24,6 +24,7 @@ import {
   Monitor,
   Grid3X3,
   List,
+  Menu,
   Sidebar,
   Settings,
   ChevronDown,
@@ -35,7 +36,7 @@ interface ShopDesignSelectorProps {
   selectedDesign?: string
   onDesignSelect: (design: Design) => void
   onLayoutChange?: (layout: 'mobile-first' | 'web-first') => void
-  onProductStyleChange?: (style: 'cards-square' | 'list-horizontal') => void
+  onProductStyleChange?: (style: 'cards-square' | 'list-horizontal' | 'menu-vertical') => void
   onSidebarChange?: (sidebar: boolean) => void
   className?: string
   fullWidth?: boolean
@@ -44,7 +45,7 @@ interface ShopDesignSelectorProps {
 interface LayoutConfig {
   design: string
   layout: 'mobile-first' | 'web-first'
-  productStyle: 'cards-square' | 'list-horizontal'
+  productStyle: 'cards-square' | 'list-horizontal' | 'menu-vertical'
   sidebar: boolean
 }
 
@@ -81,7 +82,7 @@ export function ShopDesignSelector({
     onLayoutChange?.(layout)
   }
 
-  const handleProductStyleChange = (style: 'cards-square' | 'list-horizontal') => {
+  const handleProductStyleChange = (style: 'cards-square' | 'list-horizontal' | 'menu-vertical') => {
     setLayoutConfig(prev => ({ ...prev, productStyle: style }))
     onProductStyleChange?.(style)
   }
@@ -252,7 +253,7 @@ export function ShopDesignSelector({
               
               {activeSection === 'products' && (
                 <div className="px-4 pb-4 space-y-2">
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-3 gap-2">
                     <Card 
                       className={`cursor-pointer transition-all ${
                         layoutConfig.productStyle === 'cards-square' 
@@ -263,7 +264,7 @@ export function ShopDesignSelector({
                     >
                       <CardContent className="p-3 text-center">
                         <Grid3X3 className="h-6 w-6 mx-auto mb-2 text-blue-500" />
-                        <p className="font-medium text-sm">Tarjetas Cuadradas</p>
+                        <p className="font-medium text-sm">Tarjetas</p>
                         <p className="text-xs text-muted-foreground">Grid compacto</p>
                       </CardContent>
                     </Card>
@@ -278,8 +279,23 @@ export function ShopDesignSelector({
                     >
                       <CardContent className="p-3 text-center">
                         <List className="h-6 w-6 mx-auto mb-2 text-blue-500" />
-                        <p className="font-medium text-sm">Lista Horizontal</p>
+                        <p className="font-medium text-sm">Lista</p>
                         <p className="text-xs text-muted-foreground">Lista elegante</p>
+                      </CardContent>
+                    </Card>
+
+                    <Card 
+                      className={`cursor-pointer transition-all ${
+                        layoutConfig.productStyle === 'menu-vertical' 
+                          ? 'ring-2 ring-blue-500 border-blue-500' 
+                          : 'hover:border-gray-300'
+                      }`}
+                      onClick={() => handleProductStyleChange('menu-vertical')}
+                    >
+                      <CardContent className="p-3 text-center">
+                        <Menu className="h-6 w-6 mx-auto mb-2 text-blue-500" />
+                        <p className="font-medium text-sm">Menú</p>
+                        <p className="text-xs text-muted-foreground">Ancho completo</p>
                       </CardContent>
                     </Card>
                   </div>
@@ -343,7 +359,8 @@ export function ShopDesignSelector({
                 <div className="flex justify-between text-xs">
                   <span>Productos:</span>
                   <Badge variant="secondary">
-                    {layoutConfig.productStyle === 'cards-square' ? 'Tarjetas' : 'Lista'}
+                    {layoutConfig.productStyle === 'cards-square' ? 'Tarjetas' : 
+                     layoutConfig.productStyle === 'list-horizontal' ? 'Lista' : 'Menú'}
                   </Badge>
                 </div>
                 <div className="flex justify-between text-xs">
