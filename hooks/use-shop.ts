@@ -142,6 +142,7 @@ export function useShop() {
 
   // Función para persistir categorías
   const persistCategories = async (updatedCategories: Category[]) => {
+    console.log('🔄 persistCategories called with:', updatedCategories.length, 'categories')
     try {
       // Guardar en localStorage
       localStorage.setItem('shop-categories', JSON.stringify(updatedCategories))
@@ -150,7 +151,7 @@ export function useShop() {
       // TODO: Implementar guardado en configuración global de forma segura
       console.log('✅ Categorías guardadas en localStorage')
     } catch (error) {
-      console.error('Error persistiendo categorías:', error)
+      console.error('❌ Error persistiendo categorías:', error)
     }
   }
 
@@ -211,6 +212,14 @@ export function useShop() {
   useEffect(() => {
     console.log('📊 useShop: Estado de productos actualizado:', products.length, 'productos')
   }, [products])
+
+  // Debug: Log cuando cambia el estado de categorías
+  useEffect(() => {
+    console.log('📁 useShop: Estado de categorías actualizado:', categories.length, 'categorías')
+    categories.forEach((cat, index) => {
+      console.log(`   ${index + 1}. "${cat.name}" (ID: ${cat.id})`)
+    })
+  }, [categories])
 
   // Filtrar y ordenar productos
   useEffect(() => {
@@ -454,13 +463,55 @@ export function useShop() {
   }
 
   const updateCategory = async (categoryId: string, updates: Partial<Category>) => {
+    console.log('🔄 updateCategory called:', { categoryId, updates })
+    console.log('📁 Current categories:', categories.map(c => ({ id: c.id, name: c.name })))
+    
     const updatedCategories = categories.map(cat => 
       cat.id === categoryId 
         ? { ...cat, ...updates }
         : cat
     )
+    
+    console.log('📁 Updated categories:', updatedCategories.map(c => ({ id: c.id, name: c.name })))
+    
+    // Actualizar el estado inmediatamente
     setCategories(updatedCategories)
+    
+    // Persistir en localStorage
     await persistCategories(updatedCategories)
+    
+    // Forzar una recarga completa del estado después de un breve delay
+    setTimeout(() => {
+      console.log('🔄 Forzando recarga completa del estado...')
+      
+      // Recargar desde localStorage para asegurar sincronización
+      try {
+        const savedCategories = localStorage.getItem('shop-categories')
+        if (savedCategories) {
+          const reloadedCategories = JSON.parse(savedCategories)
+          console.log('📁 Categorías recargadas desde localStorage:', reloadedCategories.map((c: Category) => ({ id: c.id, name: c.name })))
+          setCategories(reloadedCategories)
+        }
+      } catch (error) {
+        console.error('❌ Error recargando categorías:', error)
+      }
+      
+      // También forzar recarga de productos
+      try {
+        const savedProducts = localStorage.getItem('shop-products')
+        if (savedProducts) {
+          const reloadedProducts = JSON.parse(savedProducts)
+          console.log('📦 Productos recargados desde localStorage:', reloadedProducts.length)
+          setProducts(reloadedProducts)
+        }
+      } catch (error) {
+        console.error('❌ Error recargando productos:', error)
+      }
+      
+    }, 100)
+    
+    console.log('✅ updateCategory completed')
+    
     toast({
       title: 'Categoría actualizada',
       description: 'Los cambios se han guardado exitosamente'

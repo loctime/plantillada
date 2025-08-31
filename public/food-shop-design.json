@@ -1,10 +1,10 @@
 {
   "name": "Food Shop",
-  "description": "Diseño exclusivo para restaurantes y tiendas de comida con estilo moderno y acogedor",
+  "description": "Diseño especializado para restaurantes, delivery y tiendas de comida",
   "category": "shop",
   "colorScheme": {
-    "primary": "#dc2626",
-    "secondary": "#fbbf24",
+    "primary": "#fbbf24",
+    "secondary": "#dc2626",
     "accent": "#059669"
   },
   "config": {
@@ -32,8 +32,8 @@
       "totalText": "Total:"
     },
     "layout": {
-      "type": "no-sidebar",
-      "productStyle": "food-cards",
+      "type": "mobile-first",
+      "productStyle": "cards-square",
       "backgroundColor": "#fef3c7",
       "cardStyle": "food-modern",
       "headerStyle": "food-header",
@@ -45,22 +45,22 @@
     "light": {
       "backgroundColor": "#fef3c7",
       "sectionBackground": "#ffffff",
-      "navbarBackground": "#dc2626",
-      "textColor": "#374151",
-      "accentColor": "#fbbf24",
-      "primaryButtonColor": "#dc2626",
-      "secondaryButtonColor": "#fbbf24",
-      "outlineButtonColor": "#6b7280"
+      "navbarBackground": "#fbbf24",
+      "textColor": "#1f2937",
+      "accentColor": "#059669",
+      "primaryButtonColor": "#fbbf24",
+      "secondaryButtonColor": "#dc2626",
+      "outlineButtonColor": "#fbbf24"
     },
     "dark": {
-      "backgroundColor": "#92400e",
-      "sectionBackground": "#1f2937",
-      "navbarBackground": "#991b1b",
+      "backgroundColor": "#1f2937",
+      "sectionBackground": "#374151",
+      "navbarBackground": "#dc2626",
       "textColor": "#f9fafb",
-      "accentColor": "#fbbf24",
-      "primaryButtonColor": "#dc2626",
-      "secondaryButtonColor": "#fbbf24",
-      "outlineButtonColor": "#94a3b8"
+      "accentColor": "#10b981",
+      "primaryButtonColor": "#fbbf24",
+      "secondaryButtonColor": "#dc2626",
+      "outlineButtonColor": "#fbbf24"
     }
   }
 }

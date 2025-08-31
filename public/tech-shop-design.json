@@ -11,8 +11,8 @@
     "shopConfig": {
       "storeName": "TECH STORE",
       "storeTagline": "Tu tienda de tecnología de confianza",
-      "navigation": ["TIENDA", "CELULARES", "APPLE", "DRONES DJI", "GAMING", "WAREHOUSE", "LISTA DE PRECIOS"],
-      "categories": ["Todos", "Tablets", "Smartphones", "Gaming", "Laptops", "Accesorios", "Promociones"],
+      "navigation": ["TIENDA", "CELULARES", "GAMING", "LAPTOPS", "ACCESORIOS", "WAREHOUSE"],
+      "categories": ["Todos", "Smartphones", "Gaming", "Laptops", "Accesorios", "Promociones"],
       "searchPlaceholder": "Buscar productos tecnológicos...",
       "filterButtonText": "FILTRAR",
       "bestSellersTitle": "Productos Destacados",
@@ -32,7 +32,7 @@
       "totalText": "Total:"
     },
     "layout": {
-      "type": "no-sidebar",
+      "type": "web-first",
       "productStyle": "cards-square",
       "backgroundColor": "#f8fafc",
       "cardStyle": "modern",

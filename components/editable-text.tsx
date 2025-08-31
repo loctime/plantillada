@@ -1,78 +1,75 @@
 "use client"
 
-import { useState, useRef, useEffect } from 'react'
-import { useAdmin } from '@/lib/admin-context'
-import { Edit2, Check, X } from 'lucide-react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { Save, X, Edit3 } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { ColorPicker } from '@/components/color-picker'
 
 interface EditableTextProps {
   value: string
-  onSave: (newValue: string) => void
+  onSave: (value: string) => Promise<void> | void
   className?: string
-  tag?: 'h1' | 'h2' | 'h3' | 'p' | 'span'
   placeholder?: string
   multiline?: boolean
-  textColor?: string
-  onColorChange?: (color: string) => void
-  showColorPicker?: boolean
+  maxLength?: number
 }
 
 export function EditableText({ 
   value, 
   onSave, 
   className, 
-  tag = 'span',
-  placeholder = "Escribir texto...",
+  placeholder, 
   multiline = false,
-  textColor,
-  onColorChange,
-  showColorPicker = false
+  maxLength
 }: EditableTextProps) {
-  const { isAdminMode, isSaving } = useAdmin()
   const [isEditing, setIsEditing] = useState(false)
   const [editValue, setEditValue] = useState(value)
   const [isPending, setIsPending] = useState(false)
-  const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null)
 
+  // Debug: Log cuando cambia el valor
   useEffect(() => {
+    console.log('🔄 EditableText value changed:', { oldValue: editValue, newValue: value })
     setEditValue(value)
   }, [value])
 
-  useEffect(() => {
-    if (isEditing && inputRef.current) {
-      inputRef.current.focus()
-      if (multiline) {
-        inputRef.current.setSelectionRange(editValue.length, editValue.length)
-      }
-    }
-  }, [isEditing, editValue.length, multiline])
+  const handleEdit = () => {
+    console.log('✏️ EditableText handleEdit called')
+    setIsEditing(true)
+    setEditValue(value)
+  }
+
+  const handleCancel = () => {
+    console.log('❌ EditableText handleCancel called')
+    setIsEditing(false)
+    setEditValue(value)
+  }
 
   const handleSave = async () => {
+    console.log('🔄 EditableText handleSave called:', { currentValue: value, newValue: editValue.trim() })
+    
     if (editValue.trim() !== value) {
       setIsPending(true)
       try {
+        console.log('💾 EditableText calling onSave with:', editValue.trim())
         await onSave(editValue.trim())
+        console.log('✅ EditableText onSave completed')
         setIsEditing(false)
       } catch (error) {
-        console.error('Error saving text:', error)
+        console.error('❌ Error saving text:', error)
         setEditValue(value) // Revertir en caso de error
       } finally {
         setIsPending(false)
       }
     } else {
+      console.log('ℹ️ EditableText no changes detected, skipping save')
       setIsEditing(false)
     }
   }
 
-  const handleCancel = () => {
-    setEditValue(value)
-    setIsEditing(false)
-  }
-
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === 'Enter' && !multiline) {
       e.preventDefault()
       handleSave()
     } else if (e.key === 'Escape') {
@@ -80,112 +77,67 @@ export function EditableText({
     }
   }
 
-  if (!isAdminMode) {
-    const Tag = tag as keyof React.JSX.IntrinsicElements
-    return (
-      <Tag 
-        className={className}
-        style={textColor ? { color: textColor } : undefined}
-      >
-        {value}
-      </Tag>
-    )
-  }
-
   if (isEditing) {
     return (
-      <div className="relative group">
+      <div className="flex items-center space-x-2">
         {multiline ? (
-          <textarea
-            ref={inputRef as React.Ref<HTMLTextAreaElement>}
+          <Textarea
             value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
             onKeyDown={handleKeyDown}
-            disabled={isPending || isSaving}
-            className={cn(
-              "w-full min-h-[60px] p-2 border border-emerald-500 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500/20",
-              (isPending || isSaving) && "opacity-50 cursor-not-allowed",
-              className
-            )}
             placeholder={placeholder}
+            maxLength={maxLength}
+            className={cn("min-h-[60px]", className)}
+            autoFocus
           />
         ) : (
-          <input
-            ref={inputRef as React.Ref<HTMLInputElement>}
-            type="text"
+          <Input
             value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
             onKeyDown={handleKeyDown}
-            disabled={isPending || isSaving}
-            className={cn(
-              "w-full p-1 border border-emerald-500 rounded focus:outline-none focus:ring-2 focus:ring-emerald-500/20",
-              (isPending || isSaving) && "opacity-50 cursor-not-allowed",
-              className
-            )}
             placeholder={placeholder}
+            maxLength={maxLength}
+            className={className}
+            autoFocus
           />
         )}
-        
-        <div className="absolute -top-2 -right-2 flex gap-1">
-          <Button
-            size="sm"
-            onClick={handleSave}
-            disabled={isPending || isSaving}
-            className="h-6 w-6 p-0 bg-emerald-600 hover:bg-emerald-700"
-          >
-            {isPending || isSaving ? (
-              <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white"></div>
-            ) : (
-              <Check className="h-3 w-3" />
-            )}
-          </Button>
-          <Button
-            size="sm"
-            onClick={handleCancel}
-            disabled={isPending || isSaving}
-            variant="outline"
-            className="h-6 w-6 p-0"
-          >
-            <X className="h-3 w-3" />
-          </Button>
-        </div>
+        <Button
+          size="sm"
+          onClick={handleSave}
+          disabled={isPending}
+          className="bg-green-500 hover:bg-green-600"
+        >
+          <Save className="h-4 w-4" />
+        </Button>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={handleCancel}
+          disabled={isPending}
+        >
+          <X className="h-4 w-4" />
+        </Button>
       </div>
     )
   }
 
   return (
-    <div className="relative group">
-      <div 
-        className={cn(
-          "cursor-pointer hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded px-1 -mx-1 transition-colors",
-          isSaving && "opacity-75",
-          className
+    <div className="group relative">
+      <div className={cn("cursor-pointer hover:bg-gray-50 rounded px-1 py-0.5", className)}>
+        {multiline ? (
+          <div className="whitespace-pre-wrap">{value || placeholder}</div>
+        ) : (
+          <span>{value || placeholder}</span>
         )}
-        style={textColor ? { color: textColor } : undefined}
+      </div>
+      <Button
+        size="sm"
+        variant="ghost"
+        onClick={handleEdit}
+        className="absolute -right-8 top-0 opacity-0 group-hover:opacity-100 transition-opacity"
       >
-        {value || <span className="text-muted-foreground italic">{placeholder}</span>}
-      </div>
-      
-      <div className="absolute -top-2 -right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-        <Button
-          size="sm"
-          variant="ghost"
-          onClick={() => setIsEditing(true)}
-          disabled={isSaving}
-          className="h-6 w-6 p-0 custom-bg border shadow-sm"
-        >
-          <Edit2 className="h-3 w-3" />
-        </Button>
-        
-        {showColorPicker && onColorChange && (
-          <ColorPicker
-            value={textColor || '#000000'}
-            onChange={onColorChange}
-            compact={true}
-            className="h-6 w-6 p-0"
-          />
-        )}
-      </div>
+        <Edit3 className="h-3 w-3" />
+      </Button>
     </div>
   )
 }

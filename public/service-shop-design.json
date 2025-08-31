@@ -1,0 +1,66 @@
+{
+  "name": "Service Shop",
+  "description": "Diseño profesional para servicios y consultorías",
+  "category": "shop",
+  "colorScheme": {
+    "primary": "#8b5cf6",
+    "secondary": "#6b7280",
+    "accent": "#f59e0b"
+  },
+  "config": {
+    "shopConfig": {
+      "storeName": "SERVICIOS PROFESIONALES",
+      "storeTagline": "Soluciones expertas para tu negocio",
+      "navigation": ["SERVICIOS", "PORTAFOLIO", "TESTIMONIOS", "CONTACTO", "BLOG", "CONSULTA"],
+      "categories": ["Todos", "Consultoría", "Diseño", "Desarrollo", "Marketing", "Promociones"],
+      "searchPlaceholder": "Buscar servicios...",
+      "filterButtonText": "FILTRAR",
+      "bestSellersTitle": "Servicios Destacados",
+      "breadcrumbText": "Inicio / Servicios Profesionales",
+      "resultsText": "Mostrando 1-{count} de {total} servicios",
+      "sortOptions": [
+        { "value": "latest", "label": "Más Recientes" },
+        { "value": "price-low", "label": "Precio: Menor a Mayor" },
+        { "value": "price-high", "label": "Precio: Mayor a Menor" },
+        { "value": "rating", "label": "Mejor Valorados" }
+      ],
+      "addToCartText": "Solicitar Servicio",
+      "outOfStockText": "No Disponible",
+      "cartTitle": "Servicios Seleccionados",
+      "emptyCartText": "No has seleccionado servicios",
+      "checkoutText": "Solicitar Cotización",
+      "totalText": "Total:"
+    },
+    "layout": {
+      "type": "web-first",
+      "productStyle": "list-horizontal",
+      "backgroundColor": "#faf5ff",
+      "cardStyle": "professional",
+      "headerStyle": "purple-gradient",
+      "sidebarStyle": "none"
+    },
+    "products": []
+  },
+  "theme": {
+    "light": {
+      "backgroundColor": "#faf5ff",
+      "sectionBackground": "#ffffff",
+      "navbarBackground": "#8b5cf6",
+      "textColor": "#374151",
+      "accentColor": "#f59e0b",
+      "primaryButtonColor": "#8b5cf6",
+      "secondaryButtonColor": "#6b7280",
+      "outlineButtonColor": "#8b5cf6"
+    },
+    "dark": {
+      "backgroundColor": "#1e1b4b",
+      "sectionBackground": "#312e81",
+      "navbarBackground": "#4c1d95",
+      "textColor": "#f9fafb",
+      "accentColor": "#fbbf24",
+      "primaryButtonColor": "#8b5cf6",
+      "secondaryButtonColor": "#6b7280",
+      "outlineButtonColor": "#a78bfa"
+    }
+  }
+}

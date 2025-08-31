@@ -91,6 +91,14 @@ export function CategoriesSection({
 
   const activeCategories = categories.filter(c => c.isActive)
 
+  // Debug: Log cuando cambian las categorías
+  useEffect(() => {
+    console.log('📁 CategoriesSection: Categorías actualizadas:', categories.length, 'categorías')
+    categories.forEach((cat, index) => {
+      console.log(`   ${index + 1}. "${cat.name}" (ID: ${cat.id})`)
+    })
+  }, [categories])
+
   // Cargar estado de expansión desde localStorage
   useEffect(() => {
     const savedStates = localStorage.getItem('categories-expanded')
