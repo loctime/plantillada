@@ -10,7 +10,6 @@ Una plataforma completa para crear y gestionar diferentes tipos de sitios web de
 - **Centro de Psicología**: Sitio web especializado para psicólogos y terapeutas
 - **Sitio Multi-Página**: Combinación de múltiples secciones en un solo sitio
 - **LinkHub**: Página de enlaces personales y redes sociales
-- **Foro Comunitario**: Plataforma de discusión (próximamente)
 
 ### 🎨 Sistema de Edición Reactiva
 - **Edición inline**: Modifica contenido directamente en la página
@@ -75,13 +74,12 @@ palntillada/
 - **Procesamiento de Imágenes**: Optimización automática
 - **Página Principal**: La tienda es ahora la página principal del sitio
 
-### 2. Landing Page (Desactivada)
+### 2. Landing Page
 - **Formularios de Contacto**: Integración con Calendly
 - **Secciones Editables**: Contenido dinámico
 - **Testimonios**: Gestión de testimonios de clientes
 - **SEO Optimizado**: Meta tags y estructura semántica
 - **Sistema de precios**: Opcional para bufetes de abogados
-- **Estado**: Desactivada como página principal
 
 ### 3. Centro de Psicología
 - **Colores terapéuticos**: Púrpuras y azules
@@ -197,37 +195,35 @@ service cloud.firestore {
 npm run dev
 ```
 
-### Configurar Página Principal
+## 🎯 Sistema de Plantillas Activas
 
-El sistema ahora usa **Plantillas Activas** (`activeTemplates`) que permite un control más granular sobre qué plantillas están disponibles y en qué orden se muestran.
+El sistema usa **Plantillas Activas** (`activeTemplates`) que permite un control granular sobre qué plantillas están disponibles y en qué orden se muestran.
 
-#### Sistema de Plantillas Activas
-```bash
-# Configurar el nuevo sistema
-node scripts/setup-active-templates.js
-```
-
-#### Cómo Funciona
+### Cómo Funciona
 - **Página principal (`/`)** revisa `config.activeTemplates[0]`
 - **La primera plantilla en el array** será la página principal
 - **Orden de selección** determina la prioridad
 - **Plantillas desactivadas** no están disponibles
 
-#### Ejemplos
+### Configuración
+```bash
+# Configurar el nuevo sistema
+node scripts/setup-active-templates.js
+```
+
+### Ejemplos
 - `activeTemplates: ['shop']` → Página principal: `/shop`
 - `activeTemplates: ['landing', 'shop']` → Página principal: `/landing`
 - `activeTemplates: ['shop', 'landing']` → Página principal: `/shop`
 
-#### Configuración Manual
+### Configuración Manual
 1. Ir a `/admin` → "General" → "Cambiar Plantilla"
 2. Seleccionar plantillas en el orden deseado
 3. La primera seleccionada será la página principal
 4. Los cambios se guardan automáticamente
 
-**📖 Ver documentación completa:** [ACTIVE_TEMPLATES_README.md](./ACTIVE_TEMPLATES_README.md)
-- **Plantillas disponibles**: `shop`, `landing`, `linkhub`, `multi`, `psicologos`
-- **Fallback**: Si no hay configuración, usa `landing` por defecto
-- **Navegación dinámica**: Se actualiza automáticamente según la plantilla activa
+**Plantillas disponibles**: `shop`, `landing`, `linkhub`, `multi`, `psicologos`
+**Fallback**: Si no hay configuración, usa `landing` por defecto
 
 ## 🎯 Uso del Sistema
 
@@ -489,16 +485,14 @@ Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más det
 
 ## 🆘 Soporte
 
-### Documentación Adicional
-- **Configuración de Firebase**: Ver `FIREBASE_SETUP.md`
-- **Solución de Problemas**: Ver `TROUBLESHOOTING.md`
-- **Modo Admin**: Ver `ADMIN_MODE_README.md`
-- **Sistema de Diseños**: Ver `DESIGN_SYSTEM_README.md`
-- **Edición Reactiva**: Ver `REACTIVE_EDITING_README.md`
-- **Autenticación**: Ver `ADMIN_AUTH_README.md`
-- **Diseño de Fumigaciones**: Ver `FUMIGACIONES_EDITABLE_README.md`
-- **Sistema de Upload**: Ver `UPLOAD_SYSTEM_README.md`
-- **Tienda como Página Principal**: Ver `SHOP_AS_MAIN_README.md`
+### Documentación Específica
+Para información detallada sobre funcionalidades específicas, consulta:
+- **Sistema de Diseños**: `DESIGN_SYSTEM_README.md`
+- **Edición Reactiva**: `REACTIVE_EDITING_README.md`
+- **Modo Admin**: `ADMIN_MODE_README.md`
+- **Autenticación**: `ADMIN_AUTH_README.md`
+- **Clonación de Productos**: `CLONACION_PRODUCTOS_README.md`
+- **Sistema de Backup**: `BACKUP_SYSTEM_README.md`
 
 ### Contacto
 - **Issues**: [GitHub Issues](https://github.com/loctime/plantillada/issues)
