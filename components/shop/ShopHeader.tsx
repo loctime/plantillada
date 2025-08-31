@@ -13,6 +13,7 @@ import {
   Heart
 } from "lucide-react"
 import { ShopDesignSelector } from "@/components/shop-design-selector"
+import { Design } from "@/lib/designs"
 
 interface ShopHeaderProps {
   storeName: string
@@ -23,6 +24,10 @@ interface ShopHeaderProps {
   onSearch?: (query: string) => void
   onCartClick?: () => void
   onNavItemClick?: (item: string) => void
+  onDesignSelect?: (design: Design) => void
+  onLayoutChange?: (layout: 'mobile-first' | 'web-first') => void
+  onProductStyleChange?: (style: 'cards-square' | 'list-horizontal') => void
+  onSidebarChange?: (sidebar: boolean) => void
   className?: string
 }
 
@@ -35,6 +40,10 @@ export function ShopHeader({
   onSearch,
   onCartClick,
   onNavItemClick,
+  onDesignSelect,
+  onLayoutChange,
+  onProductStyleChange,
+  onSidebarChange,
   className = ""
 }: ShopHeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -102,7 +111,12 @@ export function ShopHeader({
           {/* Acciones */}
           <div className="flex items-center gap-4">
             {/* Selector de Diseño */}
-            <ShopDesignSelector />
+            <ShopDesignSelector 
+              onDesignSelect={onDesignSelect}
+              onLayoutChange={onLayoutChange}
+              onProductStyleChange={onProductStyleChange}
+              onSidebarChange={onSidebarChange}
+            />
             
             {/* Carrito */}
             <Button

@@ -34,6 +34,9 @@ import { shopDesigns, Design } from "@/lib/designs"
 interface ShopDesignSelectorProps {
   selectedDesign?: string
   onDesignSelect: (design: Design) => void
+  onLayoutChange?: (layout: 'mobile-first' | 'web-first') => void
+  onProductStyleChange?: (style: 'cards-square' | 'list-horizontal') => void
+  onSidebarChange?: (sidebar: boolean) => void
   className?: string
   fullWidth?: boolean
 }
@@ -47,7 +50,10 @@ interface LayoutConfig {
 
 export function ShopDesignSelector({ 
   selectedDesign, 
-  onDesignSelect, 
+  onDesignSelect,
+  onLayoutChange,
+  onProductStyleChange,
+  onSidebarChange,
   className = "",
   fullWidth = false
 }: ShopDesignSelectorProps) {
@@ -72,14 +78,17 @@ export function ShopDesignSelector({
 
   const handleLayoutChange = (layout: 'mobile-first' | 'web-first') => {
     setLayoutConfig(prev => ({ ...prev, layout }))
+    onLayoutChange?.(layout)
   }
 
   const handleProductStyleChange = (style: 'cards-square' | 'list-horizontal') => {
     setLayoutConfig(prev => ({ ...prev, productStyle: style }))
+    onProductStyleChange?.(style)
   }
 
   const handleSidebarChange = (sidebar: boolean) => {
     setLayoutConfig(prev => ({ ...prev, sidebar }))
+    onSidebarChange?.(sidebar)
   }
 
   const toggleSection = (section: string) => {
