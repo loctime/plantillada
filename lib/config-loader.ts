@@ -382,19 +382,47 @@ export interface Config {
       website?: string
     }
   }
+  // Colores simplificados para el nuevo sistema de temas
+  simplifiedColors?: {
+    light: {
+      primary: string
+      secondary: string
+      tertiary: string
+      border1: string
+      border2: string
+      text: string
+    }
+    dark: {
+      primary: string
+      secondary: string
+      tertiary: string
+      border1: string
+      border2: string
+      text: string
+    }
+  }
 }
 
 // Función para obtener el tenant ID basado en el dominio
 export function getTenantId(): string {
   if (typeof window === 'undefined') {
     // Server-side: usar header o variable de entorno
-    return process.env.NEXT_PUBLIC_DEFAULT_TENANT || 'default'
+    const serverTenant = process.env.NEXT_PUBLIC_DEFAULT_TENANT || 'default'
+    console.log(`🔍 Server: getTenantId() -> ${serverTenant}`)
+    return serverTenant
   }
 
   // Client-side: usar host (incluye puerto). Esto permite distinguir localhost:3000, 3001, 3003, etc.
   const host = window.location.host
+  console.log(`🔍 Client: getTenantId() - host detectado: ${host}`)
 
-  // Mapeo de dominios a tenant IDs (solo dominios reales/prod). No forzamos localhost -> default.
+  // IMPORTANTE: Para desarrollo local, usar 'default' para consistencia con el servidor
+  if (host === 'localhost:3000') {
+    console.log(`🔍 Client: getTenantId() -> default (localhost:3000)`)
+    return 'default'
+  }
+
+  // Mapeo de dominios a tenant IDs (solo dominios reales/prod)
   const domainToTenant: Record<string, string> = {
     'landing-six-gold.vercel.app': 'gold',
     'marcamia.com': 'marcamia',
@@ -404,6 +432,7 @@ export function getTenantId(): string {
 
   // Buscar coincidencia exacta
   if (domainToTenant[host]) {
+    console.log(`🔍 Client: getTenantId() -> ${domainToTenant[host]} (${host})`)
     return domainToTenant[host]
   }
 
@@ -415,9 +444,10 @@ export function getTenantId(): string {
       const firstPart = parts[0]
       if (firstPart.includes('-')) {
         const baseTenant = firstPart.split('-')[0]
-        console.log(`🔍 Detectado subdominio Vercel: ${host} -> tenant: ${baseTenant}`)
+        console.log(`🔍 Client: getTenantId() -> ${baseTenant} (subdominio Vercel: ${host})`)
         return baseTenant
       }
+      console.log(`🔍 Client: getTenantId() -> ${firstPart} (vercel.app: ${host})`)
       return firstPart
     }
   }
@@ -425,11 +455,14 @@ export function getTenantId(): string {
   // Buscar coincidencia por subdominio (solo para dominios no-Vercel)
   const subdomain = host.split('.')[0]
   if (subdomain && subdomain !== 'www') {
+    console.log(`🔍 Client: getTenantId() -> ${subdomain} (subdominio: ${host})`)
     return subdomain
   }
 
   // Fallback al host completo
-  return host.replace(/[^a-zA-Z0-9]/g, '-')
+  const fallbackTenant = host.replace(/[^a-zA-Z0-9]/g, '-')
+  console.log(`🔍 Client: getTenantId() -> ${fallbackTenant} (fallback: ${host})`)
+  return fallbackTenant
 }
 
 // Función para cargar un diseño desde archivo JSON

@@ -19,20 +19,20 @@ export interface SimplifiedTheme {
 // Esquema de colores por defecto según tu especificación
 export const DEFAULT_SIMPLIFIED_THEME: SimplifiedTheme = {
   light: {
-    primary: '#f5f5dc',      // beige
-    secondary: '#87ceeb',    // celeste
-    tertiary: '#90ee90',     // verde claro
-    border1: '#0000ff',      // azul
-    border2: '#000000',      // negro
-    text: '#000000'          // negro
+    primary: '#ffffff',      // blanco
+    secondary: '#3b82f6',    // azul
+    tertiary: '#10b981',     // verde
+    border1: '#e2e8f0',      // gris claro
+    border2: '#cbd5e1',      // gris medio
+    text: '#1e293b'          // gris oscuro
   },
   dark: {
-    primary: '#2f2f2f',      // negro mate
-    secondary: '#4a90e2',    // azul (puedes cambiar por el que prefieras)
-    tertiary: '#6b8e23',     // verde oliva (puedes cambiar por el que prefieras)
-    border1: '#8a2be2',      // violeta
-    border2: '#0000ff',      // azul
-    text: '#ffffff'          // blanco
+    primary: '#0f172a',      // negro azulado
+    secondary: '#60a5fa',    // azul claro
+    tertiary: '#34d399',     // verde claro
+    border1: '#334155',      // gris oscuro
+    border2: '#475569',      // gris medio
+    text: '#f1f5f9'          // blanco grisáceo
   }
 }
 

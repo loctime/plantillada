@@ -291,13 +291,19 @@ function Header() {
     <header className="sticky top-0 z-50 theme-bg-navbar-transparent theme-backdrop-blur theme-border theme-transition">
       <div className="container px-4 md:px-6 h-16 flex items-center justify-between">
         {/* Lado izquierdo: Título */}
-        <div className="flex items-center">
+        <div className="flex items-center gap-2">
           <EditableText
             value={config.site?.title || ""}
             onSave={(newValue) => updateConfig({ site: { ...config.site, title: newValue } })}
             className="font-semibold tracking-tight text-lg theme-text-heading"
             tag="span"
           />
+          {/* Debug temporal: mostrar valor actual */}
+          {process.env.NODE_ENV === 'development' && (
+            <div className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+              Debug: {config.site?.title || 'N/A'}
+            </div>
+          )}
         </div>
         
         {/* Centro: Navegación (solo desktop) */}

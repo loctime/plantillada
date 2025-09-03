@@ -61,6 +61,56 @@ const defaultConfig = {
     calendlyUrl: "https://calendly.com/tu-usuario/sesion",
     hotmartBaseUrl: "https://pay.hotmart.com"
   },
+  // Estructura de tema completa para evitar warnings
+  theme: {
+    light: {
+      backgroundColor: '#ffffff',
+      sectionBackground: '#f8fafc',
+      navbarBackground: '#ffffff',
+      textColor: '#1e293b',
+      accentColor: '#3b82f6',
+      primaryButtonColor: '#3b82f6',
+      secondaryButtonColor: '#64748b',
+      outlineButtonColor: '#64748b',
+      cardBackground: '#ffffff',
+      cardForeground: '#1e293b',
+      borderColor: '#e2e8f0',
+      headingColor: '#1e293b'
+    },
+    dark: {
+      backgroundColor: '#0f172a',
+      sectionBackground: '#1e293b',
+      navbarBackground: '#0f172a',
+      textColor: '#f1f5f9',
+      accentColor: '#60a5fa',
+      primaryButtonColor: '#60a5fa',
+      secondaryButtonColor: '#94a3b8',
+      outlineButtonColor: '#94a3b8',
+      cardBackground: '#1e293b',
+      cardForeground: '#f1f5f9',
+      borderColor: '#334155',
+      headingColor: '#f1f5f9'
+    }
+  },
+  // Colores simplificados para el nuevo sistema
+  simplifiedColors: {
+    light: {
+      primary: '#3b82f6',
+      secondary: '#64748b',
+      tertiary: '#10b981',
+      border1: '#e2e8f0',
+      border2: '#cbd5e1',
+      text: '#1e293b'
+    },
+    dark: {
+      primary: '#60a5fa',
+      secondary: '#94a3b8',
+      tertiary: '#34d399',
+      border1: '#334155',
+      border2: '#475569',
+      text: '#f1f5f9'
+    }
+  },
   sessions: [
     {
       id: "sesion-claridad",
@@ -108,7 +158,13 @@ const defaultConfig = {
   legal: {
     termsUrl: "",
     privacyUrl: ""
-  }
+  },
+  // Configuración de plantillas y diseños
+  selectedTemplates: ["landing"],
+  selectedDesigns: {
+    "landing": "default"
+  },
+  currentTemplate: "landing"
 }
 
 export default function RootLayout({

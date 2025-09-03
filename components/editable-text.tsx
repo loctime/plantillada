@@ -28,11 +28,13 @@ export function EditableText({
   const [editValue, setEditValue] = useState(value)
   const [isPending, setIsPending] = useState(false)
 
-  // Debug: Log cuando cambia el valor
+  // Solo actualizar editValue cuando cambie value Y no estemos editando
   useEffect(() => {
-    console.log('🔄 EditableText value changed:', { oldValue: editValue, newValue: value })
-    setEditValue(value)
-  }, [value])
+    if (!isEditing && editValue !== value) {
+      console.log('🔄 EditableText: Actualizando editValue desde prop:', { oldValue: editValue, newValue: value })
+      setEditValue(value)
+    }
+  }, [value, isEditing])
 
   const handleEdit = () => {
     console.log('✏️ EditableText handleEdit called')
@@ -56,6 +58,7 @@ export function EditableText({
         await onSave(editValue.trim())
         console.log('✅ EditableText onSave completed')
         setIsEditing(false)
+        // NO actualizar editValue aquí, dejar que el useEffect lo maneje
       } catch (error) {
         console.error('❌ Error saving text:', error)
         setEditValue(value) // Revertir en caso de error

@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useAdmin } from '@/lib/admin-context'
 import { Button } from '@/components/ui/button'
-import { Settings, Save, Check, RefreshCw, Palette } from 'lucide-react'
+import { Settings, Save, Check, RefreshCw, Palette, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import {
   Tooltip,
@@ -73,6 +73,16 @@ export function AdminToggle() {
               <>
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-emerald-600"></div>
                 <span className="text-sm text-muted-foreground">Guardando...</span>
+                {/* Botón de detener operación */}
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={forceReload}
+                  className="h-6 w-6 p-0 ml-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+                  title="Detener operación (recargar página)"
+                >
+                  <X className="h-3 w-3" />
+                </Button>
               </>
             ) : lastSaved ? (
               <>

@@ -21,6 +21,7 @@ import { NavigationManager } from "@/components/navigation-manager"
 import { useAdminAuth } from "@/hooks/use-admin-auth"
 import { useRouter } from "next/navigation"
 import { AdminLoginModal } from "@/components/admin-login-modal"
+import { AdminDebug } from "@/components/admin-debug"
 
 type LinkHubProfile = {
   name: string
@@ -582,7 +583,8 @@ export default function AdminPage() {
           </div>
         </div>
 
-        
+        {/* Componente de Debug */}
+        <AdminDebug />
 
         {message && (
           <Alert className="mb-6">

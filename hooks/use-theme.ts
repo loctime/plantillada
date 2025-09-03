@@ -12,7 +12,7 @@ export function useTheme() {
   const { config } = useAdmin()
   const [isDarkMode, setIsDarkMode] = useState(false)
 
-  // Detectar preferencia del sistema al cargar
+  // Detectar preferencia del sistema al cargar (solo una vez)
   useEffect(() => {
     console.log('🔄 useTheme: Detectando preferencia inicial del tema')
     const savedTheme = localStorage.getItem('theme')
@@ -27,7 +27,7 @@ export function useTheme() {
     }
   }, [])
 
-  // Aplicar tema cuando cambie
+  // Aplicar tema cuando cambie (optimizado para evitar re-renders excesivos)
   useEffect(() => {
     console.log(`🎨 useTheme: Aplicando tema ${isDarkMode ? 'oscuro' : 'claro'}`)
     const theme = isDarkMode ? 'dark' : 'light'
@@ -42,12 +42,12 @@ export function useTheme() {
     }
     console.log(`🎭 useTheme: Clase 'dark' ${isDarkMode ? 'agregada' : 'removida'} del documentElement`)
     
-    // Aplicar sistema de colores simplificado
+    // Aplicar sistema de colores simplificado (solo si cambia)
     const simplifiedColors = (config as any)?.simplifiedColors || DEFAULT_SIMPLIFIED_THEME
     console.log('🎨 useTheme: Aplicando colores simplificados')
     applySimplifiedColors(simplifiedColors, isDarkMode)
     
-    // Mantener compatibilidad con el sistema anterior si existe
+    // Mantener compatibilidad con el sistema anterior si existe (solo si cambia)
     if (config?.theme) {
       console.log('✅ useTheme: Configuración de tema anterior disponible (compatibilidad)')
       const designId = config.selectedDesigns?.landing
@@ -58,7 +58,7 @@ export function useTheme() {
       }
       const activeTheme = mergedTheme[isDarkMode ? 'dark' : 'light']
       
-      // Aplicar variables CSS adicionales del sistema anterior
+      // Aplicar variables CSS adicionales del sistema anterior (solo si cambian)
       console.log('🎨 useTheme: Aplicando variables CSS adicionales del sistema anterior')
       if (activeTheme.backgroundColor) root.style.setProperty('--background-color', activeTheme.backgroundColor)
       if (activeTheme.sectionBackground) root.style.setProperty('--section-background', activeTheme.sectionBackground)
@@ -92,7 +92,7 @@ export function useTheme() {
     } else {
       console.log('⚠️ useTheme: No hay configuración de tema disponible')
     }
-  }, [isDarkMode, config])
+  }, [isDarkMode, config?.theme, config?.selectedDesigns, config?.simplifiedColors]) // Dependencias optimizadas
 
   const toggleTheme = () => {
     console.log(`🔄 useTheme: Toggle del tema de ${isDarkMode ? 'oscuro' : 'claro'} a ${!isDarkMode ? 'oscuro' : 'claro'}`)

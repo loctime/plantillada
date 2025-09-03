@@ -1,152 +1,145 @@
 "use client"
 
 import { useAdmin } from '@/lib/admin-context'
-import { useAdminAuth } from '@/hooks/use-admin-auth'
-import { useState, useEffect } from 'react'
-import { Bug, X } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { RefreshCw, Database, HardDrive, AlertTriangle } from 'lucide-react'
+import { useState } from 'react'
 
 export function AdminDebug() {
-  const { isAdminMode, config, isSaving, lastSaved, refreshConfig, forceReload } = useAdmin()
-  const [showDebug, setShowDebug] = useState(false)
-  const [lastSyncCheck, setLastSyncCheck] = useState<Date | null>(null)
-  const [syncStatus, setSyncStatus] = useState<'synced' | 'outdated' | 'checking'>('synced')
+  const { config, refreshConfig, forceReload } = useAdmin()
+  const [isRefreshing, setIsRefreshing] = useState(false)
 
-  // Verificar estado de sincronización
-  const checkSyncStatus = async () => {
-    if (!config) return
-    
-    setSyncStatus('checking')
+  const handleRefresh = async () => {
+    setIsRefreshing(true)
     try {
-      const response = await fetch('/api/config')
-      if (response.ok) {
-        const serverData = await response.json()
-        const isSynced = JSON.stringify(serverData) === JSON.stringify(config)
-        setSyncStatus(isSynced ? 'synced' : 'outdated')
-        setLastSyncCheck(new Date())
-      } else {
-        setSyncStatus('outdated')
-      }
-    } catch (error) {
-      setSyncStatus('outdated')
+      await refreshConfig()
+    } finally {
+      setIsRefreshing(false)
     }
   }
 
-  // Verificar sincronización automáticamente cada 10 segundos
-  useEffect(() => {
-    if (isAdminMode) {
-      const interval = setInterval(checkSyncStatus, 10000)
-      return () => clearInterval(interval)
+  const getConfigSource = () => {
+    if (!config) return 'none'
+    
+    // Verificar si tiene datos personalizados
+    const hasCustomData = config.site?.title && 
+                         config.site?.title !== 'Tu Marca Personal - localhost:3000'
+    
+    if (hasCustomData) {
+      return 'firebase'
     }
-  }, [isAdminMode, config])
+    
+    return 'default'
+  }
 
-  if (!isAdminMode) return null
+  const configSource = getConfigSource()
+  const cacheData = typeof window !== 'undefined' ? localStorage.getItem('config-cache') : null
 
   return (
-    <div className="fixed bottom-4 right-4 z-50">
-      {/* Botón de debug */}
-      <button
-        onClick={() => setShowDebug(!showDebug)}
-        className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-full p-3 shadow-lg transition-all duration-200"
-        title="Debug Admin"
-      >
-        <Bug className="h-5 w-5" />
-      </button>
-
-      {/* Panel de debug */}
-      {showDebug && (
-        <div className="absolute bottom-16 right-0 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 p-4 min-w-80">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Debug Admin</h3>
-            <button
-              onClick={() => setShowDebug(false)}
-              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          </div>
-
-          {/* Estado de sincronización */}
-          <div className="mb-4 p-3 rounded-lg border">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Estado de Sincronización
-              </span>
-              <button
-                onClick={checkSyncStatus}
-                className="text-xs bg-blue-100 hover:bg-blue-200 text-blue-800 px-2 py-1 rounded"
-              >
-                Verificar
-              </button>
+    <Card className="w-full max-w-4xl mx-auto">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Database className="h-5 w-5" />
+          Debug de Configuración
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {/* Estado de la configuración */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="text-center p-3 border rounded-lg">
+            <div className="text-2xl font-bold mb-1">
+              {config ? '✅' : '❌'}
             </div>
-            
-            <div className="flex items-center space-x-2">
-              <div className={`w-3 h-3 rounded-full ${
-                syncStatus === 'synced' ? 'bg-green-500' :
-                syncStatus === 'outdated' ? 'bg-red-500' : 'bg-yellow-500'
-              }`} />
-              <span className="text-sm text-gray-600 dark:text-gray-400">
-                {syncStatus === 'synced' ? 'Sincronizado' :
-                 syncStatus === 'outdated' ? 'Desactualizado' : 'Verificando...'}
-              </span>
-            </div>
-            
-            {lastSyncCheck && (
-              <p className="text-xs text-gray-500 mt-1">
-                Última verificación: {lastSyncCheck.toLocaleTimeString()}
-              </p>
-            )}
+            <div className="text-sm text-muted-foreground">Config Cargada</div>
           </div>
-
-          {/* Estado del guardado */}
-          <div className="mb-4 p-3 rounded-lg border">
-            <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Estado del Guardado
-            </h4>
-            <div className="space-y-2">
-              <div className="flex items-center space-x-2">
-                <div className={`w-2 h-2 rounded-full ${isSaving ? 'bg-yellow-500' : 'bg-green-500'}`} />
-                <span className="text-sm text-gray-600 dark:text-gray-400">
-                  {isSaving ? 'Guardando...' : 'Sin cambios pendientes'}
-                </span>
-              </div>
-              {lastSaved && (
-                <p className="text-xs text-gray-500">
-                  Último guardado: {lastSaved.toLocaleTimeString()}
-                </p>
-              )}
+          
+          <div className="text-center p-3 border rounded-lg">
+            <div className="text-2xl font-bold mb-1">
+              {configSource === 'firebase' ? '🔥' : configSource === 'default' ? '📝' : '❓'}
+            </div>
+            <div className="text-sm text-muted-foreground">
+              {configSource === 'firebase' ? 'Firebase' : configSource === 'default' ? 'Por Defecto' : 'Desconocido'}
             </div>
           </div>
-
-          {/* Información de configuración */}
-          <div className="mb-4 p-3 rounded-lg border">
-            <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Configuración Actual
-            </h4>
-            <div className="space-y-1 text-xs text-gray-600 dark:text-gray-400">
-              <p><strong>Título:</strong> {config?.site?.title || 'No definido'}</p>
-              <p><strong>Tagline:</strong> {config?.site?.tagline || 'No definido'}</p>
-              <p><strong>Plantillas activas:</strong> {config?.activeTemplates?.length || 0}</p>
-              <p><strong>Sesiones:</strong> {config?.sessions?.length || 0}</p>
+          
+          <div className="text-center p-3 border rounded-lg">
+            <div className="text-2xl font-bold mb-1">
+              {cacheData ? '💾' : '❌'}
             </div>
-          </div>
-
-          {/* Acciones */}
-          <div className="space-y-2">
-            <button
-              onClick={refreshConfig}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded text-sm transition-colors"
-            >
-              🔄 Recargar desde Firebase
-            </button>
-            <button
-              onClick={forceReload}
-              className="w-full bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-sm transition-colors"
-            >
-              🔄 Recargar Página Completa
-            </button>
+            <div className="text-sm text-muted-foreground">Cache Local</div>
           </div>
         </div>
-      )}
-    </div>
+
+        {/* Información detallada */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+            <span className="font-medium">Título del sitio:</span>
+            <Badge variant={configSource === 'firebase' ? 'default' : 'secondary'}>
+              {config?.site?.title || 'No definido'}
+            </Badge>
+          </div>
+          
+          <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+            <span className="font-medium">Tagline:</span>
+            <Badge variant={configSource === 'firebase' ? 'default' : 'secondary'}>
+              {config?.site?.tagline || 'No definido'}
+            </Badge>
+          </div>
+          
+          <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+            <span className="font-medium">Tenant ID:</span>
+            <Badge variant="outline">
+              {typeof window !== 'undefined' ? window.location.host : 'SSR'}
+            </Badge>
+          </div>
+        </div>
+
+        {/* Cache local */}
+        {cacheData && (
+          <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="flex items-center gap-2 mb-2">
+              <HardDrive className="h-4 w-4 text-blue-600" />
+              <span className="font-medium text-blue-800">Cache Local Disponible</span>
+            </div>
+            <div className="text-sm text-blue-700">
+              <div>Tamaño: {Math.round(cacheData.length / 1024)} KB</div>
+              <div>Última actualización: {new Date().toLocaleString()}</div>
+            </div>
+          </div>
+        )}
+
+        {/* Acciones */}
+        <div className="flex gap-2">
+          <Button 
+            onClick={handleRefresh} 
+            disabled={isRefreshing}
+            variant="outline"
+            className="flex-1"
+          >
+            <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
+            {isRefreshing ? 'Refrescando...' : 'Refrescar Config'}
+          </Button>
+          
+          <Button 
+            onClick={forceReload} 
+            variant="destructive"
+            className="flex-1"
+          >
+            <AlertTriangle className="h-4 w-4 mr-2" />
+            Forzar Recarga
+          </Button>
+        </div>
+
+        {/* Información de debug */}
+        <div className="text-xs text-muted-foreground p-3 bg-gray-50 rounded-lg">
+          <div className="font-medium mb-1">Información de Debug:</div>
+          <div>Host: {typeof window !== 'undefined' ? window.location.host : 'SSR'}</div>
+          <div>URL: {typeof window !== 'undefined' ? window.location.href : 'SSR'}</div>
+          <div>User Agent: {typeof window !== 'undefined' ? window.navigator.userAgent.substring(0, 50) + '...' : 'SSR'}</div>
+        </div>
+      </CardContent>
+    </Card>
   )
 }
