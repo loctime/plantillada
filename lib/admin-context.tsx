@@ -205,6 +205,25 @@ export function AdminProvider({ children, initialConfig }: { children: ReactNode
       if (success) {
         setLastSaved(new Date())
         console.log('✅ Configuración guardada exitosamente')
+        
+        // Verificar que se guardó correctamente
+        try {
+          const response = await fetch('/api/config')
+          if (response.ok) {
+            const savedData = await response.json()
+            console.log('🔍 Verificando datos guardados...')
+            
+            // Si hay diferencias, actualizar el contexto
+            if (JSON.stringify(savedData) !== JSON.stringify(newConfig)) {
+              console.log('🔄 Datos guardados diferentes, actualizando contexto...')
+              const mergedConfig = mergeConfig(initialConfig, savedData)
+              setConfig(mergedConfig)
+            }
+          }
+        } catch (verifyError) {
+          console.warn('⚠️ No se pudo verificar datos guardados:', verifyError)
+        }
+        
         try {
           localStorage.setItem('config-cache', JSON.stringify(newConfig))
         } catch {}

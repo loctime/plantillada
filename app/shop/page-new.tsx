@@ -196,7 +196,7 @@ export default function ShopPage() {
 
       {/* Componentes de administración */}
       <AdminToggle />
-      <ShopDesignSelector />
+      {isAdminMode && <ShopDesignSelector />}
     </div>
   )
 }

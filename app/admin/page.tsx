@@ -14,8 +14,8 @@ import { Save, Eye, EyeOff, Settings, User, ShoppingCart, Calendar, Quote, Globe
 import { Config, getTenantId } from "@/lib/config-loader"
 import { useAdmin } from "@/lib/admin-context"
 import { TemplateSelector } from "@/components/template-selector"
-import { DesignSelector } from "@/components/design-selector"
-import BackupManager from "@/components/backup-manager"
+import { ShopDesignSelector } from "@/components/shop-design-selector"
+
 import { PriceVisibilityToggle } from "@/components/price-visibility-toggle"
 import { NavigationManager } from "@/components/navigation-manager"
 import { useAdminAuth } from "@/hooks/use-admin-auth"
@@ -1914,10 +1914,9 @@ export default function AdminPage() {
                               </Badge>
                             )}
                           </div>
-                          <DesignSelector 
-                            onDesignSelect={handleDesignSelect}
+                          <ShopDesignSelector 
                             selectedDesign={selectedDesigns[templateType]}
-                            templateType={templateType}
+                            onDesignSelect={handleDesignSelect}
                           />
                         </div>
                       ))}
@@ -1936,7 +1935,11 @@ export default function AdminPage() {
           </TabsContent>
 
           <TabsContent value="backups" className="space-y-6">
-            <BackupManager />
+            <div className="text-center py-8">
+              <Palette className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">Sistema de Backup</h3>
+              <p className="text-gray-500">Funcionalidad de backup en desarrollo.</p>
+            </div>
           </TabsContent>
         </Tabs>
 

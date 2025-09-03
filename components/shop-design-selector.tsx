@@ -34,7 +34,7 @@ import { shopDesigns, Design } from "@/lib/designs"
 
 interface ShopDesignSelectorProps {
   selectedDesign?: string
-  onDesignSelect: (design: Design) => void
+  onDesignSelect?: (design: Design) => void
   onLayoutChange?: (layout: 'mobile-first' | 'web-first') => void
   onProductStyleChange?: (style: 'cards-square' | 'list-horizontal' | 'menu-vertical') => void
   onSidebarChange?: (sidebar: boolean) => void
@@ -73,7 +73,7 @@ export function ShopDesignSelector({
     const design = shopDesigns.find(d => d.id === designId)
     if (design) {
       setLayoutConfig(prev => ({ ...prev, design: designId }))
-      onDesignSelect(design)
+      onDesignSelect?.(design)
     }
   }
 

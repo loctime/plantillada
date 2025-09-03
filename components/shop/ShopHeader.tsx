@@ -14,6 +14,7 @@ import {
 } from "lucide-react"
 import { ShopDesignSelector } from "@/components/shop-design-selector"
 import { Design } from "@/lib/designs"
+import { useAdmin } from "@/lib/admin-context"
 
 interface ShopHeaderProps {
   storeName: string
@@ -46,6 +47,7 @@ export function ShopHeader({
   onSidebarChange,
   className = ""
 }: ShopHeaderProps) {
+  const { isAdminMode } = useAdmin()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
 
@@ -110,13 +112,15 @@ export function ShopHeader({
 
           {/* Acciones */}
           <div className="flex items-center gap-4">
-            {/* Selector de Diseño */}
-            <ShopDesignSelector 
-              onDesignSelect={onDesignSelect}
-              onLayoutChange={onLayoutChange}
-              onProductStyleChange={onProductStyleChange}
-              onSidebarChange={onSidebarChange}
-            />
+            {/* Selector de Diseño (solo en modo admin) */}
+            {isAdminMode && onDesignSelect && (
+              <ShopDesignSelector 
+                onDesignSelect={onDesignSelect}
+                onLayoutChange={onLayoutChange}
+                onProductStyleChange={onProductStyleChange}
+                onSidebarChange={onSidebarChange}
+              />
+            )}
             
             {/* Carrito */}
             <Button

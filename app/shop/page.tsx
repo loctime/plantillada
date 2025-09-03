@@ -12,23 +12,29 @@ import { ShopFooter } from '@/components/shop/ShopFooter'
 import { ShopSidebar } from '@/components/shop/ShopSidebar'
 import { ShopDesignSelector } from '@/components/shop-design-selector'
 import { AdminToggle } from '@/components/admin-toggle'
+import { BulkUploadProducts } from '@/components/bulk-upload-products'
+import { BulkEditProducts } from '@/components/bulk-edit-products'
 
 // Componentes de UI
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Filter, ShoppingCart, Star, Heart } from 'lucide-react'
+import { Filter, ShoppingCart, Star, Heart, Upload, Edit3 } from 'lucide-react'
 
 // Tipos
 interface Product {
   id: string
   name: string
-  description: string
+  brand: string
   price: number
+  originalPrice?: number
   image: string
-  category: string
   rating: number
+  reviews: number
+  category: string
   inStock: boolean
+  description: string
+  features: string[]
 }
 
 interface LayoutConfig {
@@ -58,6 +64,10 @@ export default function ShopPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [cartItems, setCartItems] = useState<Product[]>([])
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  
+  // Estado para gestión masiva
+  const [showBulkUploadModal, setShowBulkUploadModal] = useState(false)
+  const [showBulkEditModal, setShowBulkEditModal] = useState(false)
   
   // Configuración actual del diseño
   const currentDesign = shopDesigns.find(d => d.id === layoutConfig.design)
@@ -346,13 +356,39 @@ export default function ShopPage() {
             </div>
             
             <div className="flex items-center gap-3">
-              {/* Selector de Diseño */}
-              <ShopDesignSelector 
-                onDesignSelect={handleDesignSelect}
-                onLayoutChange={handleLayoutChange}
-                onProductStyleChange={handleProductStyleChange}
-                onSidebarChange={handleSidebarToggle}
-              />
+              {/* Selector de Diseño (solo en modo admin) */}
+              {isAdminMode && (
+                <ShopDesignSelector 
+                  onDesignSelect={handleDesignSelect}
+                  onLayoutChange={handleLayoutChange}
+                  onProductStyleChange={handleProductStyleChange}
+                  onSidebarChange={handleSidebarToggle}
+                />
+              )}
+              
+              {/* Botones de gestión masiva (solo en modo admin) */}
+              {isAdminMode && (
+                <>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowBulkUploadModal(true)}
+                    className="hidden md:flex"
+                  >
+                    <Upload className="h-4 w-4 mr-2" />
+                    Carga Masiva
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowBulkEditModal(true)}
+                    className="hidden md:flex"
+                  >
+                    <Edit3 className="h-4 w-4 mr-2" />
+                    Editar Masivo
+                  </Button>
+                </>
+              )}
               
               {/* Carrito */}
               <Button
@@ -461,13 +497,41 @@ export default function ShopPage() {
 
       {/* Componentes de administración */}
       <AdminToggle />
-      <ShopDesignSelector 
-        selectedDesign={layoutConfig.design}
-        onDesignSelect={handleDesignSelect}
-        onLayoutChange={handleLayoutChange}
-        onProductStyleChange={handleProductStyleChange}
-        onSidebarChange={handleSidebarToggle}
-      />
+      {isAdminMode && (
+        <ShopDesignSelector 
+          selectedDesign={layoutConfig.design}
+          onDesignSelect={handleDesignSelect}
+          onLayoutChange={handleLayoutChange}
+          onProductStyleChange={handleProductStyleChange}
+          onSidebarChange={handleSidebarToggle}
+        />
+      )}
+      
+      {/* Modales de gestión masiva */}
+      {showBulkUploadModal && (
+        <BulkUploadProducts
+          onProductsUploaded={(newProducts) => {
+            setProducts(prev => [...prev, ...newProducts])
+            setFilteredProducts(prev => [...prev, ...newProducts])
+            setShowBulkUploadModal(false)
+          }}
+          onClose={() => setShowBulkUploadModal(false)}
+          existingCategories={designConfig.categories || []}
+        />
+      )}
+      
+      {showBulkEditModal && (
+        <BulkEditProducts
+          existingProducts={products}
+          onProductsUpdated={(updatedProducts, updatedCategories) => {
+            setProducts(updatedProducts)
+            setFilteredProducts(updatedProducts)
+            setShowBulkEditModal(false)
+          }}
+          onClose={() => setShowBulkEditModal(false)}
+          existingCategories={[]}
+        />
+      )}
     </div>
   )
 }
@@ -477,41 +541,53 @@ const sampleProducts: Product[] = [
   {
     id: '1',
     name: 'Producto Ejemplo 1',
-    description: 'Descripción del producto ejemplo 1',
+    brand: 'Marca Ejemplo',
     price: 99.99,
     image: '/placeholder.jpg',
     category: 'Electrónicos',
     rating: 4,
-    inStock: true
+    reviews: 12,
+    inStock: true,
+    description: 'Descripción del producto ejemplo 1',
+    features: ['Característica 1', 'Característica 2']
   },
   {
     id: '2',
     name: 'Producto Ejemplo 2',
-    description: 'Descripción del producto ejemplo 2',
+    brand: 'Marca Ejemplo',
     price: 149.99,
     image: '/placeholder.jpg',
     category: 'Ropa',
     rating: 5,
-    inStock: true
+    reviews: 8,
+    inStock: true,
+    description: 'Descripción del producto ejemplo 2',
+    features: ['Característica 1', 'Característica 2']
   },
   {
     id: '3',
     name: 'Producto Ejemplo 3',
-    description: 'Descripción del producto ejemplo 3',
+    brand: 'Marca Ejemplo',
     price: 79.99,
     image: '/placeholder.jpg',
     category: 'Hogar',
     rating: 3,
-    inStock: false
+    reviews: 5,
+    inStock: false,
+    description: 'Descripción del producto ejemplo 3',
+    features: ['Característica 1', 'Característica 2']
   },
   {
     id: '4',
     name: 'Producto Ejemplo 4',
-    description: 'Descripción del producto ejemplo 4',
+    brand: 'Marca Ejemplo',
     price: 199.99,
     image: '/placeholder.jpg',
     category: 'Electrónicos',
     rating: 4,
-    inStock: true
+    reviews: 15,
+    inStock: true,
+    description: 'Descripción del producto ejemplo 4',
+    features: ['Característica 1', 'Característica 2']
   }
 ]

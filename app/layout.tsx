@@ -4,7 +4,7 @@ import { GeistMono } from 'geist/font/mono'
 import './globals.css'
 import { ThemeProvider } from '@/components/theme-provider'
 import { AdminProvider } from '@/lib/admin-context'
-import { DesignApplier } from '@/components/design-applier'
+
 import { Toaster } from '@/components/ui/toaster'
 import { loadConfig, getTenantId } from '@/lib/config-loader'
 
@@ -135,7 +135,7 @@ html {
           disableTransitionOnChange
         >
           <AdminProvider initialConfig={defaultConfig}>
-            <DesignApplier currentTemplate="landing" />
+    
             {children}
             <Toaster />
           </AdminProvider>

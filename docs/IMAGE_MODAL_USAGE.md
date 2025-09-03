@@ -43,20 +43,27 @@ imageModal.openModal()
 imageModal.closeModal()
 ```
 
-### 3. ImageModalTrigger
-Componente de botón para abrir el modal.
+### 3. ImageModalTrigger (DEPRECADO)
+**⚠️ Este componente fue eliminado. Usar ImageModal directamente.**
+
+Para abrir el modal, usar el hook `useImageModal`:
 
 ```tsx
-import { ImageModalTrigger } from '@/components/image-modal-trigger'
+const imageModal = useImageModal({
+  onSave: (newImageUrl) => {
+    // Lógica de guardado
+  }
+})
 
-<ImageModalTrigger
-  onClick={() => imageModal.openModal()}
-  variant="outline"
-  size="sm"
-  icon="edit"
->
-  Cambiar Imagen
-</ImageModalTrigger>
+// Abrir modal
+imageModal.openModal()
+
+// Renderizar modal
+<ImageModal
+  isOpen={imageModal.isOpen}
+  onClose={imageModal.closeModal}
+  onSave={imageModal.handleSave}
+/>
 ```
 
 ## Ejemplos de Uso
@@ -128,8 +135,6 @@ function ProductCard({ product }) {
 
 ### Ejemplo 3: Con Botón Personalizado
 ```tsx
-import { ImageModalTrigger } from '@/components/image-modal-trigger'
-
 function ProfileSection() {
   const avatarModal = useImageModal({
     onSave: (newAvatarUrl) => {
@@ -141,7 +146,10 @@ function ProfileSection() {
     <div className="profile">
       <img src={user.avatar} alt="Avatar" />
       
-      <ImageModalTrigger
+      <button
+        onClick={() => avatarModal.openModal()}
+        className="btn btn-outline"
+      >
         onClick={() => avatarModal.openModal({
           title: 'Cambiar Avatar',
           placeholder: 'https://ejemplo.com/avatar.jpg'

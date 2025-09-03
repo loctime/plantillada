@@ -17,7 +17,7 @@ import { EditableMedia } from "@/components/editable-media"
 import { SectionManager } from "@/components/section-manager"
 import { DynamicSection } from "@/components/dynamic-section"
 import { LinkHubSection } from "@/components/linkhub-section"
-import { ShopSection } from "@/components/shop-section"
+
 import { SessionManager } from "@/components/session-manager"
 import { TestimonialManager } from "@/components/testimonial-manager"
 import { AdminNotifications } from "@/components/admin-notifications"
