@@ -53,7 +53,7 @@ export async function GET(request: NextRequest) {
     const template = searchParams.get('template')
     
     console.log('🔍 API: Cargando configuración para tenant:', tenantId, 'template:', template)
-    
+
     const config = await loadConfig(tenantId, template)
     return NextResponse.json(config)
   } catch (error) {

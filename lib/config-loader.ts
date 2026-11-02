@@ -544,8 +544,7 @@ export async function saveConfig(config: Config, tenantId?: string): Promise<boo
     
     // Guardar como JSON string en el campo 'data'
     const dataToSave = { data: JSON.stringify(configToSave) }
-    console.log('💾 Datos a guardar:', JSON.stringify(dataToSave, null, 2))
-    
+
     await setDoc(configDoc, dataToSave)
     console.log('✅ Documento guardado exitosamente en Firestore para tenant:', tenant)
     return true
@@ -856,10 +855,10 @@ export async function loadConfig(tenantId?: string, template?: string | null): P
     
     const configDoc = doc(db, 'config', tenant)
     const configSnapshot = await getDoc(configDoc)
-    
+
     if (configSnapshot.exists()) {
       const data = configSnapshot.data()
-      
+
       // Si los datos están en el campo 'data' como string JSON
       if (data.data && typeof data.data === 'string') {
         try {
